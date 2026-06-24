@@ -297,7 +297,6 @@ export default function BroadcastManager() {
           className={`relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 1 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
           title="1. Conexão"
         >
-          {currentScreen === 1 && <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-black dark:bg-white rounded-r-md"></div>}
           <div className="flex flex-col items-center gap-1">
             <Plug size={20} />
             <span className="text-[9px] font-bold uppercase tracking-wider">Conexão</span>
@@ -309,7 +308,6 @@ export default function BroadcastManager() {
           className={`relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 2 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
           title="2. Alvos"
         >
-          {currentScreen === 2 && <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-black dark:bg-white rounded-r-md"></div>}
           <div className="flex flex-col items-center gap-1">
             <Users size={20} />
             <span className="text-[9px] font-bold uppercase tracking-wider">Alvos</span>
@@ -321,7 +319,6 @@ export default function BroadcastManager() {
           className={`relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 3 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
           title="3. Disparo"
         >
-          {currentScreen === 3 && <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-black dark:bg-white rounded-r-md"></div>}
           <div className="flex flex-col items-center gap-1">
             <MessageSquare size={20} />
             <span className="text-[9px] font-bold uppercase tracking-wider">Disparo</span>
