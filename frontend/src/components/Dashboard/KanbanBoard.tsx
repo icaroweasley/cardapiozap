@@ -28,10 +28,11 @@ const COLUMNS = [
 export default function KanbanBoard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateFilter, setDateFilter] = useState<'TODAY' | 'YESTERDAY' | 'WEEK' | 'ALL'>('TODAY');
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('/api/orders', {
+      const res = await axios.get('http://localhost:3001/api/orders', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setOrders(res.data);
@@ -52,7 +53,7 @@ export default function KanbanBoard() {
     // Optimistic update
     setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus as any } : o));
     try {
-      await axios.patch(`/api/orders/${id}/status`, { status: newStatus }, {
+      await axios.patch(`http://localhost:3001/api/orders/${id}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
     } catch (error) {
@@ -61,17 +62,53 @@ export default function KanbanBoard() {
     }
   };
 
+  const filteredOrders = orders.filter(order => {
+    if (dateFilter === 'ALL') return true;
+    
+    const orderDate = new Date(order.createdAt);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    if (dateFilter === 'TODAY') {
+      return orderDate >= today;
+    }
+    if (dateFilter === 'YESTERDAY') {
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      return orderDate >= yesterday && orderDate < today;
+    }
+    if (dateFilter === 'WEEK') {
+      const lastWeek = new Date(today);
+      lastWeek.setDate(lastWeek.getDate() - 7);
+      return orderDate >= lastWeek;
+    }
+    return true;
+  });
+
   return (
     <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up">
-      <div className="p-6 border-b border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/50 flex justify-between items-center">
+      <div className="p-6 border-b border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white">Gestão de Pedidos</h2>
-        <button 
-          onClick={fetchOrders} 
-          className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 text-black dark:text-white font-inter tracking-widest text-[10px] font-bold uppercase px-6 py-3 flex items-center gap-2 transition-all"
-        >
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-          <span className="hidden sm:inline">ATUALIZAR</span>
-        </button>
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <select
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value as any)}
+            className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white font-inter tracking-widest text-[10px] font-bold uppercase px-4 py-3 focus:outline-none focus:border-black/30 dark:focus:border-white/30 cursor-pointer"
+          >
+            <option value="TODAY">Hoje</option>
+            <option value="YESTERDAY">Ontem</option>
+            <option value="WEEK">Últimos 7 dias</option>
+            <option value="ALL">Todo o Histórico</option>
+          </select>
+
+          <button 
+            onClick={fetchOrders} 
+            className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 text-black dark:text-white font-inter tracking-widest text-[10px] font-bold uppercase px-6 py-3 flex items-center gap-2 transition-all"
+          >
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+            <span className="hidden sm:inline">ATUALIZAR</span>
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-x-auto p-6 hide-scrollbar">
@@ -80,10 +117,10 @@ export default function KanbanBoard() {
             <div key={column.id} className="w-[320px] flex flex-col bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 h-full backdrop-blur-md">
               <div className="p-4 bg-white/10 dark:bg-black/40 border-b border-black/10 dark:border-white/10 font-inter font-bold tracking-widest text-xs uppercase flex justify-between items-center text-black dark:text-white">
                 <span>{column.title}</span>
-                <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-0.5 text-[10px]">{orders.filter(o => o.status === column.id).length}</span>
+                <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-0.5 text-[10px]">{filteredOrders.filter(o => o.status === column.id).length}</span>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-4 hide-scrollbar">
-                {orders.filter(o => o.status === column.id).map(order => (
+                {filteredOrders.filter(o => o.status === column.id).map(order => (
                   <div key={order.id} className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-5 shadow-lg group">
                     <div className="flex justify-between items-start mb-3">
                       <span className="font-inter font-bold uppercase tracking-wider text-sm truncate max-w-[150px] text-black dark:text-white">{order.customerName}</span>
