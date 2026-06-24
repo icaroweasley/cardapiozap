@@ -17,7 +17,8 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
     customerPhone: '',
     deliveryType: 'DELIVERY',
     address: '',
-    paymentMethod: 'PIX'
+    paymentMethod: 'PIX',
+    observation: ''
   });
   const [loading, setLoading] = useState(false);
 
@@ -43,6 +44,7 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
         deliveryType: formData.deliveryType,
         address: formData.address,
         paymentMethod: formData.paymentMethod,
+        observation: formData.observation,
         items: items.map(item => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -139,6 +141,11 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
                   <textarea className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" rows={2} placeholder="Rua, Número, Bairro, Complemento" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}></textarea>
                 </div>
               )}
+
+              <div>
+                <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Observação (Opcional)</label>
+                <textarea className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" rows={2} placeholder="Tirar cebola, ponto da carne, etc..." value={formData.observation} onChange={e => setFormData({...formData, observation: e.target.value})}></textarea>
+              </div>
 
               <div className="pt-4 border-t border-black/10 dark:border-white/10">
                 <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-4">Método de Pagamento</label>

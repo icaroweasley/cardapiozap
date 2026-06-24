@@ -15,6 +15,7 @@ interface Order {
   totalAmount: number;
   status: 'PENDING' | 'PREPARING' | 'SHIPPED' | 'FINISHED';
   createdAt: string;
+  observation?: string;
   items: OrderItem[];
 }
 
@@ -131,11 +132,18 @@ export default function KanbanBoard() {
                       <MessageCircle size={14} className="text-green-500" /> {order.customerPhone}
                     </a>
 
-                    <ul className="text-xs space-y-2 mb-6 border-l border-black/20 dark:border-white/20 pl-3 font-inter text-black/80 dark:text-white/80">
+                    <ul className="text-xs space-y-2 mb-4 border-l border-black/20 dark:border-white/20 pl-3 font-inter text-black/80 dark:text-white/80">
                       {order.items.map(item => (
                         <li key={item.id} className="truncate uppercase tracking-wider"><span className="font-bold">{item.quantity}X</span> {item.product.name}</li>
                       ))}
                     </ul>
+
+                    {order.observation && (
+                      <div className="mb-4 bg-yellow-500/10 border border-yellow-500/30 p-3 text-xs font-inter text-yellow-700 dark:text-yellow-500">
+                        <strong className="block uppercase tracking-widest mb-1 text-[10px]">Observação:</strong>
+                        {order.observation}
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-black/10 dark:border-white/10">
                       {column.id === 'PENDING' && (

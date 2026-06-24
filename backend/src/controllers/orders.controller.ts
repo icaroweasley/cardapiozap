@@ -5,7 +5,7 @@ import { notifyCustomerOrderReceived, notifyMerchantNewOrder, notifyCustomerOrde
 
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { merchantId, customerName, customerPhone, deliveryType, address, paymentMethod, items } = req.body;
+    const { merchantId, customerName, customerPhone, deliveryType, address, paymentMethod, observation, items } = req.body;
 
     // Validate items and calculate total
     let totalAmount = 0;
@@ -33,6 +33,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
         deliveryType,
         address,
         paymentMethod,
+        observation,
         totalAmount,
         items: {
           create: orderItemsData

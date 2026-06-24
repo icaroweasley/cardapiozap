@@ -48,6 +48,8 @@ model Order {
   paymentMethod  String
   totalAmount    Int         // Store in cents
   status         String      @default("PENDING") // "PENDING", "PREPARING", "SHIPPED", "FINISHED"
+  observation    String?
+
   createdAt      DateTime    @default(now())
   merchant       Merchant    @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   items          OrderItem[]

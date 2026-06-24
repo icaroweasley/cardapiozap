@@ -84,8 +84,9 @@ export const notifyCustomerOrderReceived = async (order: FullOrder) => {
 
 export const notifyMerchantNewOrder = async (order: FullOrder) => {
   let itemsText = order.items.map(i => `${i.quantity}x ${i.product.name}`).join('\n');
+  let obsText = order.observation ? `\n*Observação:* ${order.observation}` : '';
   
-  const text = `*Novo Pedido Recebido!*\n\n*Cliente:* ${order.customerName}\n*Contato:* ${order.customerPhone}\n*Tipo:* ${order.deliveryType === 'DELIVERY' ? 'Entrega' : 'Retirada'}\n*Endereço:* ${order.address || 'N/A'}\n*Pagamento:* ${order.paymentMethod}\n\n*Itens:*\n${itemsText}\n\n*Total:* ${formatCurrency(order.totalAmount)}`;
+  const text = `*Novo Pedido Recebido!*\n\n*Cliente:* ${order.customerName}\n*Contato:* ${order.customerPhone}\n*Tipo:* ${order.deliveryType === 'DELIVERY' ? 'Entrega' : 'Retirada'}\n*Endereço:* ${order.address || 'N/A'}\n*Pagamento:* ${order.paymentMethod}${obsText}\n\n*Itens:*\n${itemsText}\n\n*Total:* ${formatCurrency(order.totalAmount)}`;
   await sendWhatsAppMessage(order.merchant, order.merchant.phone, text);
 };
 
