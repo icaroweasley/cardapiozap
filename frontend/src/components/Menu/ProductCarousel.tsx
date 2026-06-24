@@ -74,11 +74,11 @@ export function ProductCarousel({ products, category }: ProductCarouselProps) {
   };
 
   return (
-    <div className="relative group -mx-6 lg:-mx-16">
+    <div className="relative group -ml-6 -mr-6 lg:-mr-16 lg:-ml-[calc(350px+4rem)] xl:-ml-[calc(400px+4rem)]">
       {canScrollLeft && (
         <button 
           onClick={scrollLeft}
-          className="absolute left-6 lg:left-16 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-black backdrop-blur-md border border-black/20 dark:border-white/20 shadow-2xl flex items-center justify-center rounded-full transition-all hover:scale-110 opacity-70 hover:opacity-100"
+          className="absolute left-6 lg:left-[calc(350px+2rem)] xl:left-[calc(400px+2rem)] top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-black backdrop-blur-md border border-black/20 dark:border-white/20 shadow-2xl flex items-center justify-center rounded-full transition-all hover:scale-110 opacity-70 hover:opacity-100"
         >
           <ChevronLeft className="w-6 h-6 text-black dark:text-white" />
         </button>
@@ -91,7 +91,7 @@ export function ProductCarousel({ products, category }: ProductCarouselProps) {
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
         onScroll={updateScrollButtons}
-        className={`flex overflow-x-auto gap-6 hide-scrollbar pb-6 pl-[4.5rem] lg:pl-[9rem] pr-6 lg:pr-16 scroll-pl-[4.5rem] lg:scroll-pl-[9rem] ${className}`}
+        className={`flex overflow-x-auto gap-6 hide-scrollbar pb-6 pr-6 lg:pr-16 pl-[4.5rem] lg:pl-[calc(350px+9rem)] xl:pl-[calc(400px+9rem)] scroll-pl-[4.5rem] lg:scroll-pl-[calc(350px+9rem)] xl:scroll-pl-[calc(400px+9rem)] ${className}`}
       >
         {products.map((product) => {
           const cartItem = items.find((i) => i.productId === product.id);
