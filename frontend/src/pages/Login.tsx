@@ -45,7 +45,7 @@ export default function Login() {
         {isDark ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-black" />}
       </button>
 
-      <div className="relative z-10 bg-white/40 dark:bg-black/40 backdrop-blur-3xl p-10 max-w-md w-full border border-black/10 dark:border-white/10 shadow-2xl animate-fade-up">
+      <div className="relative z-10 bg-white/40 dark:bg-black/40 backdrop-blur-3xl p-10 max-w-md w-full border border-black/10 dark:border-white/10 shadow-2xl animate-fade-up rounded-3xl">
         <div className="flex justify-center mb-8">
           <Crown size={48} className="text-black dark:text-white" />
         </div>
@@ -53,13 +53,13 @@ export default function Login() {
           Acesso Restrito
         </p>
         
-        {error && <p className="font-inter text-xs text-red-500 mb-6 uppercase tracking-widest text-center border border-red-500/20 bg-red-500/10 p-3">{error}</p>}
+        {error && <p className="font-inter text-xs text-red-500 mb-6 uppercase tracking-widest text-center border border-red-500/20 bg-red-500/10 p-3 rounded-xl">{error}</p>}
         
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
             <label className="block font-inter text-[10px] tracking-widest text-black/70 dark:text-white/70 uppercase mb-3 font-bold">URL da Loja</label>
             <input 
-              className="w-full bg-white/50 dark:bg-black/50 border border-black/20 dark:border-white/20 text-black dark:text-white p-4 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" 
+              className="w-full bg-white/50 dark:bg-black/50 border border-black/20 dark:border-white/20 text-black dark:text-white p-4 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
               placeholder="lanchonete-demo" 
               value={slug} 
               onChange={e => setSlug(e.target.value)} 
@@ -70,7 +70,7 @@ export default function Login() {
             <label className="block font-inter text-[10px] tracking-widest text-black/70 dark:text-white/70 uppercase mb-3 font-bold">Senha de Acesso</label>
             <input 
               type="password"
-              className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-4 font-inter focus:outline-none focus:border-black dark:focus:border-white transition-colors placeholder:text-black/30 dark:placeholder:text-white/30" 
+              className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-4 font-inter focus:outline-none focus:border-black dark:focus:border-white transition-colors placeholder:text-black/30 dark:placeholder:text-white/30 rounded-xl" 
               placeholder="******" 
               value={password} 
               onChange={e => setPassword(e.target.value)} 
@@ -79,7 +79,7 @@ export default function Login() {
           </div>
           <button 
             type="submit" 
-            className="w-full bg-black dark:bg-white text-white dark:text-black font-inter tracking-[0.2em] font-semibold text-[11px] uppercase py-5 mt-4 flex items-center justify-center gap-3 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors group"
+            className="w-full bg-black dark:bg-white text-white dark:text-black font-inter tracking-[0.2em] font-semibold text-[11px] uppercase py-5 mt-4 flex items-center justify-center gap-3 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors group rounded-xl"
             disabled={loading}
           >
             {loading ? 'AUTENTICANDO...' : 'ACESSAR PAINEL'}

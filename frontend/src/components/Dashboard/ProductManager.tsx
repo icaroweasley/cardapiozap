@@ -97,12 +97,12 @@ export default function ProductManager() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up">
+    <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-3xl lg:m-2">
       <div className="p-6 border-b border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/50 flex justify-between items-center">
         <h2 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white">Cardápio</h2>
         <button 
           onClick={openNewModal} 
-          className="bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-[10px] font-bold uppercase px-6 py-3 flex items-center gap-2 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors"
+          className="bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-[10px] font-bold uppercase px-6 py-3 flex items-center gap-2 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors rounded-xl"
         >
           <Plus size={14} />
           <span className="hidden sm:inline">NOVO PRODUTO</span>
@@ -129,7 +129,7 @@ export default function ProductManager() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {categoryProducts.map(product => (
-                    <div key={product.id} className={`flex flex-col bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-xl transition-all ${!product.available ? 'opacity-50 grayscale' : ''}`}>
+                    <div key={product.id} className={`flex flex-col bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-xl transition-all ${!product.available ? 'opacity-50 grayscale' : ''} rounded-2xl overflow-hidden`}>
                       {product.imageUrl ? (
                         <img src={product.imageUrl} alt={product.name} className="w-full h-40 object-cover border-b border-black/10 dark:border-white/10" />
                       ) : (
@@ -141,7 +141,7 @@ export default function ProductManager() {
                       <div className="p-5 flex-1 flex flex-col">
                         <div className="flex justify-between items-start mb-3">
                           <h3 className="font-podium uppercase text-lg text-black dark:text-white tracking-wider truncate mr-2">{product.name}</h3>
-                          <span className="bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/10 text-black dark:text-white px-2 py-1 text-[9px] font-inter font-bold tracking-widest uppercase shrink-0">
+                          <span className="bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/10 text-black dark:text-white px-2 py-1 text-[9px] font-inter font-bold tracking-widest uppercase shrink-0 rounded-lg">
                             {product.category}
                           </span>
                         </div>
@@ -153,13 +153,13 @@ export default function ProductManager() {
                         <div className="flex gap-2 mt-auto">
                           <button 
                             onClick={() => handleEdit(product)} 
-                            className="flex-1 border border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5 py-3 text-[10px] font-inter font-bold tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black dark:text-white"
+                            className="flex-1 border border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5 py-3 text-[10px] font-inter font-bold tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black dark:text-white rounded-xl"
                           >
                             <Edit size={14}/> EDITAR
                           </button>
                           <button 
                             onClick={() => handleDelete(product.id)} 
-                            className="flex-1 border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 py-3 text-[10px] font-inter font-bold tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-red-500/20 transition-colors"
+                            className="flex-1 border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 py-3 text-[10px] font-inter font-bold tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-red-500/20 transition-colors rounded-xl"
                           >
                             <Trash2 size={14}/> EXCLUIR
                           </button>
@@ -176,7 +176,7 @@ export default function ProductManager() {
 
       {isModalOpen && createPortal(
         <div className="fixed inset-0 bg-white/80 dark:bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-neutral-100 dark:bg-[#050505] w-full max-w-lg p-8 border border-black/10 dark:border-white/10 shadow-2xl relative">
+          <div className="bg-neutral-100 dark:bg-[#050505] w-full max-w-lg p-8 border border-black/10 dark:border-white/10 shadow-2xl relative rounded-3xl overflow-hidden">
             <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors">
               <X size={20} />
             </button>
@@ -189,7 +189,7 @@ export default function ProductManager() {
               <div>
                 <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Nome</label>
                 <input 
-                  className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" 
+                  className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
                   value={formData.name} 
                   onChange={e => setFormData({...formData, name: e.target.value})} 
                   required 
@@ -201,7 +201,7 @@ export default function ProductManager() {
                   <input 
                     type="number" 
                     step="0.01" 
-                    className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" 
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
                     value={formData.price} 
                     onChange={e => setFormData({...formData, price: e.target.value})} 
                     required 
@@ -210,7 +210,7 @@ export default function ProductManager() {
                 <div>
                   <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Categoria</label>
                   <input 
-                    className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" 
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
                     placeholder="Ex: Bebidas" 
                     value={formData.category} 
                     onChange={e => setFormData({...formData, category: e.target.value})} 
@@ -221,7 +221,7 @@ export default function ProductManager() {
               <div>
                 <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">URL da Imagem</label>
                 <input 
-                  className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" 
+                  className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
                   value={formData.imageUrl} 
                   onChange={e => setFormData({...formData, imageUrl: e.target.value})} 
                 />
@@ -229,7 +229,7 @@ export default function ProductManager() {
               <div>
                 <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Descrição</label>
                 <textarea 
-                  className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" 
+                  className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
                   rows={2} 
                   value={formData.description} 
                   onChange={e => setFormData({...formData, description: e.target.value})} 
@@ -253,13 +253,13 @@ export default function ProductManager() {
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)} 
-                  className="flex-1 border border-black/20 dark:border-white/20 text-black dark:text-white font-inter tracking-widest text-[10px] uppercase py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold"
+                  className="flex-1 border border-black/20 dark:border-white/20 text-black dark:text-white font-inter tracking-widest text-[10px] uppercase py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-bold rounded-xl"
                 >
                   CANCELAR
                 </button>
                 <button 
                   type="submit" 
-                  className="flex-1 bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-[10px] uppercase py-4 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors font-bold"
+                  className="flex-1 bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-[10px] uppercase py-4 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors font-bold rounded-xl"
                 >
                   SALVAR PRODUTO
                 </button>
