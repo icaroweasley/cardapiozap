@@ -25,7 +25,7 @@ export default function Dashboard() {
   const merchant = JSON.parse(localStorage.getItem('merchant') || '{}');
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-neutral-100 dark:bg-black transition-colors duration-500 relative">
+    <div className="h-screen overflow-hidden flex flex-col md:flex-row bg-neutral-100 dark:bg-black transition-colors duration-500 relative">
       {/* Background Image */}
       <img
         src="/bg-burger.png"
@@ -42,7 +42,7 @@ export default function Dashboard() {
       </button>
 
       {/* Sidebar */}
-      <aside className="w-full md:w-[300px] shrink-0 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur-md relative z-20 flex flex-col md:min-h-screen transition-colors duration-500">
+      <aside className="w-full md:w-[300px] shrink-0 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur-md relative z-20 flex flex-col md:h-screen transition-colors duration-500">
         <div className="p-8 border-b border-black/10 dark:border-white/10 flex flex-col items-start">
           <Crown className="w-8 h-8 text-black/30 dark:text-white/30 mb-4" />
           <h1 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white">{merchant.name || 'LOJA'}</h1>
