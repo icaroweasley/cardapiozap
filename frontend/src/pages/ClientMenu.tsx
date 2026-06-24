@@ -125,10 +125,10 @@ export default function ClientMenu() {
           <div className="max-w-4xl mx-auto lg:ml-auto lg:mr-0 pointer-events-auto">
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="w-full lg:w-[400px] shadow-2xl group bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 flex justify-between items-center text-sm px-6 py-5 transition-colors border border-black/10 dark:border-white/10"
+              className="w-full lg:w-[400px] shadow-2xl group bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 flex justify-between items-center text-sm px-6 py-5 transition-colors border border-black/10 dark:border-white/10 rounded-2xl lg:rounded-3xl"
             >
               <div className="flex items-center gap-4">
-                <div className="bg-white dark:bg-black text-black dark:text-white px-3 py-1 font-inter text-[10px] tracking-widest font-bold">
+                <div className="bg-white dark:bg-black text-black dark:text-white px-3 py-1 font-inter text-[10px] tracking-widest font-bold rounded-lg">
                   {cartItemCount}
                 </div>
                 <span className="font-inter tracking-[0.2em] font-semibold uppercase">VER CARRINHO</span>

@@ -64,7 +64,7 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
 
   return (
     <div className="fixed inset-0 bg-white/80 dark:bg-black/80 backdrop-blur-md z-50 flex justify-end transition-all">
-      <div className="bg-neutral-100 dark:bg-[#050505] w-full max-w-md h-full flex flex-col shadow-2xl border-l border-black/10 dark:border-white/10 animate-fade-in text-black dark:text-white font-inter">
+      <div className="bg-neutral-100 dark:bg-[#050505] w-full max-w-md h-full flex flex-col shadow-2xl border-l border-black/10 dark:border-white/10 animate-fade-in text-black dark:text-white font-inter rounded-l-3xl overflow-hidden">
         
         <div className="flex justify-between items-center p-6 border-b border-black/10 dark:border-white/10">
           <h2 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white">
@@ -91,16 +91,16 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
                           <p className="font-inter text-sm font-semibold uppercase tracking-wider text-black/90 dark:text-white/90 mb-1">{item.name}</p>
                           <p className="font-inter text-xs text-black/50 dark:text-white/50 tracking-widest">{(item.price / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
                         </div>
-                        <div className="flex items-center gap-4 border border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5 p-1 rounded-sm">
-                          <button onClick={() => updateQuantity(item.productId, item.quantity - 1)} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70"><Minus size={14} /></button>
+                        <div className="flex items-center gap-4 border border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5 p-1 rounded-lg">
+                          <button onClick={() => updateQuantity(item.productId, item.quantity - 1)} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70 rounded-md"><Minus size={14} /></button>
                           <span className="font-inter font-bold text-sm w-4 text-center text-black dark:text-white">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.productId, item.quantity + 1)} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70"><Plus size={14} /></button>
+                          <button onClick={() => updateQuantity(item.productId, item.quantity + 1)} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70 rounded-md"><Plus size={14} /></button>
                         </div>
                       </li>
                     ))}
                   </ul>
                   
-                  <button onClick={onClose} className="w-full font-inter text-[10px] tracking-[0.2em] text-black/60 dark:text-white/60 uppercase flex justify-center items-center gap-2 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors border border-black/20 dark:border-white/20 hover:border-black/50 dark:hover:border-white/50 border-dashed">
+                  <button onClick={onClose} className="w-full font-inter text-[10px] tracking-[0.2em] text-black/60 dark:text-white/60 uppercase flex justify-center items-center gap-2 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors border border-black/20 dark:border-white/20 hover:border-black/50 dark:hover:border-white/50 border-dashed rounded-xl">
                     <Plus size={14} /> ADICIONAR MAIS ITENS
                   </button>
                 </div>
@@ -113,22 +113,22 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
               <div className="space-y-4">
                 <div>
                   <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Nome</label>
-                  <input className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" placeholder="Ex: João Silva" value={formData.customerName} onChange={e => setFormData({...formData, customerName: e.target.value})} />
+                  <input className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" placeholder="Ex: João Silva" value={formData.customerName} onChange={e => setFormData({...formData, customerName: e.target.value})} />
                 </div>
                 <div>
                   <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Telefone / WhatsApp</label>
-                  <input className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" placeholder="(00) 00000-0000" value={formData.customerPhone} onChange={e => setFormData({...formData, customerPhone: e.target.value})} />
+                  <input className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" placeholder="(00) 00000-0000" value={formData.customerPhone} onChange={e => setFormData({...formData, customerPhone: e.target.value})} />
                 </div>
               </div>
 
               <div className="pt-4 border-t border-black/10 dark:border-white/10">
                 <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-3">Método de Entrega</label>
                 <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer text-sm">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-black/10 dark:border-white/10">
                     <input type="radio" name="delivery" value="DELIVERY" checked={formData.deliveryType === 'DELIVERY'} onChange={e => setFormData({...formData, deliveryType: e.target.value})} className="accent-black dark:accent-white" />
                     <span>Entrega</span>
                   </label>
-                  <label className="flex items-center gap-2 cursor-pointer text-sm">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-black/10 dark:border-white/10">
                     <input type="radio" name="delivery" value="PICKUP" checked={formData.deliveryType === 'PICKUP'} onChange={e => setFormData({...formData, deliveryType: e.target.value})} className="accent-black dark:accent-white" />
                     <span>Retirada</span>
                   </label>
@@ -138,20 +138,20 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
               {formData.deliveryType === 'DELIVERY' && (
                 <div>
                   <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Endereço Completo</label>
-                  <textarea className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" rows={2} placeholder="Rua, Número, Bairro, Complemento" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}></textarea>
+                  <textarea className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" rows={2} placeholder="Rua, Número, Bairro, Complemento" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}></textarea>
                 </div>
               )}
 
               <div>
                 <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Observação (Opcional)</label>
-                <textarea className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" rows={2} placeholder="Tirar cebola, ponto da carne, etc..." value={formData.observation} onChange={e => setFormData({...formData, observation: e.target.value})}></textarea>
+                <textarea className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" rows={2} placeholder="Tirar cebola, ponto da carne, etc..." value={formData.observation} onChange={e => setFormData({...formData, observation: e.target.value})}></textarea>
               </div>
 
               <div className="pt-4 border-t border-black/10 dark:border-white/10">
                 <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-4">Método de Pagamento</label>
                 <div className="space-y-3">
                   {paymentOptions.map(opt => (
-                    <label key={opt.id} className={`flex items-center justify-between p-4 border cursor-pointer transition-colors ${formData.paymentMethod === opt.id ? 'border-black dark:border-white bg-black/10 dark:bg-white/10' : 'border-black/10 dark:border-white/10 hover:border-black/40 dark:hover:border-white/40 bg-black/5 dark:bg-white/5'}`}>
+                    <label key={opt.id} className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-colors ${formData.paymentMethod === opt.id ? 'border-black dark:border-white bg-black/10 dark:bg-white/10' : 'border-black/10 dark:border-white/10 hover:border-black/40 dark:hover:border-white/40 bg-black/5 dark:bg-white/5'}`}>
                       <div className="flex items-center gap-3">
                         <input 
                           type="radio" 
@@ -178,7 +178,7 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
               <p className="text-black/60 dark:text-white/60 font-inter text-sm max-w-xs leading-relaxed">
                 Seu pedido foi enviado com sucesso para a cozinha. Você receberá atualizações no seu WhatsApp.
               </p>
-              <button onClick={onClose} className="mt-8 bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest uppercase text-xs px-8 py-4 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors">
+              <button onClick={onClose} className="mt-8 bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest uppercase text-xs px-8 py-4 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors rounded-xl">
                 Voltar ao Menu
               </button>
             </div>
@@ -208,7 +208,7 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
             {step === 1 ? (
               <button 
                 onClick={() => setStep(2)}
-                className="w-full bg-black dark:bg-white text-white dark:text-black font-inter tracking-[0.2em] font-semibold text-[11px] uppercase py-4 flex items-center justify-center gap-2 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors group"
+                className="w-full bg-black dark:bg-white text-white dark:text-black font-inter tracking-[0.2em] font-semibold text-[11px] uppercase py-4 flex items-center justify-center gap-2 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors group rounded-xl"
               >
                 AVANÇAR PARA PAGAMENTO
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -217,14 +217,14 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
               <div className="flex gap-3">
                 <button 
                   onClick={() => setStep(1)}
-                  className="w-1/3 border border-black/30 dark:border-white/30 text-black dark:text-white font-inter tracking-widest text-[10px] uppercase py-4 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                  className="w-1/3 border border-black/30 dark:border-white/30 text-black dark:text-white font-inter tracking-widest text-[10px] uppercase py-4 hover:bg-black/10 dark:hover:bg-white/10 transition-colors rounded-xl"
                 >
                   VOLTAR
                 </button>
                 <button 
                   onClick={handleOrder}
                   disabled={loading}
-                  className="w-2/3 bg-black dark:bg-white text-white dark:text-black font-inter tracking-[0.2em] font-semibold text-[11px] uppercase py-4 flex items-center justify-center gap-2 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50"
+                  className="w-2/3 bg-black dark:bg-white text-white dark:text-black font-inter tracking-[0.2em] font-semibold text-[11px] uppercase py-4 flex items-center justify-center gap-2 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors disabled:opacity-50 rounded-xl"
                 >
                   {loading ? 'PROCESSANDO...' : 'CONFIRMAR PEDIDO'}
                 </button>
