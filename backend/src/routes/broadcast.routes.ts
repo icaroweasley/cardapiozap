@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import { authenticateToken } from '../middlewares/auth.middleware';
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
+import { authenticate } from '../middlewares/auth.middleware';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-router.get('/customers', authenticateToken, async (req: any, res) => {
+router.get('/customers', authenticate, async (req: any, res) => {
   try {
-    const merchantId = req.user.merchantId;
+    const merchantId = req.merchantId;
     // Get unique customers from orders
     const orders = await prisma.order.findMany({
       where: { merchantId },
@@ -28,10 +28,10 @@ router.get('/customers', authenticateToken, async (req: any, res) => {
   }
 });
 
-router.post('/send', authenticateToken, async (req: any, res) => {
+router.post('/send', authenticate, async (req: any, res) => {
   try {
     const { number, text, mediaUrl, mediaType } = req.body;
-    const userId = req.user.merchantId;
+    const userId = req.merchantId;
 
     const merchant = await prisma.merchant.findUnique({
       where: { id: userId }
