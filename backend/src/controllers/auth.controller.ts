@@ -61,3 +61,48 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+import { AuthRequest } from '../middlewares/auth.middleware';
+
+export const getSettings = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const merchant = await prisma.merchant.findUnique({
+      where: { id: req.merchantId }
+    });
+    
+    if (!merchant) {
+      res.status(404).json({ error: 'Merchant not found' });
+      return;
+    }
+
+    res.json({
+      whatsappProvider: merchant.whatsappProvider,
+      whatsappConfig: merchant.whatsappConfig ? JSON.parse(merchant.whatsappConfig) : null
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const updateSettings = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { whatsappProvider, whatsappConfig } = req.body;
+    
+    const merchant = await prisma.merchant.update({
+      where: { id: req.merchantId },
+      data: {
+        whatsappProvider,
+        whatsappConfig: whatsappConfig ? JSON.stringify(whatsappConfig) : null
+      }
+    });
+
+    res.json({
+      whatsappProvider: merchant.whatsappProvider,
+      whatsappConfig: merchant.whatsappConfig ? JSON.parse(merchant.whatsappConfig) : null
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Crown } from 'lucide-react';
+import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Crown, Settings2 } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 import KanbanBoard from '../components/Dashboard/KanbanBoard';
 import ProductManager from '../components/Dashboard/ProductManager';
+import SettingsPanel from '../components/Dashboard/SettingsPanel';
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS'>('KANBAN');
+  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS'>('KANBAN');
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useThemeStore();
 
@@ -65,6 +66,13 @@ export default function Dashboard() {
             <Package size={18} />
             Cardápio
           </button>
+          <button 
+            onClick={() => setActiveTab('SETTINGS')}
+            className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border ${activeTab === 'SETTINGS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+          >
+            <Settings2 size={18} />
+            Conexões
+          </button>
         </nav>
 
         <div className="p-6 mt-auto border-t border-black/10 dark:border-white/10">
@@ -77,7 +85,9 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex-1 relative z-10 overflow-hidden flex flex-col p-4 md:p-8">
-        {activeTab === 'KANBAN' ? <KanbanBoard /> : <ProductManager />}
+        {activeTab === 'KANBAN' && <KanbanBoard />}
+        {activeTab === 'PRODUCTS' && <ProductManager />}
+        {activeTab === 'SETTINGS' && <SettingsPanel />}
       </main>
     </div>
   );

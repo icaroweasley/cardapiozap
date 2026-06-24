@@ -8,19 +8,21 @@ export default function Login() {
   const [slug, setSlug] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useThemeStore();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     try {
-      const res = await axios.post('/api/auth/login', { slug, password });
+      const res = await axios.post('http://localhost:3001/api/auth/login', { slug, password });
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('merchant', JSON.stringify(res.data.merchant));
       navigate('/dashboard');
-    } catch (error) {
-      alert('Credenciais inválidas');
+    } catch (err) {
+      setError('Credenciais inválidas. Verifique o slug e a senha.');
     } finally {
       setLoading(false);
     }

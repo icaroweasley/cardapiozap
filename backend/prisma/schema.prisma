@@ -8,15 +8,17 @@ datasource db {
 }
 
 model Merchant {
-  id        String    @id @default(uuid())
-  name      String
-  slug      String    @unique
-  phone     String
-  password  String
-  active    Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  products  Product[]
-  orders    Order[]
+  id               String    @id @default(uuid())
+  name             String
+  slug             String    @unique
+  phone            String
+  password         String
+  whatsappProvider String    @default("EVOLUTION") // "EVOLUTION" or "OFFICIAL"
+  whatsappConfig   String?   // JSON string for credentials
+  active           Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  products         Product[]
+  orders           Order[]
 
   @@index([slug])
 }
