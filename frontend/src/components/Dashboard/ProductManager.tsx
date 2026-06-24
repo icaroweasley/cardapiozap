@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
 
@@ -173,7 +174,7 @@ export default function ProductManager() {
         )}
       </div>
 
-      {isModalOpen && (
+      {isModalOpen && createPortal(
         <div className="fixed inset-0 bg-white/80 dark:bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-neutral-100 dark:bg-[#050505] w-full max-w-lg p-8 border border-black/10 dark:border-white/10 shadow-2xl relative">
             <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors">
@@ -265,7 +266,8 @@ export default function ProductManager() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
