@@ -28,7 +28,7 @@ const COLUMNS = [
 export default function KanbanBoard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateFilter, setDateFilter] = useState<'TODAY' | 'YESTERDAY' | 'WEEK' | 'ALL'>('TODAY');
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
   const fetchOrders = async () => {
     try {
@@ -63,26 +63,9 @@ export default function KanbanBoard() {
   };
 
   const filteredOrders = orders.filter(order => {
-    if (dateFilter === 'ALL') return true;
-    
-    const orderDate = new Date(order.createdAt);
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
-    if (dateFilter === 'TODAY') {
-      return orderDate >= today;
-    }
-    if (dateFilter === 'YESTERDAY') {
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-      return orderDate >= yesterday && orderDate < today;
-    }
-    if (dateFilter === 'WEEK') {
-      const lastWeek = new Date(today);
-      lastWeek.setDate(lastWeek.getDate() - 7);
-      return orderDate >= lastWeek;
-    }
-    return true;
+    if (!selectedDate) return true;
+    const orderDateStr = new Date(order.createdAt).toISOString().split('T')[0];
+    return orderDateStr === selectedDate;
   });
 
   return (
@@ -90,16 +73,23 @@ export default function KanbanBoard() {
       <div className="p-6 border-b border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white">Gestão de Pedidos</h2>
         <div className="flex items-center gap-4 w-full md:w-auto">
-          <select
-            value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value as any)}
-            className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white font-inter tracking-widest text-[10px] font-bold uppercase px-4 py-3 focus:outline-none focus:border-black/30 dark:focus:border-white/30 cursor-pointer"
-          >
-            <option value="TODAY">Hoje</option>
-            <option value="YESTERDAY">Ontem</option>
-            <option value="WEEK">Últimos 7 dias</option>
-            <option value="ALL">Todo o Histórico</option>
-          </select>
+          
+          <div className="flex items-center gap-3">
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white font-inter tracking-widest text-[10px] sm:text-xs font-bold uppercase px-4 py-3 focus:outline-none focus:border-black/30 dark:focus:border-white/30 cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
+            />
+            {selectedDate && (
+              <button 
+                onClick={() => setSelectedDate('')} 
+                className="text-[10px] uppercase tracking-widest font-bold border-b border-black/50 dark:border-white/50 text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors"
+              >
+                Ver Todos
+              </button>
+            )}
+          </div>
 
           <button 
             onClick={fetchOrders} 
