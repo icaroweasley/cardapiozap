@@ -6,6 +6,28 @@ import axios from 'axios';
 const router = Router();
 const prisma = new PrismaClient();
 
+router.get('/customers', authenticateToken, async (req: any, res) => {
+  try {
+    const merchantId = req.user.merchantId;
+    // Get unique customers from orders
+    const orders = await prisma.order.findMany({
+      where: { merchantId },
+      select: { customerName: true, customerPhone: true },
+      distinct: ['customerPhone']
+    });
+
+    const customers = orders.map(o => ({
+      name: o.customerName,
+      number: o.customerPhone.replace(/\D/g, '')
+    })).filter(c => c.number.length >= 10);
+
+    res.json(customers);
+  } catch (error) {
+    console.error('Error fetching customers:', error);
+    res.status(500).json({ error: 'Failed to fetch customers' });
+  }
+});
+
 router.post('/send', authenticateToken, async (req: any, res) => {
   try {
     const { number, text, mediaUrl, mediaType } = req.body;
