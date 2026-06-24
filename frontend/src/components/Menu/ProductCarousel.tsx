@@ -91,7 +91,7 @@ export function ProductCarousel({ products, category }: ProductCarouselProps) {
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
         onScroll={updateScrollButtons}
-        className={`flex overflow-x-auto gap-6 hide-scrollbar pb-6 px-1 lg:px-6 ${className}`}
+        className={`flex overflow-x-auto gap-6 hide-scrollbar pb-6 px-1 lg:px-6 scroll-pl-1 lg:scroll-pl-6 ${className}`}
       >
         {products.map((product) => {
           const cartItem = items.find((i) => i.productId === product.id);
