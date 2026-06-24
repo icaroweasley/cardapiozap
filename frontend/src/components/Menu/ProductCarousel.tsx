@@ -74,11 +74,11 @@ export function ProductCarousel({ products, category }: ProductCarouselProps) {
   };
 
   return (
-    <div className="relative group">
+    <div className="relative group -mx-6 lg:-mx-16">
       {canScrollLeft && (
         <button 
           onClick={scrollLeft}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-black backdrop-blur-md border border-black/20 dark:border-white/20 shadow-2xl flex items-center justify-center rounded-full transition-all hover:scale-110 opacity-70 hover:opacity-100"
+          className="absolute left-6 lg:left-16 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-black backdrop-blur-md border border-black/20 dark:border-white/20 shadow-2xl flex items-center justify-center rounded-full transition-all hover:scale-110 opacity-70 hover:opacity-100"
         >
           <ChevronLeft className="w-6 h-6 text-black dark:text-white" />
         </button>
@@ -91,7 +91,7 @@ export function ProductCarousel({ products, category }: ProductCarouselProps) {
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
         onScroll={updateScrollButtons}
-        className={`flex overflow-x-auto gap-6 hide-scrollbar pb-6 px-1 lg:px-6 scroll-pl-1 lg:scroll-pl-6 ${className}`}
+        className={`flex overflow-x-auto gap-6 hide-scrollbar pb-6 pl-[4.5rem] lg:pl-[9rem] pr-6 lg:pr-16 scroll-pl-[4.5rem] lg:scroll-pl-[9rem] ${className}`}
       >
         {products.map((product) => {
           const cartItem = items.find((i) => i.productId === product.id);
@@ -169,7 +169,7 @@ export function ProductCarousel({ products, category }: ProductCarouselProps) {
       {canScrollRight && (
         <button 
           onClick={scrollRight}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-black backdrop-blur-md border border-black/20 dark:border-white/20 shadow-2xl flex items-center justify-center rounded-full transition-all hover:scale-110 opacity-70 hover:opacity-100"
+          className="absolute right-6 lg:right-16 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-black backdrop-blur-md border border-black/20 dark:border-white/20 shadow-2xl flex items-center justify-center rounded-full transition-all hover:scale-110 opacity-70 hover:opacity-100"
         >
           <ChevronRight className="w-6 h-6 text-black dark:text-white" />
         </button>
