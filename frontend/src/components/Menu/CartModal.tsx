@@ -16,7 +16,9 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
     customerName: '',
     customerPhone: '',
     deliveryType: 'DELIVERY',
-    address: '',
+    street: '',
+    number: '',
+    neighborhood: '',
     paymentMethod: 'PIX',
     observation: ''
   });
@@ -29,9 +31,9 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
   const paymentOptions = [
     { id: 'PIX', label: 'PIX', icon: '❖' },
     { id: 'PICPAY', label: 'PICPAY', icon: 'P' },
-    { id: 'DINHEIRO', label: 'CASH', icon: '💵' },
-    { id: 'DEBITO', label: 'DEBIT CARD', icon: '💳' },
-    { id: 'CREDITO', label: 'CREDIT CARD', icon: '💳' },
+    { id: 'DINHEIRO', label: 'DINHEIRO', icon: '💵' },
+    { id: 'DEBITO', label: 'CARTÃO DE DÉBITO', icon: '💳' },
+    { id: 'CREDITO', label: 'CARTÃO DE CRÉDITO', icon: '💳' },
   ];
 
   const handleOrder = async () => {
@@ -42,7 +44,7 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
         customerName: formData.customerName,
         customerPhone: formData.customerPhone,
         deliveryType: formData.deliveryType,
-        address: formData.address,
+        address: formData.deliveryType === 'DELIVERY' ? `${formData.street}, ${formData.number} - ${formData.neighborhood}` : '',
         paymentMethod: formData.paymentMethod,
         observation: formData.observation,
         items: items.map(item => ({
@@ -136,9 +138,21 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
               </div>
 
               {formData.deliveryType === 'DELIVERY' && (
-                <div>
-                  <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Endereço Completo</label>
-                  <textarea className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" rows={2} placeholder="Rua, Número, Bairro, Complemento" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})}></textarea>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Rua</label>
+                    <input className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" placeholder="Nome da rua" value={formData.street} onChange={e => setFormData({...formData, street: e.target.value})} />
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Número</label>
+                      <input className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" placeholder="123" value={formData.number} onChange={e => setFormData({...formData, number: e.target.value})} />
+                    </div>
+                    <div className="flex-[2]">
+                      <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Bairro</label>
+                      <input className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" placeholder="Nome do bairro" value={formData.neighborhood} onChange={e => setFormData({...formData, neighborhood: e.target.value})} />
+                    </div>
+                  </div>
                 </div>
               )}
 
