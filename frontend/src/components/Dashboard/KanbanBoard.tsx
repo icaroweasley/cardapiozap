@@ -68,6 +68,12 @@ export default function KanbanBoard() {
     return orderDateStr === selectedDate;
   });
 
+  const today = new Date();
+  const maxDate = today.toISOString().split('T')[0];
+  const minDateObj = new Date();
+  minDateObj.setFullYear(today.getFullYear() - 20);
+  const minDate = minDateObj.toISOString().split('T')[0];
+
   return (
     <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up">
       <div className="p-6 border-b border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -79,6 +85,8 @@ export default function KanbanBoard() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
+              min={minDate}
+              max={maxDate}
               className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white font-inter tracking-widest text-[10px] sm:text-xs font-bold uppercase px-4 py-3 focus:outline-none focus:border-black/30 dark:focus:border-white/30 cursor-pointer [color-scheme:light] dark:[color-scheme:dark]"
             />
             {selectedDate && (
