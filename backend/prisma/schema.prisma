@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Merchant {
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  phone     String
+  password  String
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  products  Product[]
+  orders    Order[]
+
+  @@index([slug])
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  merchantId  String
+  name        String
+  description String?
+  price       Int         // Store in cents
+  imageUrl    String?
+  category    String
+  available   Boolean     @default(true)
+  merchant    Merchant    @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
+
+  @@index([merchantId])
+}
+
+model Order {
+  id             String      @id @default(uuid())
+  merchantId     String
+  customerName   String
+  customerPhone  String
+  deliveryType   String      // "DELIVERY" or "PICKUP"
+  address        String?
+  paymentMethod  String
+  totalAmount    Int         // Store in cents
+  status         String      @default("PENDING") // "PENDING", "PREPARING", "SHIPPED", "FINISHED"
+  createdAt      DateTime    @default(now())
+  merchant       Merchant    @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  items          OrderItem[]
+
+  @@index([merchantId])
+}
+
+model OrderItem {
+  id              String   @id @default(uuid())
+  orderId         String
+  productId       String
+  quantity        Int
+  priceAtPurchase Int      // Store in cents
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([productId])
+}
