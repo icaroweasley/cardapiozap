@@ -340,37 +340,50 @@ export default function BroadcastManager() {
             </h1>
 
             <div className="w-full bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-8 rounded-3xl shadow-xl flex flex-col items-center text-center">
-              {providerInfo?.whatsappProvider === 'OFFICIAL' ? (
-                 <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 text-emerald-500 border border-emerald-500/20">
-                   <Plug size={40} />
-                 </div>
+              {(!providerInfo?.whatsappProvider || !providerInfo?.whatsappConfig) ? (
+                 <>
+                   <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mb-6 text-red-500 border border-red-500/20">
+                     <AlertCircle size={40} />
+                   </div>
+                   <h2 className="font-inter text-xl font-bold uppercase tracking-widest text-black dark:text-white mb-2">
+                     Nenhuma Conexão
+                   </h2>
+                   <p className="text-sm font-inter text-red-500 mb-8 max-w-xs bg-red-500/10 px-4 py-3 rounded-xl border border-red-500/20">
+                     API não configurada! Vá na aba <strong>Conexões</strong> para configurar o seu WhatsApp.
+                   </p>
+                 </>
               ) : (
-                 <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mb-6 text-blue-500 border border-blue-500/20">
-                   <Plug size={40} />
-                 </div>
-              )}
-              
-              <h2 className="font-inter text-xl font-bold uppercase tracking-widest text-black dark:text-white mb-2">
-                {providerInfo?.whatsappProvider === 'OFFICIAL' ? 'API Oficial Meta' : 'Evolution API'}
-              </h2>
-              
-              {providerInfo?.whatsappProvider === 'EVOLUTION' && providerInfo?.whatsappConfig ? (
-                <p className="text-sm font-inter text-black/60 dark:text-white/60 mb-8 max-w-xs">
-                  Instância: <strong className="text-black dark:text-white">{JSON.parse(providerInfo.whatsappConfig).instanceName || 'N/A'}</strong>
-                </p>
-              ) : providerInfo?.whatsappProvider === 'OFFICIAL' && providerInfo?.whatsappConfig ? (
-                <p className="text-sm font-inter text-black/60 dark:text-white/60 mb-8 max-w-xs">
-                  ID do Telefone: <strong className="text-black dark:text-white">{JSON.parse(providerInfo.whatsappConfig).phoneNumberId || 'N/A'}</strong>
-                </p>
-              ) : (
-                <p className="text-sm font-inter text-red-500 mb-8 max-w-xs bg-red-500/10 px-4 py-2 rounded-xl">
-                  API não configurada! Vá na aba "Conexões" para configurar.
-                </p>
+                 <>
+                   {providerInfo.whatsappProvider === 'OFFICIAL' ? (
+                      <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 text-emerald-500 border border-emerald-500/20">
+                        <Plug size={40} />
+                      </div>
+                   ) : (
+                      <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mb-6 text-blue-500 border border-blue-500/20">
+                        <Plug size={40} />
+                      </div>
+                   )}
+                   
+                   <h2 className="font-inter text-xl font-bold uppercase tracking-widest text-black dark:text-white mb-2">
+                     {providerInfo.whatsappProvider === 'OFFICIAL' ? 'API Oficial Meta' : 'Evolution API'}
+                   </h2>
+                   
+                   {providerInfo.whatsappProvider === 'EVOLUTION' ? (
+                     <p className="text-sm font-inter text-black/60 dark:text-white/60 mb-8 max-w-xs">
+                       Instância: <strong className="text-black dark:text-white">{JSON.parse(providerInfo.whatsappConfig).instanceName || 'N/A'}</strong>
+                     </p>
+                   ) : (
+                     <p className="text-sm font-inter text-black/60 dark:text-white/60 mb-8 max-w-xs">
+                       ID do Telefone: <strong className="text-black dark:text-white">{JSON.parse(providerInfo.whatsappConfig).phoneNumberId || 'N/A'}</strong>
+                     </p>
+                   )}
+                 </>
               )}
 
               <button 
                 onClick={() => nextScreen(2)}
-                className="w-full bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-xs font-bold uppercase py-4 rounded-xl flex items-center justify-center gap-2 hover:scale-105 transition-transform"
+                disabled={!providerInfo?.whatsappConfig}
+                className="w-full bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-xs font-bold uppercase py-4 rounded-xl flex items-center justify-center gap-2 hover:scale-105 transition-transform disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
               >
                 Avançar para Alvos <ArrowRight size={16} />
               </button>
