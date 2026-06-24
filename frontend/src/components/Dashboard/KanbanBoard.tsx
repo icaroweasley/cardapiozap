@@ -90,14 +90,6 @@ export default function KanbanBoard() {
               max={maxDate}
               className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white font-inter tracking-widest text-[10px] sm:text-xs font-bold uppercase px-4 py-3 focus:outline-none focus:border-black/30 dark:focus:border-white/30 cursor-pointer [color-scheme:light] dark:[color-scheme:dark] rounded-xl"
             />
-            {selectedDate && (
-              <button 
-                onClick={() => setSelectedDate('')} 
-                className="text-[10px] uppercase tracking-widest font-bold border-b border-black/50 dark:border-white/50 text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors"
-              >
-                Ver Todos
-              </button>
-            )}
           </div>
 
           <button 
