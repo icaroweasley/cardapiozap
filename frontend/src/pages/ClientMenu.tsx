@@ -37,7 +37,9 @@ export default function ClientMenu() {
   useEffect(() => {
     axios.get(`/api/menu/${slug}`)
       .then(res => setMerchant(res.data))
-      .catch(err => setError('Cardápio não encontrado'))
+      .catch(() => {
+        setError('Cardápio não encontrado');
+      })
       .finally(() => setLoading(false));
   }, [slug]);
 

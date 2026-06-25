@@ -1,0 +1,1 @@
+const fs=require('fs'); let c=fs.readFileSync('src/controllers/auth.controller.ts','utf8'); c=c.replace(/[\x00-\x1F\x7F-\x9F]/g, "").replace(/import axios.*/gi, ""); fs.writeFileSync('src/controllers/auth.controller.ts', c.trim() + "\n");

@@ -9,9 +9,90 @@ export default function SettingsPanel() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
+  const [instanceStatus, setInstanceStatus] = useState<string>('Desconectado');
+  const [qrCode, setQrCode] = useState<string | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
+
   useEffect(() => {
     fetchSettings();
   }, []);
+
+  const fetchInstanceStatus = async (currentConfig = config) => {
+    if (!currentConfig.instanceName || provider !== 'EVOLUTION') return;
+    try {
+      const res = await fetch(`http://localhost:3001/api/auth/evolution/instance/${currentConfig.instanceName}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.instance?.state === 'open') {
+          setInstanceStatus('Conectado');
+          setQrCode(null);
+        } else if (data.instance?.state === 'close') {
+          setInstanceStatus('Desconectado');
+        } else if (data.instance?.state === 'connecting') {
+          setInstanceStatus('Conectando...');
+        }
+      } else {
+        setInstanceStatus('Não criada');
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    if (provider === 'EVOLUTION' && config.instanceName) {
+      fetchInstanceStatus();
+      const interval = setInterval(() => fetchInstanceStatus(), 5000);
+      return () => clearInterval(interval);
+    }
+  }, [provider, config.instanceName]);
+
+  const handleConnectInstance = async () => {
+    if (!config.instanceName) return alert('Digite um nome de instância e salve primeiro.');
+    setIsChecking(true);
+    setInstanceStatus('Gerando QR Code...');
+    setQrCode(null);
+    try {
+      const res = await fetch('http://localhost:3001/api/auth/evolution/instance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ instanceName: config.instanceName })
+      });
+      const data = await res.json();
+      if (data.base64) {
+        setQrCode(data.base64);
+        setInstanceStatus('Aguardando leitura do QR Code...');
+      } else {
+        fetchInstanceStatus();
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Erro ao criar/conectar instância.');
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  const handleDisconnectInstance = async () => {
+    if (!confirm('Deseja realmente desconectar e apagar esta instância?')) return;
+    try {
+      await fetch(`http://localhost:3001/api/auth/evolution/instance/${config.instanceName}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      setInstanceStatus('Desconectado');
+      setQrCode(null);
+      alert('Instância desconectada e removida com sucesso.');
+    } catch (e) {
+      console.error(e);
+      alert('Erro ao desconectar instância.');
+    }
+  };
 
   const fetchSettings = async () => {
     try {
@@ -147,19 +228,40 @@ export default function SettingsPanel() {
         <div className="flex-1 overflow-y-auto hide-scrollbar">
           {provider === 'EVOLUTION' ? (
             <div className="flex flex-col md:flex-row gap-8 items-center md:items-start p-8 border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 rounded-2xl">
-              <div className="w-64 h-64 border border-black/20 dark:border-white/20 bg-white flex items-center justify-center p-4 rounded-2xl">
-                {/* Mock QR Code */}
-                <div className="w-full h-full border-4 border-dashed border-black/30 dark:border-black/30 flex items-center justify-center text-center p-4 rounded-xl">
-                  <span className="font-inter text-xs text-black/50 font-bold uppercase tracking-widest">Aguardando QR Code da API</span>
-                </div>
+              <div className="w-64 h-64 border border-black/20 dark:border-white/20 bg-white flex flex-col items-center justify-center p-4 rounded-2xl relative overflow-hidden shrink-0">
+                {qrCode ? (
+                  <img src={qrCode} alt="QR Code" className="w-full h-full object-contain" />
+                ) : (
+                  <div className="w-full h-full border-4 border-dashed border-black/30 dark:border-black/30 flex flex-col gap-2 items-center justify-center text-center p-4 rounded-xl">
+                    <span className="font-inter text-xs text-black/50 font-bold uppercase tracking-widest">
+                      {instanceStatus === 'Conectado' ? 'Instância Conectada' : 'Sem QR Code'}
+                    </span>
+                    {instanceStatus !== 'Conectado' && (
+                      <button 
+                        onClick={handleConnectInstance}
+                        disabled={isChecking || !config.instanceName}
+                        className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-[10px] uppercase tracking-widest font-bold rounded-lg disabled:opacity-50"
+                      >
+                        {isChecking ? 'Carregando...' : 'Gerar QR Code'}
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="flex-1 w-full space-y-6">
                 <div>
                   <h4 className="font-inter text-sm font-bold uppercase tracking-widest text-black dark:text-white mb-2 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                    <span className={`w-2 h-2 rounded-full ${instanceStatus === 'Conectado' ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`}></span>
                     Status da Instância
                   </h4>
-                  <p className="font-inter text-sm text-black/70 dark:text-white/70">Desconectado. Escaneie o QR Code para conectar.</p>
+                  <div className="flex items-center justify-between">
+                    <p className="font-inter text-sm text-black/70 dark:text-white/70">{instanceStatus}</p>
+                    {instanceStatus === 'Conectado' && (
+                      <button onClick={handleDisconnectInstance} className="text-xs uppercase tracking-widest font-bold text-red-500 bg-red-500/10 px-3 py-1.5 rounded-lg border border-red-500/20 hover:bg-red-500/20 transition-colors">
+                        Desconectar
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="block font-inter text-xs font-bold uppercase tracking-widest text-black/70 dark:text-white/70 mb-2">Nome da Instância</label>
@@ -170,6 +272,7 @@ export default function SettingsPanel() {
                     className="w-full bg-transparent border-b border-black/20 dark:border-white/20 px-0 py-3 text-black dark:text-white font-inter focus:outline-none focus:border-black dark:focus:border-white transition-colors"
                     placeholder="Ex: cardapio_loja1"
                   />
+                  <p className="text-[10px] uppercase font-inter mt-1 opacity-50 tracking-widest">Salve a configuração antes de gerar o QR Code.</p>
                 </div>
               </div>
             </div>

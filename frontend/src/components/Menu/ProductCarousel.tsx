@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Minus, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
 import { useDraggableScroll } from '../../hooks/useDraggableScroll';
@@ -17,8 +17,8 @@ interface ProductCarouselProps {
   category: string;
 }
 
-export function ProductCarousel({ products, category }: ProductCarouselProps) {
-  const { ref, onMouseDown, onMouseLeave, onMouseUp, onMouseMove, isDragging, className } = useDraggableScroll();
+export function ProductCarousel({ products }: ProductCarouselProps) {
+  const { ref, onMouseDown, onMouseLeave, onMouseUp, onMouseMove, className } = useDraggableScroll();
   const { items, addItem, updateQuantity } = useCartStore();
   
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -94,7 +94,6 @@ export function ProductCarousel({ products, category }: ProductCarouselProps) {
         className={`flex overflow-x-auto gap-6 hide-scrollbar pb-6 pr-6 lg:pr-16 pl-[4.5rem] lg:pl-[calc(350px+9rem)] xl:pl-[calc(400px+9rem)] scroll-pl-[4.5rem] lg:scroll-pl-[calc(350px+9rem)] xl:scroll-pl-[calc(400px+9rem)] ${className}`}
       >
         {products.map((product) => {
-          const cartItem = items.find((i) => i.productId === product.id);
           const isJustAdded = justAdded.includes(product.id);
           
           return (
