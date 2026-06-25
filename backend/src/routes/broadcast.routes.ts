@@ -95,7 +95,7 @@ router.post('/send', authenticate, async (req: any, res) => {
       );
     } else {
       // Evolution API
-      const apiUrl = process.env.EVOLUTION_API_URL || 'http://localhost:8080';
+      const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
       const instanceName = config.instanceName || process.env.EVOLUTION_INSTANCE_NAME || 'cardapio_instance';
       const apiKey = process.env.EVOLUTION_API_KEY || '';
 

@@ -7,7 +7,7 @@ export const getEvolutionState = async (req: AuthRequest, res: Response): Promis
     const { instanceName } = req.params;
     if (!instanceName) { res.status(400).json({ error: 'instanceName required' }); return; }
 
-    const apiUrl = process.env.EVOLUTION_API_URL || 'http://localhost:8080';
+    const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
     const apiKey = process.env.EVOLUTION_API_KEY || '';
 
     try {
@@ -33,7 +33,7 @@ export const createEvolutionInstance = async (req: AuthRequest, res: Response): 
     const { instanceName } = req.body;
     if (!instanceName) { res.status(400).json({ error: 'instanceName required' }); return; }
 
-    const apiUrl = process.env.EVOLUTION_API_URL || 'http://localhost:8080';
+    const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
     const apiKey = process.env.EVOLUTION_API_KEY || '';
 
     // Create or reconnect
@@ -64,7 +64,7 @@ export const deleteEvolutionInstance = async (req: AuthRequest, res: Response): 
     const { instanceName } = req.params;
     if (!instanceName) { res.status(400).json({ error: 'instanceName required' }); return; }
 
-    const apiUrl = process.env.EVOLUTION_API_URL || 'http://localhost:8080';
+    const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
     const apiKey = process.env.EVOLUTION_API_KEY || '';
 
     await axios.delete(`${apiUrl}/instance/logout/${instanceName}`, { headers: { apikey: apiKey } }).catch(() => {});
