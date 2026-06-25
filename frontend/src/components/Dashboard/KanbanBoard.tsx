@@ -33,7 +33,7 @@ export default function KanbanBoard() {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('http://localhost:3001/api/orders', {
+      const res = await axios.get('/api/orders', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setOrders(res.data);
@@ -54,7 +54,7 @@ export default function KanbanBoard() {
     // Optimistic update
     setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus as any } : o));
     try {
-      await axios.patch(`http://localhost:3001/api/orders/${id}/status`, { status: newStatus }, {
+      await axios.patch(`/api/orders/${id}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
     } catch (error) {

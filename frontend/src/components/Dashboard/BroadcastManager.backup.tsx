@@ -50,7 +50,7 @@ export default function BroadcastManager() {
   const isCancelledRef = useRef(false);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const apiUrl = import.meta.env.VITE_API_URL || '';
 
   // Fetch Connection Data
   useEffect(() => {

@@ -17,7 +17,7 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('http://localhost:3001/api/auth/login', { slug, password });
+      const res = await axios.post('/api/auth/login', { slug, password });
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('merchant', JSON.stringify(res.data.merchant));
       navigate('/dashboard');
