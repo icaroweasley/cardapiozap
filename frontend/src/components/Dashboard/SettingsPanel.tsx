@@ -63,6 +63,10 @@ export default function SettingsPanel() {
         },
         body: JSON.stringify({ instanceName: config.instanceName })
       });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Erro ao comunicar com servidor');
+      }
       const data = await res.json();
       const base64Qr = data.base64 || data.qrcode?.base64;
       if (base64Qr) {
@@ -71,9 +75,9 @@ export default function SettingsPanel() {
       } else {
         fetchInstanceStatus();
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      alert('Erro ao criar/conectar instância.');
+      alert(e.message || 'Erro ao criar/conectar instância.');
     } finally {
       setIsChecking(false);
     }

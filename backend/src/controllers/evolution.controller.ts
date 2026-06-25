@@ -31,6 +31,7 @@ export const getEvolutionState = async (req: AuthRequest, res: Response): Promis
 export const createEvolutionInstance = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { instanceName } = req.body;
+    console.log(`\n\n--- CREATING EVOLUTION INSTANCE: ${instanceName} ---`);
     if (!instanceName) { res.status(400).json({ error: 'instanceName required' }); return; }
 
     const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
