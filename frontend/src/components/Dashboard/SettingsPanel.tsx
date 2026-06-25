@@ -20,7 +20,7 @@ export default function SettingsPanel() {
   const fetchInstanceStatus = async (currentConfig = config) => {
     if (!currentConfig.instanceName || provider !== 'EVOLUTION') return;
     try {
-      const res = await fetch(`/api/auth/evolution/instance/${currentConfig.instanceName}`, {
+      const res = await fetch(`http://163.176.37.93:3001/api/auth/evolution/instance/${currentConfig.instanceName}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) {
@@ -55,7 +55,7 @@ export default function SettingsPanel() {
     setInstanceStatus('Gerando QR Code...');
     setQrCode(null);
     try {
-      const res = await fetch('/api/auth/evolution/instance', {
+      const res = await fetch('http://163.176.37.93:3001/api/auth/evolution/instance', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export default function SettingsPanel() {
   const handleDisconnectInstance = async () => {
     if (!confirm('Deseja realmente desconectar e apagar esta instância?')) return;
     try {
-      await fetch(`/api/auth/evolution/instance/${config.instanceName}`, {
+      await fetch(`http://163.176.37.93:3001/api/auth/evolution/instance/${config.instanceName}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -96,7 +96,7 @@ export default function SettingsPanel() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/auth/settings', {
+      const response = await fetch('http://163.176.37.93:3001/api/auth/settings', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -119,7 +119,7 @@ export default function SettingsPanel() {
     setSuccess(false);
 
     try {
-      const response = await fetch('/api/auth/settings', {
+      const response = await fetch('http://163.176.37.93:3001/api/auth/settings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
