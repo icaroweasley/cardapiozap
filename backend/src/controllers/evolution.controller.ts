@@ -36,21 +36,23 @@ export const createEvolutionInstance = async (req: AuthRequest, res: Response): 
     const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
     const apiKey = process.env.EVOLUTION_API_KEY || '';
 
-    // Create or reconnect
-    await axios.post(`${apiUrl}/instance/create`, {
-      instanceName,
-      qrcode: true,
-      integration: "WHATSAPP-BAILEYS"
-    }, {
-      headers: { apikey: apiKey }
-    }).catch(e => {
-       // ignore if already exists
-    });
-
-    // Try to connect to fetch QR code
-    const connectRes = await axios.get(`${apiUrl}/instance/connect/${instanceName}`, {
-      headers: { apikey: apiKey }
-    });
+    // Try to create the instance
+    let connectRes;
+    try {
+      const createRes = await axios.post(`${apiUrl}/instance/create`, {
+        instanceName,
+        qrcode: true,
+        integration: "WHATSAPP-BAILEYS"
+      }, {
+        headers: { apikey: apiKey }
+      });
+      connectRes = createRes;
+    } catch (e: any) {
+      // If it already exists, try to connect to get the QR code
+      connectRes = await axios.get(`${apiUrl}/instance/connect/${instanceName}`, {
+        headers: { apikey: apiKey }
+      });
+    }
 
     res.json(connectRes.data);
   } catch (error) {

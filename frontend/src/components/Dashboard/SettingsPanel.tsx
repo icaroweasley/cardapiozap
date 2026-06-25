@@ -64,8 +64,9 @@ export default function SettingsPanel() {
         body: JSON.stringify({ instanceName: config.instanceName })
       });
       const data = await res.json();
-      if (data.base64) {
-        setQrCode(data.base64);
+      const base64Qr = data.base64 || data.qrcode?.base64;
+      if (base64Qr) {
+        setQrCode(base64Qr);
         setInstanceStatus('Aguardando leitura do QR Code...');
       } else {
         fetchInstanceStatus();
