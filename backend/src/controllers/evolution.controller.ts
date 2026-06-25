@@ -49,6 +49,7 @@ export const createEvolutionInstance = async (req: AuthRequest, res: Response): 
       });
       connectRes = createRes;
     } catch (e: any) {
+      console.log(`Failed to create instance ${instanceName}, error:`, e.response?.data || e.message);
       // If it already exists, try to connect to get the QR code
       connectRes = await axios.get(`${apiUrl}/instance/connect/${instanceName}`, {
         headers: { apikey: apiKey }
