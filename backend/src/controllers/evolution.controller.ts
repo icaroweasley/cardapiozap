@@ -54,6 +54,7 @@ export const createEvolutionInstance = async (req: AuthRequest, res: Response): 
       });
     }
 
+    console.log("SENDING INSTANCE RES TO FRONTEND:", JSON.stringify(connectRes.data).substring(0, 200));
     res.json(connectRes.data);
   } catch (error) {
     console.error(error);
