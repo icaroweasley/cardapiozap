@@ -14,6 +14,8 @@ cd cardapiozap/backend
 echo "=== Configurando Backend ==="
 npm install
 npx prisma generate
+npx prisma db push --accept-data-loss
+npx prisma db seed
 npm run build
 pm2 start dist/index.js --name "cardapio-backend"
 

@@ -25,6 +25,10 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       });
     }
 
+    if (deliveryType === 'DELIVERY') {
+      totalAmount += 500; // Taxa de entrega (R$ 5,00 mock)
+    }
+
     const order = await prisma.order.create({
       data: {
         merchantId,
