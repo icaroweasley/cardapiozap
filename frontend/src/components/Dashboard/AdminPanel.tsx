@@ -32,7 +32,7 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-[2rem] lg:m-2">
+    <div className="flex-1 flex flex-col h-full min-h-0 bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-[2rem] lg:m-2">
       <div className="p-6 md:p-10 border-b border-black/10 dark:border-white/10 bg-white/30 dark:bg-black/20 flex items-center gap-4">
         <Server className="w-8 h-8 text-black dark:text-white" />
         <div>
@@ -45,7 +45,7 @@ export default function AdminPanel() {
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-6 md:p-10 flex flex-col gap-6">
+      <div className="flex-1 overflow-y-auto p-6 md:p-10 flex flex-col gap-6 min-h-0">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-6 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-4 shadow-sm">
              <div className="bg-black/5 dark:bg-white/5 p-4 rounded-xl text-black dark:text-white"><Users /></div>
