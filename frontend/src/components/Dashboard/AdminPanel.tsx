@@ -45,7 +45,7 @@ export default function AdminPanel() {
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-6 md:p-10 hide-scrollbar flex flex-col gap-6">
+      <div className="flex-1 overflow-y-auto p-6 md:p-10 flex flex-col gap-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-6 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-4 shadow-sm">
              <div className="bg-black/5 dark:bg-white/5 p-4 rounded-xl text-black dark:text-white"><Users /></div>
