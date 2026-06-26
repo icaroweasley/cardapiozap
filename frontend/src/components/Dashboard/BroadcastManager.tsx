@@ -901,6 +901,15 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                      <label className="text-[10px] font-bold text-black/50 dark:text-white/50 uppercase tracking-widest">Mídias: (Opcional - Máx 3)</label>
                    </div>
                    <div className="flex flex-col gap-3">
+                     <select
+                       value={textPosition}
+                       onChange={e => setTextPosition(e.target.value as any)}
+                       className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 text-black dark:text-white text-xs focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-colors rounded-xl font-inter cursor-pointer"
+                     >
+                       <option value="after">Texto separado, APÓS a mídia</option>
+                       <option value="before">Texto separado, ANTES da mídia</option>
+                       <option value="caption">Texto embutido como legenda na imagem</option>
+                     </select>
                      <input
                        type="file"
                        multiple
