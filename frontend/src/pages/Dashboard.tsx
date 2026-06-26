@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Crown, Settings2, Megaphone, Server } from 'lucide-react';
+import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Crown, Settings2, Megaphone, Server, AlertTriangle, X } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 import KanbanBoard from '../components/Dashboard/KanbanBoard';
 import ProductManager from '../components/Dashboard/ProductManager';
@@ -25,6 +25,23 @@ export default function Dashboard() {
   };
 
   const merchant = JSON.parse(localStorage.getItem('merchant') || '{}');
+
+  const [showGraceModal, setShowGraceModal] = useState(false);
+  const [graceDaysLeft, setGraceDaysLeft] = useState(0);
+
+  useEffect(() => {
+    if (merchant.planExpiresAt && merchant.planStatus === 'active' && !merchant.isAdmin) {
+      const expiresAt = new Date(merchant.planExpiresAt).getTime();
+      const now = new Date().getTime();
+      if (now >= expiresAt) {
+        const msPassed = now - expiresAt;
+        const daysPassed = Math.floor(msPassed / (1000 * 60 * 60 * 24));
+        const daysLeft = Math.max(0, 3 - daysPassed);
+        setGraceDaysLeft(daysLeft);
+        setShowGraceModal(true);
+      }
+    }
+  }, [merchant.planExpiresAt, merchant.planStatus, merchant.isAdmin]);
 
   if (merchant.planStatus === 'inactive' && !merchant.isAdmin) {
     return (
@@ -63,6 +80,38 @@ export default function Dashboard() {
       >
         {isDark ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-black" />}
       </button>
+
+      {/* Grace Period Modal */}
+      {showGraceModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-inter">
+          <div className="bg-white dark:bg-[#121215] border border-red-500/30 p-8 rounded-3xl shadow-2xl max-w-md w-full relative animate-fade-up">
+            <button onClick={() => setShowGraceModal(false)} className="absolute top-4 right-4 text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors">
+              <X size={20} />
+            </button>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-6">
+                <AlertTriangle size={32} />
+              </div>
+              <h2 className="text-xl font-bold text-black dark:text-white uppercase tracking-widest mb-2 font-podium">
+                Atenção: Assinatura Vencida
+              </h2>
+              <p className="text-sm text-black/70 dark:text-white/70 leading-relaxed mb-6">
+                Sua assinatura venceu. Você está no período de carência. 
+                Seu acesso será <strong>completamente bloqueado em {graceDaysLeft} {graceDaysLeft === 1 ? 'dia' : 'dias'}</strong>.
+              </p>
+              <button 
+                onClick={() => {
+                  setShowGraceModal(false);
+                  setActiveTab('SETTINGS');
+                }} 
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-bold text-xs py-4 rounded-xl uppercase tracking-widest transition-colors shadow-lg shadow-red-500/20"
+              >
+                Renovar Agora
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sidebar */}
       <aside className="w-full md:w-[300px] shrink-0 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur-md relative z-20 flex flex-col md:h-screen transition-colors duration-500">

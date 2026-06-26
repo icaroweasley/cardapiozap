@@ -52,12 +52,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     let planStatus = merchant.planStatus;
-    if (merchant.planExpiresAt && new Date(merchant.planExpiresAt) < new Date() && planStatus === 'active') {
-      await prisma.merchant.update({
-        where: { id: merchant.id },
-        data: { planStatus: 'inactive' }
-      });
-      planStatus = 'inactive';
+    if (merchant.planExpiresAt && planStatus === 'active') {
+      const gracePeriodMs = 3 * 24 * 60 * 60 * 1000;
+      if (new Date(merchant.planExpiresAt).getTime() + gracePeriodMs < new Date().getTime()) {
+        await prisma.merchant.update({
+          where: { id: merchant.id },
+          data: { planStatus: 'inactive' }
+        });
+        planStatus = 'inactive';
+      }
     }
 
     const token = jwt.sign({ id: merchant.id }, process.env.JWT_SECRET || 'secret', {
@@ -85,12 +88,15 @@ export const getSettings = async (req: AuthRequest, res: Response): Promise<void
     }
 
     let planStatus = merchant.planStatus;
-    if (merchant.planExpiresAt && new Date(merchant.planExpiresAt) < new Date() && planStatus === 'active') {
-      await prisma.merchant.update({
-        where: { id: merchant.id },
-        data: { planStatus: 'inactive' }
-      });
-      planStatus = 'inactive';
+    if (merchant.planExpiresAt && planStatus === 'active') {
+      const gracePeriodMs = 3 * 24 * 60 * 60 * 1000;
+      if (new Date(merchant.planExpiresAt).getTime() + gracePeriodMs < new Date().getTime()) {
+        await prisma.merchant.update({
+          where: { id: merchant.id },
+          data: { planStatus: 'inactive' }
+        });
+        planStatus = 'inactive';
+      }
     }
 
     res.json({

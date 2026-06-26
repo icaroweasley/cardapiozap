@@ -26,12 +26,15 @@ export const getMenuBySlug = async (req: Request, res: Response): Promise<void> 
     }
 
     let planStatus = merchant.planStatus;
-    if (merchant.planExpiresAt && new Date(merchant.planExpiresAt) < new Date() && planStatus === 'active') {
-      await prisma.merchant.update({
-        where: { id: merchant.id },
-        data: { planStatus: 'inactive' }
-      });
-      planStatus = 'inactive';
+    if (merchant.planExpiresAt && planStatus === 'active') {
+      const gracePeriodMs = 3 * 24 * 60 * 60 * 1000;
+      if (new Date(merchant.planExpiresAt).getTime() + gracePeriodMs < new Date().getTime()) {
+        await prisma.merchant.update({
+          where: { id: merchant.id },
+          data: { planStatus: 'inactive' }
+        });
+        planStatus = 'inactive';
+      }
     }
 
     res.json({ ...merchant, planStatus });
