@@ -92,14 +92,14 @@ export default function Dashboard() {
               <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-6">
                 <AlertTriangle size={32} />
               </div>
-              <h2 className="text-xl font-bold text-black dark:text-white uppercase tracking-widest mb-4 font-podium">
-                Atenção: Assinatura Vencida
+              <h2 className="text-2xl font-bold text-red-500 uppercase tracking-widest mb-4 font-podium">
+                Atenção
               </h2>
               <p className="text-sm text-black/70 dark:text-white/70 leading-relaxed mb-4">
                 A assinatura do seu plano terminou. Você tem
               </p>
-              <div className="bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl py-3 px-6 mb-4 inline-block shadow-inner">
-                <span className="text-3xl font-podium font-bold tracking-widest">{graceDaysLeft}</span>
+              <div className="text-red-500 mb-4 inline-block">
+                <span className="text-4xl font-podium font-bold tracking-widest">{graceDaysLeft}</span>
                 <span className="text-sm font-bold ml-2 uppercase tracking-widest block mt-1">
                   {graceDaysLeft === 1 ? 'dia restante' : 'dias restantes'}
                 </span>
