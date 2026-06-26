@@ -85,15 +85,48 @@ router.get('/whatsapp-contacts', authenticate, async (req: any, res) => {
     const instanceName = config.instanceName || 'cardapio_instance';
     const apiKey = process.env.EVOLUTION_API_KEY || '';
 
-    const response = await axios.get(`${apiUrl}/v2/contact/fetchContacts/${instanceName}`, {
-       headers: { apikey: apiKey }
-    });
-    
-    const rawContacts = Array.isArray(response.data) ? response.data : (response.data?.contacts || []);
-    const customers = rawContacts.map((c: any) => ({
-       name: c.pushName || c.name || '',
-       number: (c.remoteJid || c.id || '').split('@')[0]
-    })).filter((c: any) => c.number && c.number.length >= 10);
+    const endpointsToTry = [
+      { path: `/chat/findContacts/${instanceName}`, method: 'POST', data: {} },
+      { path: `/v2/chat/findContacts/${instanceName}`, method: 'POST', data: {} },
+      { path: `/contact/find/${instanceName}`, method: 'POST', data: {} },
+      { path: `/v2/contact/fetchContacts/${instanceName}`, method: 'GET' },
+      { path: `/contact/fetchContacts/${instanceName}`, method: 'GET' },
+      { path: `/chat/fetchContacts/${instanceName}`, method: 'GET' }
+    ];
+
+    let success = false;
+    let customers: any[] = [];
+
+    for (const endpoint of endpointsToTry) {
+      try {
+        const reqConfig: any = {
+          method: endpoint.method,
+          url: `${apiUrl}${endpoint.path}`,
+          headers: { apikey: apiKey }
+        };
+        if (endpoint.method === 'POST') {
+          reqConfig.data = endpoint.data;
+        }
+
+        const response = await axios(reqConfig);
+        
+        const rawContacts = Array.isArray(response.data) ? response.data : (response.data?.contacts || response.data?.data || []);
+        
+        customers = rawContacts.map((c: any) => ({
+           name: c.pushName || c.name || '',
+           number: (c.remoteJid || c.id || c.number || '').split('@')[0]
+        })).filter((c: any) => c.number && c.number.length >= 10);
+        
+        success = true;
+        break; // Stop at first successful endpoint
+      } catch (e) {
+        // Silently try next
+      }
+    }
+
+    if (!success) {
+      throw new Error('All contact fetch endpoints failed.');
+    }
     
     res.json(customers);
   } catch (error: any) {
