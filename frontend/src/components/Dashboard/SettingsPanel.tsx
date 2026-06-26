@@ -241,15 +241,6 @@ export default function SettingsPanel() {
                     <span className="font-inter text-xs text-black/50 font-bold uppercase tracking-widest">
                       {instanceStatus === 'Conectado' ? 'Instância Conectada' : 'Sem QR Code'}
                     </span>
-                    {instanceStatus !== 'Conectado' && (
-                      <button 
-                        onClick={handleConnectInstance}
-                        disabled={isChecking || !config.instanceName}
-                        className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-[10px] uppercase tracking-widest font-bold rounded-lg disabled:opacity-50"
-                      >
-                        {isChecking ? 'Carregando...' : 'Gerar QR Code'}
-                      </button>
-                    )}
                   </div>
                 )}
               </div>
@@ -278,6 +269,17 @@ export default function SettingsPanel() {
                     placeholder="Ex: cardapio_loja1"
                   />
                   <p className="text-[10px] uppercase font-inter mt-1 opacity-50 tracking-widest">Salve a configuração antes de gerar o QR Code.</p>
+                  
+                  {instanceStatus !== 'Conectado' && (
+                    <button 
+                      onClick={handleConnectInstance}
+                      disabled={isChecking || !config.instanceName}
+                      className="mt-6 w-full bg-black dark:bg-white text-white dark:text-black px-4 py-4 text-xs uppercase tracking-widest font-bold rounded-xl disabled:opacity-50 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
+                    >
+                      <Smartphone size={16} />
+                      {isChecking ? 'Gerando...' : 'Gerar QR Code'}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
