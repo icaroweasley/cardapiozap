@@ -982,7 +982,7 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                      <input
                        type="file"
                        multiple
-                       accept="image/*,video/*"
+                       accept="image/*"
                        onChange={handleFileUpload}
                        className="text-xs text-black/50 dark:text-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-black dark:file:bg-white file:text-white dark:file:text-black hover:file:bg-black/80 dark:hover:file:bg-white/80 transition-colors cursor-pointer"
                      />
@@ -1017,10 +1017,37 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                 <div className="w-full max-w-sm mt-8">
                   <div className="bg-[#e5ddd5] dark:bg-[#0b141a] rounded-2xl p-5 w-full border border-black/5 dark:border-white/5 shadow-2xl relative">
                     <div className="absolute inset-0 bg-white dark:bg-white opacity-[0.05] rounded-2xl"></div>
-                    <div className="relative z-10 flex flex-col gap-1 items-end">
-                      <div className="bg-[#d9fdd3] dark:bg-[#005c4b] text-[#111b21] dark:text-white p-3 px-4 rounded-2xl rounded-tr-sm text-sm shadow-sm inline-block max-w-[90%] break-words font-inter leading-relaxed relative">
-                        {message ? message.replace(/{nome}/gi, 'João da Silva') : <span className="opacity-50 italic">Olá João da Silva! Se precisar de mais informações, estou à disposição!</span>}
-                      </div>
+                    <div className="relative z-10 flex flex-col gap-2 items-end w-full">
+                      {mediaAttachments.length === 0 ? (
+                        <div className="bg-[#d9fdd3] dark:bg-[#005c4b] text-[#111b21] dark:text-white p-3 px-4 rounded-2xl rounded-tr-sm text-sm shadow-sm inline-block max-w-[90%] break-words font-inter leading-relaxed relative">
+                          {message ? message.replace(/{nome}/gi, 'João da Silva') : <span className="opacity-50 italic">Olá João da Silva! Se precisar de mais informações, estou à disposição!</span>}
+                        </div>
+                      ) : (
+                        <>
+                          {textPosition === 'before' && (
+                            <div className="bg-[#d9fdd3] dark:bg-[#005c4b] text-[#111b21] dark:text-white p-3 px-4 rounded-2xl rounded-tr-sm text-sm shadow-sm inline-block max-w-[90%] break-words font-inter leading-relaxed relative">
+                              {message ? message.replace(/{nome}/gi, 'João da Silva') : <span className="opacity-50 italic">Olá João da Silva! Se precisar de mais informações, estou à disposição!</span>}
+                            </div>
+                          )}
+
+                          {mediaAttachments.map((media, index) => (
+                            <div key={media.id} className="bg-[#d9fdd3] dark:bg-[#005c4b] p-1.5 rounded-2xl rounded-tr-sm shadow-sm max-w-[90%] flex flex-col">
+                              <img src={media.base64} alt="Preview" className="w-full max-w-[220px] max-h-[300px] object-cover rounded-xl" />
+                              {textPosition === 'caption' && index === 0 && (
+                                <div className="text-[#111b21] dark:text-white pt-2 pb-1 px-2 text-sm font-inter break-words max-w-[220px]">
+                                  {message ? message.replace(/{nome}/gi, 'João da Silva') : <span className="opacity-50 italic">Olá João da Silva! Se precisar de mais informações, estou à disposição!</span>}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+
+                          {textPosition === 'after' && (
+                            <div className="bg-[#d9fdd3] dark:bg-[#005c4b] text-[#111b21] dark:text-white p-3 px-4 rounded-2xl rounded-tr-sm text-sm shadow-sm inline-block max-w-[90%] break-words font-inter leading-relaxed relative">
+                              {message ? message.replace(/{nome}/gi, 'João da Silva') : <span className="opacity-50 italic">Olá João da Silva! Se precisar de mais informações, estou à disposição!</span>}
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
