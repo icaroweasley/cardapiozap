@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, Server, ShoppingCart, Activity, ListOrdered } from 'lucide-react';
+import { Users, Server, ShoppingCart, Activity, ListOrdered, Edit3, X, Save } from 'lucide-react';
 
 export default function AdminPanel() {
   const [merchants, setMerchants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingMerchant, setEditingMerchant] = useState<any>(null);
+  const [planForm, setPlanForm] = useState({ planStatus: 'active', planExpiresAt: '' });
+  const [savingPlan, setSavingPlan] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL || '';
 
   useEffect(() => {
@@ -22,6 +25,31 @@ export default function AdminPanel() {
     };
     fetchMerchants();
   }, [apiUrl]);
+
+  const handleEditPlan = (merchant: any) => {
+    setEditingMerchant(merchant);
+    setPlanForm({
+      planStatus: merchant.planStatus || 'active',
+      planExpiresAt: merchant.planExpiresAt ? new Date(merchant.planExpiresAt).toISOString().split('T')[0] : ''
+    });
+  };
+
+  const handleSavePlan = async () => {
+    if (!editingMerchant) return;
+    setSavingPlan(true);
+    try {
+      const res = await axios.put(`${apiUrl}/api/admin/merchants/${editingMerchant.id}/plan`, planForm, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setMerchants(merchants.map(m => m.id === editingMerchant.id ? { ...m, ...res.data } : m));
+      setEditingMerchant(null);
+    } catch (error) {
+      console.error('Failed to update plan', error);
+      alert('Erro ao atualizar plano');
+    } finally {
+      setSavingPlan(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -89,9 +117,11 @@ export default function AdminPanel() {
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Slug</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Status</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">API / Instância</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Plano</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Vencimento</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Pedidos</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Produtos</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Listas Salvas</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,9 +150,25 @@ export default function AdminPanel() {
                           </div>
                         )}
                       </td>
+                      <td className="p-4">
+                        <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest ${merchant.planStatus === 'active' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'}`}>
+                          {merchant.planStatus === 'active' ? 'Ativo' : 'Inativo'}
+                        </span>
+                      </td>
+                      <td className="p-4 text-xs font-bold font-mono">
+                        {merchant.planExpiresAt ? new Date(merchant.planExpiresAt).toLocaleDateString('pt-BR') : 'N/A'}
+                      </td>
                       <td className="p-4 font-bold">{merchant._count.orders}</td>
                       <td className="p-4 font-bold">{merchant._count.products}</td>
-                      <td className="p-4 font-bold text-black/50 dark:text-white/50">{merchant._count.savedLists}</td>
+                      <td className="p-4">
+                        <button 
+                          onClick={() => handleEditPlan(merchant)}
+                          className="bg-black/10 dark:bg-white/10 p-2 rounded-xl hover:bg-black/20 dark:hover:bg-white/20 transition-colors"
+                          title="Editar Plano"
+                        >
+                          <Edit3 size={16} />
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -131,6 +177,53 @@ export default function AdminPanel() {
           </div>
         </div>
       </div>
+
+      {/* Edit Plan Modal */}
+      {editingMerchant && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-inter">
+          <div className="bg-white dark:bg-[#121215] border border-black/10 dark:border-white/10 p-8 rounded-3xl shadow-2xl max-w-sm w-full relative animate-fade-up">
+            <button onClick={() => setEditingMerchant(null)} className="absolute top-4 right-4 text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors">
+              <X size={20} />
+            </button>
+            <h2 className="text-xl font-bold text-black dark:text-white uppercase tracking-widest mb-2 font-podium">
+              Editar Plano
+            </h2>
+            <p className="text-xs text-black/60 dark:text-white/60 mb-6 uppercase tracking-widest">{editingMerchant.name}</p>
+            
+            <div className="space-y-4 mb-8">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Status do Plano</label>
+                <select 
+                  value={planForm.planStatus}
+                  onChange={e => setPlanForm({ ...planForm, planStatus: e.target.value })}
+                  className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white font-inter focus:outline-none"
+                >
+                  <option value="active">Ativo (Pode usar e receber pedidos)</option>
+                  <option value="inactive">Inativo (Bloqueado)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Data de Vencimento</label>
+                <input 
+                  type="date"
+                  value={planForm.planExpiresAt}
+                  onChange={e => setPlanForm({ ...planForm, planExpiresAt: e.target.value })}
+                  className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white font-inter focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <button 
+              onClick={handleSavePlan}
+              disabled={savingPlan}
+              className="w-full bg-black dark:bg-white text-white dark:text-black font-bold text-xs py-4 rounded-xl uppercase tracking-widest transition-transform hover:scale-[1.02] disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <Save size={16} />
+              {savingPlan ? 'Salvando...' : 'Salvar Alterações'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

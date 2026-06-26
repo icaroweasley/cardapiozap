@@ -22,6 +22,8 @@ router.get('/merchants', authenticate, requireAdmin, async (req: any, res) => {
         slug: true,
         phone: true,
         active: true,
+        planStatus: true,
+        planExpiresAt: true,
         createdAt: true,
         whatsappProvider: true,
         whatsappConfig: true,
@@ -34,6 +36,31 @@ router.get('/merchants', authenticate, requireAdmin, async (req: any, res) => {
     res.json(merchants);
   } catch (error) {
     res.status(500).json({ error: 'Falha ao buscar usuários' });
+  }
+});
+
+router.put('/merchants/:id/plan', authenticate, requireAdmin, async (req: any, res) => {
+  try {
+    const { id } = req.params;
+    const { planStatus, planExpiresAt } = req.body;
+
+    const updated = await prisma.merchant.update({
+      where: { id },
+      data: {
+        planStatus,
+        planExpiresAt: planExpiresAt ? new Date(planExpiresAt) : null,
+      },
+      select: {
+        id: true,
+        planStatus: true,
+        planExpiresAt: true,
+      }
+    });
+
+    res.json(updated);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Falha ao atualizar o plano do lojista' });
   }
 });
 
