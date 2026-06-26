@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Settings2, Save, CheckCircle2, AlertCircle, Smartphone } from 'lucide-react';
+import { Settings2, Smartphone } from 'lucide-react';
 
 export default function SettingsPanel() {
   const [config, setConfig] = useState<any>({});
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
 
   const [instanceStatus, setInstanceStatus] = useState<string>('Desconectado');
   const [qrCode, setQrCode] = useState<string | null>(null);
@@ -52,11 +49,24 @@ export default function SettingsPanel() {
   }, [config.instanceName]);
 
   const handleConnectInstance = async () => {
-    if (!config.instanceName) return alert('Digite um nome de instância e salve primeiro.');
+    if (!config.instanceName) return alert('Digite um nome de instância primeiro.');
     setIsChecking(true);
     setInstanceStatus('Gerando QR Code...');
     setQrCode(null);
     try {
+      // Salva as configurações automaticamente antes de gerar
+      await fetch('http://163.176.37.93:3001/api/auth/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          whatsappProvider: 'EVOLUTION',
+          whatsappConfig: config
+        })
+      });
+
       const res = await fetch('http://163.176.37.93:3001/api/auth/evolution/instance', {
         method: 'POST',
         headers: {
@@ -119,36 +129,7 @@ export default function SettingsPanel() {
     }
   };
 
-  const handleSave = async () => {
-    setSaving(true);
-    setError('');
-    setSuccess(false);
 
-    try {
-      const response = await fetch('http://163.176.37.93:3001/api/auth/settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          whatsappProvider: 'EVOLUTION',
-          whatsappConfig: config
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Falha ao salvar configurações');
-      }
-
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -171,29 +152,7 @@ export default function SettingsPanel() {
               Configurações de Mensageria e WhatsApp
             </p>
           </div>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black px-6 py-3 font-inter text-xs tracking-widest uppercase font-bold hover:scale-105 transition-transform disabled:opacity-50 rounded-xl"
-          >
-            <Save size={16} />
-            {saving ? 'Salvando...' : 'Salvar'}
-          </button>
         </div>
-
-        {success && (
-          <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 flex items-center gap-3 text-green-600 dark:text-green-400 font-inter text-sm rounded-xl">
-            <CheckCircle2 size={18} />
-            Configurações salvas com sucesso!
-          </div>
-        )}
-
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 flex items-center gap-3 text-red-600 dark:text-red-400 font-inter text-sm rounded-xl">
-            <AlertCircle size={18} />
-            {error}
-          </div>
-        )}
 
         {/* Tab Content */}
         <div className="w-full flex-1">
