@@ -77,13 +77,13 @@ export default function AdminPanel() {
           </div>
         </div>
 
-        <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md rounded-[2rem] border border-black/10 dark:border-white/10 overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-black/5 dark:border-white/5 flex justify-between items-center">
+        <div className="flex-1 flex flex-col min-h-0 bg-white/60 dark:bg-black/60 backdrop-blur-md rounded-[2rem] border border-black/10 dark:border-white/10 overflow-hidden shadow-sm">
+          <div className="p-6 border-b border-black/5 dark:border-white/5 flex justify-between items-center shrink-0">
             <h2 className="font-podium text-lg uppercase tracking-widest text-black dark:text-white">Lojistas / Clientes</h2>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse font-inter text-sm">
-              <thead>
+          <div className="flex-1 overflow-auto">
+            <table className="w-full text-left border-collapse font-inter text-sm relative">
+              <thead className="sticky top-0 z-10 bg-white/90 dark:bg-black/90 backdrop-blur-md">
                 <tr className="bg-black/5 dark:bg-white/5 text-[10px] uppercase tracking-widest text-black/50 dark:text-white/50">
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Nome</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Slug</th>
