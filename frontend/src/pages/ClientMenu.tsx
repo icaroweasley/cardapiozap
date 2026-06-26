@@ -20,6 +20,7 @@ interface Merchant {
   id: string;
   name: string;
   slug: string;
+  planStatus?: string;
   products: Product[];
 }
 
@@ -45,6 +46,16 @@ export default function ClientMenu() {
 
   if (loading) return <div className="h-screen flex items-center justify-center bg-white dark:bg-black text-black dark:text-white font-inter tracking-widest text-sm uppercase animate-pulse">Carregando Cardápio...</div>;
   if (error || !merchant || !Array.isArray(merchant.products)) return <div className="h-screen flex items-center justify-center bg-white dark:bg-black text-black/50 dark:text-white/50 font-inter tracking-widest text-sm uppercase">{error || 'Cardápio Indisponível'}</div>;
+  
+  if (merchant.planStatus === 'inactive') {
+    return (
+      <div className="h-screen flex items-center justify-center bg-white dark:bg-black text-black dark:text-white font-inter tracking-widest uppercase flex-col gap-4 text-center p-6">
+        <Crown className="w-12 h-12 text-black/30 dark:text-white/30" />
+        <h1 className="text-xl font-bold">ESTABELECIMENTO TEMPORARIAMENTE INDISPONÍVEL</h1>
+        <p className="text-xs text-black/50 dark:text-white/50">O cardápio que você está tentando acessar está desativado no momento.</p>
+      </div>
+    );
+  }
 
   const categories = Array.from(new Set(merchant.products.map(p => (p.category || '').trim().toUpperCase())));
 

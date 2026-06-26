@@ -26,6 +26,27 @@ export default function Dashboard() {
 
   const merchant = JSON.parse(localStorage.getItem('merchant') || '{}');
 
+  if (merchant.planStatus === 'inactive' && !merchant.isAdmin) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-neutral-100 dark:bg-black transition-colors duration-500 relative font-inter">
+        <img src="/bg-burger.png" alt="Background" className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none" />
+        <div className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 p-10 rounded-[2rem] shadow-2xl flex flex-col items-center text-center max-w-md z-10 animate-fade-up">
+          <Crown className="w-12 h-12 text-black/30 dark:text-white/30 mb-6" />
+          <h1 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white mb-4">Assinatura Inativa</h1>
+          <p className="text-sm text-black/70 dark:text-white/70 leading-relaxed mb-8">
+            O plano do seu estabelecimento expirou. Para voltar a receber pedidos e realizar disparos, por favor renove a sua assinatura.
+          </p>
+          <button className="w-full bg-black dark:bg-white text-white dark:text-black font-bold text-sm py-4 rounded-xl flex items-center justify-center hover:scale-105 transition-transform shadow-xl uppercase tracking-widest">
+            Renovar Plano
+          </button>
+          <button onClick={handleLogout} className="mt-6 text-[10px] text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white uppercase tracking-widest font-bold flex items-center gap-2">
+            <LogOut size={12} /> Sair da conta
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen overflow-hidden flex flex-col md:flex-row bg-neutral-100 dark:bg-black transition-colors duration-500 relative">
       {/* Background Image */}

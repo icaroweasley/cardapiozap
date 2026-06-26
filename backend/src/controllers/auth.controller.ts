@@ -51,11 +51,20 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    let planStatus = merchant.planStatus;
+    if (merchant.planExpiresAt && new Date(merchant.planExpiresAt) < new Date() && planStatus === 'active') {
+      await prisma.merchant.update({
+        where: { id: merchant.id },
+        data: { planStatus: 'inactive' }
+      });
+      planStatus = 'inactive';
+    }
+
     const token = jwt.sign({ id: merchant.id }, process.env.JWT_SECRET || 'secret', {
       expiresIn: '7d',
     });
 
-    res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, isAdmin: merchant.isAdmin } });
+    res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, isAdmin: merchant.isAdmin, planStatus, planExpiresAt: merchant.planExpiresAt } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
@@ -75,10 +84,21 @@ export const getSettings = async (req: AuthRequest, res: Response): Promise<void
       return;
     }
 
+    let planStatus = merchant.planStatus;
+    if (merchant.planExpiresAt && new Date(merchant.planExpiresAt) < new Date() && planStatus === 'active') {
+      await prisma.merchant.update({
+        where: { id: merchant.id },
+        data: { planStatus: 'inactive' }
+      });
+      planStatus = 'inactive';
+    }
+
     res.json({
       whatsappProvider: merchant.whatsappProvider,
       whatsappConfig: merchant.whatsappConfig ? JSON.parse(merchant.whatsappConfig) : null,
-      isAdmin: merchant.isAdmin
+      isAdmin: merchant.isAdmin,
+      planStatus,
+      planExpiresAt: merchant.planExpiresAt
     });
   } catch (error) {
     console.error(error);

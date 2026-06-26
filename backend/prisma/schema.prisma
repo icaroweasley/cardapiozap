@@ -17,6 +17,8 @@ model Merchant {
   whatsappConfig   String?   // JSON string for credentials
   active           Boolean   @default(true)
   isAdmin          Boolean   @default(false)
+  planStatus       String    @default("active") // "active", "inactive"
+  planExpiresAt    DateTime? 
   createdAt        DateTime  @default(now())
   products         Product[]
   orders           Order[]

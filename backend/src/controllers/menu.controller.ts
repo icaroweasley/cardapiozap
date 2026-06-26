@@ -11,6 +11,8 @@ export const getMenuBySlug = async (req: Request, res: Response): Promise<void> 
         id: true,
         name: true,
         phone: true,
+        planStatus: true,
+        planExpiresAt: true,
         products: {
           where: { available: true },
           orderBy: { category: 'asc' }
@@ -23,7 +25,16 @@ export const getMenuBySlug = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    res.json(merchant);
+    let planStatus = merchant.planStatus;
+    if (merchant.planExpiresAt && new Date(merchant.planExpiresAt) < new Date() && planStatus === 'active') {
+      await prisma.merchant.update({
+        where: { id: merchant.id },
+        data: { planStatus: 'inactive' }
+      });
+      planStatus = 'inactive';
+    }
+
+    res.json({ ...merchant, planStatus });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
