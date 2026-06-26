@@ -14,7 +14,23 @@ export const getEvolutionState = async (req: AuthRequest, res: Response): Promis
       const response = await axios.get(`${apiUrl}/instance/connectionState/${instanceName}`, {
         headers: { apikey: apiKey }
       });
-      res.json(response.data);
+      
+      let base64Qr = null;
+      if (response.data?.instance?.state === 'connecting') {
+        try {
+          const connectRes = await axios.get(`${apiUrl}/instance/connect/${instanceName}`, {
+            headers: { apikey: apiKey }
+          });
+          base64Qr = connectRes.data?.base64 || connectRes.data?.qrcode?.base64;
+        } catch (err) {
+          console.error('Error fetching fresh QR for connecting instance:', err);
+        }
+      }
+
+      res.json({
+        ...response.data,
+        base64: base64Qr
+      });
     } catch (e: any) {
       if (e.response?.status === 404) {
         res.status(404).json({ error: 'Instance not found' });

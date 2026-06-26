@@ -32,6 +32,9 @@ export default function SettingsPanel() {
           setInstanceStatus('Desconectado');
         } else if (data.instance?.state === 'connecting') {
           setInstanceStatus('Conectando...');
+          if (data.base64) {
+            setQrCode(data.base64);
+          }
         }
       } else {
         setInstanceStatus('Não criada');
