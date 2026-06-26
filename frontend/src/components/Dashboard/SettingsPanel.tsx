@@ -162,7 +162,7 @@ export default function SettingsPanel() {
 
   return (
     <div className="flex-1 overflow-y-auto hide-scrollbar h-full flex flex-col items-center">
-      <div className="w-full max-w-4xl p-6 bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 flex flex-col shadow-2xl relative overflow-hidden h-full rounded-3xl lg:m-2">
+      <div className="w-full max-w-4xl p-6 bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 flex flex-col shadow-2xl relative h-fit min-h-full rounded-3xl lg:m-2">
         <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-6 mb-6">
           <div>
             <h2 className="font-podium text-2xl md:text-3xl uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
@@ -233,7 +233,7 @@ export default function SettingsPanel() {
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto hide-scrollbar">
+        <div className="w-full flex-1">
           {provider === 'EVOLUTION' ? (
             <div className="flex flex-col md:flex-row gap-6 items-center md:items-start p-6 border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 rounded-2xl">
               <div className="w-48 h-48 border border-black/20 dark:border-white/20 bg-white flex flex-col items-center justify-center p-3 rounded-2xl relative overflow-hidden shrink-0">
