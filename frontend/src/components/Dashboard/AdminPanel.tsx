@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { Users, Server, ShoppingCart, Activity, ListOrdered, Edit3, X, Save } from 'lucide-react';
 
@@ -178,9 +179,9 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* Edit Plan Modal */}
-      {editingMerchant && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-inter">
+      {/* Edit Plan Modal using Portal */}
+      {editingMerchant && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-inter">
           <div className="bg-white dark:bg-[#121215] border border-black/10 dark:border-white/10 p-8 rounded-3xl shadow-2xl max-w-sm w-full relative animate-fade-up">
             <button onClick={() => setEditingMerchant(null)} className="absolute top-4 right-4 text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors">
               <X size={20} />
@@ -222,7 +223,8 @@ export default function AdminPanel() {
               {savingPlan ? 'Salvando...' : 'Salvar Alterações'}
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
