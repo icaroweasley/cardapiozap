@@ -103,9 +103,9 @@ export default function KanbanBoard() {
       </div>
 
       <div className="flex-1 overflow-x-auto p-4 md:p-6 hide-scrollbar">
-        <div className="flex gap-4 md:gap-6 h-full min-w-max">
+        <div className="flex gap-3 md:gap-4 lg:gap-6 h-full min-w-[800px] lg:min-w-0">
           {COLUMNS.map(column => (
-            <div key={column.id} className="w-[260px] xl:w-[280px] 2xl:w-[320px] shrink-0 flex flex-col bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 h-full backdrop-blur-md rounded-2xl overflow-hidden">
+            <div key={column.id} className="flex-1 min-w-[220px] max-w-[400px] flex flex-col bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 h-full backdrop-blur-md rounded-2xl overflow-hidden">
               <div className="p-4 bg-white/10 dark:bg-black/40 border-b border-black/10 dark:border-white/10 font-inter font-bold tracking-widest text-xs uppercase flex justify-between items-center text-black dark:text-white">
                 <span>{column.title}</span>
                 <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-0.5 text-[10px] rounded-lg">{filteredOrders.filter(o => o.status === column.id).length}</span>
