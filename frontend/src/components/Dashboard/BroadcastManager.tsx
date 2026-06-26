@@ -66,6 +66,7 @@ interface LogEntry {
 export default function BroadcastManager() {
   const [currentScreen, setCurrentScreen] = useState<1 | 2 | 3>(1);
   const [providerInfo, setProviderInfo] = useState<any>(null);
+  const [actualInstanceStatus, setActualInstanceStatus] = useState<string>('Verificando...');
   
   // Contacts State
   const [allContacts, setAllContacts] = useState<Contact[]>([]);
@@ -128,6 +129,28 @@ export default function BroadcastManager() {
       return {};
     }
   }, [providerInfo]);
+
+  useEffect(() => {
+    if (providerInfo?.whatsappProvider === 'EVOLUTION' && configObj?.instanceName) {
+      const checkStatus = async () => {
+        try {
+          const res = await axios.get(`${apiUrl}/api/auth/evolution/instance/${configObj.instanceName}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          });
+          if (res.data?.instance?.state === 'open') {
+            setActualInstanceStatus('Conectado');
+          } else {
+            setActualInstanceStatus('Desconectado');
+          }
+        } catch (e) {
+          setActualInstanceStatus('Desconectado');
+        }
+      };
+      checkStatus();
+    } else if (providerInfo?.whatsappProvider === 'OFFICIAL') {
+      setActualInstanceStatus('Conectado');
+    }
+  }, [providerInfo, configObj, apiUrl]);
 
   // Load Saved Lists
   const fetchLists = async () => {
@@ -572,7 +595,7 @@ const nextScreen = (screen: 1 | 2 | 3) => {
             </h1>
 
             <div className="w-full bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-8 rounded-[2rem] shadow-xl flex flex-col items-center text-center">
-              {(!providerInfo?.whatsappProvider || !providerInfo?.whatsappConfig) ? (
+               {(!providerInfo?.whatsappProvider || !providerInfo?.whatsappConfig) ? (
                  <>
                    <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mb-6 text-red-500 border border-red-500/20 shadow-lg">
                      <AlertCircle size={40} />
@@ -582,6 +605,18 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                    </h2>
                    <p className="text-sm font-inter text-red-500 mb-8 max-w-xs bg-red-500/10 px-4 py-3 rounded-xl border border-red-500/20">
                      API não configurada! Vá na aba <strong>Conexões</strong> para configurar o seu WhatsApp.
+                   </p>
+                 </>
+              ) : (actualInstanceStatus !== 'Conectado') ? (
+                 <>
+                   <div className="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center mb-6 text-yellow-500 border border-yellow-500/20 shadow-lg">
+                     <AlertCircle size={40} />
+                   </div>
+                   <h2 className="font-podium text-xl uppercase tracking-widest text-black dark:text-white mb-2">
+                     WhatsApp Desconectado
+                   </h2>
+                   <p className="text-sm font-inter text-yellow-600 dark:text-yellow-500 mb-8 max-w-xs bg-yellow-500/10 px-4 py-3 rounded-xl border border-yellow-500/20">
+                     Sua instância não está conectada. Vá na aba <strong>Conexões</strong>, gere o QR Code e escaneie com seu celular.
                    </p>
                  </>
               ) : (
@@ -624,7 +659,7 @@ const nextScreen = (screen: 1 | 2 | 3) => {
 
               <button 
                 onClick={() => nextScreen(2)}
-                disabled={!providerInfo?.whatsappConfig}
+                disabled={!providerInfo?.whatsappConfig || actualInstanceStatus !== 'Conectado'}
                 className="w-full bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-xs font-bold uppercase py-4 rounded-xl flex items-center justify-center gap-2 hover:scale-105 transition-transform disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed shadow-xl"
               >
                 Avançar para Envios <ArrowRight size={16} />
