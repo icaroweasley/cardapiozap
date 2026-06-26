@@ -198,8 +198,8 @@ export default function AdminPanel() {
                   onChange={e => setPlanForm({ ...planForm, planStatus: e.target.value })}
                   className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white font-inter focus:outline-none"
                 >
-                  <option value="active">Ativo (Pode usar e receber pedidos)</option>
-                  <option value="inactive">Inativo (Bloqueado)</option>
+                  <option className="bg-white dark:bg-[#121215] text-black dark:text-white" value="active">Ativo (Pode usar e receber pedidos)</option>
+                  <option className="bg-white dark:bg-[#121215] text-black dark:text-white" value="inactive">Inativo (Bloqueado)</option>
                 </select>
               </div>
               <div>
