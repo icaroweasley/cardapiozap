@@ -965,15 +965,20 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                      <label className="text-[10px] font-bold text-black/50 dark:text-white/50 uppercase tracking-widest">Mídias: (Opcional - Máx 3)</label>
                    </div>
                    <div className="flex flex-col gap-3">
-                     <select
-                       value={textPosition}
-                       onChange={e => setTextPosition(e.target.value as any)}
-                       className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 text-black dark:text-white text-xs focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-colors rounded-xl font-inter cursor-pointer"
-                     >
-                       <option value="after">Texto separado, APÓS a mídia</option>
-                       <option value="before">Texto separado, ANTES da mídia</option>
-                       <option value="caption">Texto embutido como legenda na imagem</option>
-                     </select>
+                     <div className="flex flex-col gap-3 mb-2">
+                       <label className="flex items-center gap-3 cursor-pointer group">
+                         <input type="radio" value="after" checked={textPosition === 'after'} onChange={() => setTextPosition('after')} className="accent-black dark:accent-white w-4 h-4" />
+                         <span className="text-xs text-black/70 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors font-inter">Texto separado, APÓS a mídia</span>
+                       </label>
+                       <label className="flex items-center gap-3 cursor-pointer group">
+                         <input type="radio" value="before" checked={textPosition === 'before'} onChange={() => setTextPosition('before')} className="accent-black dark:accent-white w-4 h-4" />
+                         <span className="text-xs text-black/70 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors font-inter">Texto separado, ANTES da mídia</span>
+                       </label>
+                       <label className="flex items-center gap-3 cursor-pointer group">
+                         <input type="radio" value="caption" checked={textPosition === 'caption'} onChange={() => setTextPosition('caption')} className="accent-black dark:accent-white w-4 h-4" />
+                         <span className="text-xs text-black/70 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors font-inter">Texto embutido como legenda na imagem</span>
+                       </label>
+                     </div>
                      <input
                        type="file"
                        multiple
