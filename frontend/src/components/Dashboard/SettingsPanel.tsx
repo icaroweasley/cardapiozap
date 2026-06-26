@@ -248,6 +248,16 @@ export default function SettingsPanel() {
                 )}
               </div>
               <div className="flex-1 w-full space-y-4">
+                <div className="bg-white/10 dark:bg-black/10 border border-black/10 dark:border-white/10 p-4 rounded-xl text-xs font-inter text-black/70 dark:text-white/70">
+                  <strong className="block uppercase tracking-widest text-[10px] mb-2 text-black dark:text-white">Como conectar o dispositivo:</strong>
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>Abra o WhatsApp no seu celular</li>
+                    <li>Clique nos três pontinhos (⋮) ou Configurações</li>
+                    <li>Vá em "Dispositivos Conectados"</li>
+                    <li>Clique em "Conectar Dispositivo"</li>
+                    <li>Aponte a câmera para o QR Code ao lado</li>
+                  </ol>
+                </div>
                 <div>
                   <h4 className="font-inter text-sm font-bold uppercase tracking-widest text-black dark:text-white mb-2 flex items-center gap-2">
                     <span className={`w-2 h-2 rounded-full ${instanceStatus === 'Conectado' ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`}></span>

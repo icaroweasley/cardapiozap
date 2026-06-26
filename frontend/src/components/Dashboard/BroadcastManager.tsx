@@ -64,7 +64,7 @@ interface LogEntry {
   timestamp: Date;
 }
 
-export default function BroadcastManager() {
+export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab: 'SETTINGS' | 'KANBAN' | 'PRODUCTS' | 'BROADCAST' | 'ADMIN') => void }) {
   const [currentScreen, setCurrentScreen] = useState<1 | 2 | 3>(1);
   const [providerInfo, setProviderInfo] = useState<any>(null);
   const [actualInstanceStatus, setActualInstanceStatus] = useState<string>('Verificando...');
@@ -590,8 +590,30 @@ const nextScreen = (screen: 1 | 2 | 3) => {
       {/* MAIN CONTENT */}
       <main className="flex-1 overflow-hidden flex flex-col p-6 lg:p-10 relative z-10">
         
+        {actualInstanceStatus !== 'Conectado' && (
+          <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl mx-auto animate-fade-in">
+             <div className="w-full bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-8 rounded-[2rem] shadow-xl flex flex-col items-center text-center">
+                 <div className="w-16 h-16 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mb-6">
+                    <AlertCircle size={32} />
+                 </div>
+                 <h2 className="font-podium text-2xl tracking-widest uppercase mb-4 text-black dark:text-white">
+                    Nenhuma Conexão
+                 </h2>
+                 <p className="text-red-500 bg-red-500/10 px-4 py-3 rounded-xl text-xs font-inter font-bold uppercase tracking-wider mb-8">
+                    API não configurada! Vá na aba Conexões para configurar o seu WhatsApp.
+                 </p>
+                 <button 
+                   onClick={() => setActiveTab && setActiveTab('SETTINGS')}
+                   className="bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-xs font-bold uppercase px-8 py-4 rounded-xl flex items-center justify-center gap-2 hover:scale-105 transition-transform shadow-xl"
+                 >
+                   Ir para Conexões <ArrowRight size={16} />
+                 </button>
+             </div>
+           </div>
+        )}
+
         {/* SCREEN 1: CONNECTION */}
-        {currentScreen === 1 && (
+        {actualInstanceStatus === 'Conectado' && currentScreen === 1 && (
           <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl mx-auto animate-fade-in">
             <h1 className="font-podium text-4xl lg:text-5xl uppercase tracking-widest text-black dark:text-white mb-10 text-center">
               CONECTE SUA INSTÂNCIA
@@ -606,21 +628,6 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                    <h2 className="font-podium text-xl uppercase tracking-widest text-black dark:text-white mb-2">
                      Nenhuma Conexão
                    </h2>
-                   <p className="text-sm font-inter text-red-500 mb-8 max-w-xs bg-red-500/10 px-4 py-3 rounded-xl border border-red-500/20">
-                     API não configurada! Vá na aba <strong>Conexões</strong> para configurar o seu WhatsApp.
-                   </p>
-                 </>
-              ) : (actualInstanceStatus !== 'Conectado') ? (
-                 <>
-                   <div className="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center mb-6 text-yellow-500 border border-yellow-500/20 shadow-lg">
-                     <AlertCircle size={40} />
-                   </div>
-                   <h2 className="font-podium text-xl uppercase tracking-widest text-black dark:text-white mb-2">
-                     WhatsApp Desconectado
-                   </h2>
-                   <p className="text-sm font-inter text-yellow-600 dark:text-yellow-500 mb-8 max-w-xs bg-yellow-500/10 px-4 py-3 rounded-xl border border-yellow-500/20">
-                     Sua instância não está conectada. Vá na aba <strong>Conexões</strong>, gere o QR Code e escaneie com seu celular.
-                   </p>
                  </>
               ) : (
                  <>
@@ -663,20 +670,16 @@ const nextScreen = (screen: 1 | 2 | 3) => {
               <button 
                 onClick={() => nextScreen(2)}
                 disabled={!providerInfo?.whatsappConfig || actualInstanceStatus !== 'Conectado'}
-                className="w-full bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-xs font-bold uppercase py-4 rounded-xl flex items-center justify-center gap-2 hover:scale-105 transition-transform disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed shadow-xl"
+                className="w-full bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-xs font-bold uppercase py-4 rounded-xl flex items-center justify-center gap-2 hover:scale-105 transition-transform disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed shadow-xl mt-6"
               >
                 Avançar para Envios <ArrowRight size={16} />
               </button>
-            </div>
-            <div className="mt-6 max-w-lg mx-auto text-center text-xs font-inter text-black/50 dark:text-white/50 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl p-5 leading-relaxed backdrop-blur-sm">
-                <span className="font-bold text-black/70 dark:text-white/70 block mb-2 uppercase tracking-widest">Como conectar o dispositivo:</span> 
-                Abra o WhatsApp {'>'} clique nos três pontinhos no lado direito superior {'>'} Dispositivos Conectados {'>'} Conectar Dispositivo {'>'} escaneie o código QR. Vá até a aba "Conexões" se precisar trocar a instância.
             </div>
           </div>
         )}
 
         {/* SCREEN 2: TARGETS */}
-        {currentScreen === 2 && (
+        {actualInstanceStatus === 'Conectado' && currentScreen === 2 && (
           <div className="flex-1 flex flex-col lg:flex-row gap-6 w-full h-full overflow-hidden animate-fade-in font-inter">
             
             {/* LEFT COLUMN: Source Contacts */}
@@ -928,7 +931,7 @@ const nextScreen = (screen: 1 | 2 | 3) => {
         )}
 
         {/* SCREEN 3: BROADCAST */}
-        {currentScreen === 3 && (
+        {actualInstanceStatus === 'Conectado' && currentScreen === 3 && (
           <div className="flex-1 flex flex-col lg:flex-row gap-6 w-full h-full overflow-hidden animate-fade-in font-inter">
             {/* Left Config Panel */}
             <div className="flex-1 flex flex-col bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden relative">

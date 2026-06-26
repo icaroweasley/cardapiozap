@@ -185,7 +185,7 @@ export default function Dashboard() {
         {activeTab === 'KANBAN' && <KanbanBoard />}
         {activeTab === 'PRODUCTS' && <ProductManager />}
         {activeTab === 'SETTINGS' && <SettingsPanel />}
-        {activeTab === 'BROADCAST' && <BroadcastManager />}
+        {activeTab === 'BROADCAST' && <BroadcastManager setActiveTab={setActiveTab} />}
         {activeTab === 'ADMIN' && <AdminPanel />}
       </main>
     </div>
