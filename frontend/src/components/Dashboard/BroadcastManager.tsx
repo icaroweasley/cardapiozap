@@ -46,6 +46,7 @@ interface MediaAttachment {
 interface Contact {
   id: string;
   name?: string;
+  pushName?: string;
   number: string;
   status?: 'pending' | 'sent' | 'error';
 }
@@ -360,6 +361,7 @@ export default function BroadcastManager() {
     const searchLower = deferredSearchAll.toLowerCase();
     return allContacts.filter(c => 
       c.name?.toLowerCase().includes(searchLower) || 
+      c.pushName?.toLowerCase().includes(searchLower) ||
       c.number.includes(deferredSearchAll)
     );
   }, [allContacts, deferredSearchAll]);
@@ -368,6 +370,7 @@ export default function BroadcastManager() {
     const searchLower = deferredSearchTarget.toLowerCase();
     return targetContacts.filter(c => 
       c.name?.toLowerCase().includes(searchLower) || 
+      c.pushName?.toLowerCase().includes(searchLower) ||
       c.number.includes(deferredSearchTarget)
     );
   }, [targetContacts, deferredSearchTarget]);
@@ -450,12 +453,12 @@ export default function BroadcastManager() {
       setTargetContacts([...currentContacts]);
       
       try {
-        const personalizedMessage = message.replace(/{nome}/gi, contact.name || 'cliente');
+        const personalizedMessage = message.replace(/{nome}/gi, contact.name || contact.pushName || 'cliente');
         
         // Anti-ban: Simular digitação
         const textLength = personalizedMessage ? personalizedMessage.length : 10;
         const typingDelayMs = Math.min(Math.max(textLength * 40, 2000), 15000) + Math.floor(Math.random() * 2000);
-        addLog(`Simulando digitação para ${contact.name || contact.number} (${(typingDelayMs/1000).toFixed(1)}s)...`, 'pending');
+        addLog(`Simulando digitação para ${contact.name || contact.pushName || contact.number} (${(typingDelayMs/1000).toFixed(1)}s)...`, 'pending');
         
         try {
           await axios.post(`${apiUrl}/api/broadcast/presence`, { number: contact.number, presence: 'composing', delay: typingDelayMs }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
@@ -499,7 +502,7 @@ export default function BroadcastManager() {
 
         currentContacts[i] = { ...contact, status: 'sent' };
         sentCount++;
-        addLog(`Enviado para ${contact.name || contact.number}`, 'success');
+        addLog(`Enviado para ${contact.name || contact.pushName || contact.number}`, 'success');
       } catch (error: any) {
         currentContacts[i] = { ...contact, status: 'error' };
         addLog(`Erro ao enviar para ${contact.number}: ${error?.response?.data?.error || error.message}`, 'error');
@@ -738,7 +741,7 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                             className="mr-3 w-4 h-4 accent-black dark:accent-white cursor-pointer rounded-sm"
                           />
                           <div className="flex-1 flex flex-col min-w-0">
-                            <span className="text-sm font-bold text-black dark:text-white truncate font-inter">{contact.name || 'Desconhecido'}</span>
+                            <span className="text-sm font-bold text-black dark:text-white truncate font-inter">{contact.name || contact.pushName || 'Desconhecido'}</span>
                             <span className="text-[10px] text-black/50 dark:text-white/50 mt-1 tracking-widest">{contact.number}</span>
                           </div>
                         </div>
@@ -898,7 +901,7 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                             className="mr-3 w-4 h-4 accent-black dark:accent-white cursor-pointer rounded-sm"
                           />
                           <div className="flex-1 flex flex-col min-w-0">
-                            <span className="text-sm font-bold text-black dark:text-white truncate font-inter">{contact.name || 'Desconhecido'}</span>
+                            <span className="text-sm font-bold text-black dark:text-white truncate font-inter">{contact.name || contact.pushName || 'Desconhecido'}</span>
                             <span className="text-[10px] text-black/50 dark:text-white/50 mt-1 tracking-widest">{contact.number}</span>
                           </div>
                           {contact.status === 'sent' && <CheckCircle2 size={16} className="text-emerald-500 ml-2" />}
