@@ -36,6 +36,13 @@ const unthrottledSleep = (ms: number): Promise<void> => {
     sleepWorker.postMessage({ id, delay: ms });
   });
 };
+interface MediaAttachment {
+  id: string;
+  base64: string;
+  name: string;
+  type: string;
+}
+
 interface Contact {
   id: string;
   name?: string;
@@ -80,8 +87,8 @@ export default function BroadcastManager() {
 
   // Message State
   const [message, setMessage] = useState('');
-  const [mediaUrl, setMediaUrl] = useState('');
-  const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
+  const [mediaAttachments, setMediaAttachments] = useState<MediaAttachment[]>([]);
+  const [textPosition, setTextPosition] = useState<'before' | 'after' | 'caption'>('after');
   
   // Broadcast State
   const [isSending, setIsSending] = useState(false);
@@ -190,6 +197,83 @@ export default function BroadcastManager() {
     }
   };
 
+  const fetchWhatsAppContacts = async () => {
+    try {
+      addLog('Buscando contatos do WhatsApp...', 'pending');
+      const res = await axios.get(`${apiUrl}/api/broadcast/whatsapp-contacts`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      const fetched = res.data.map((c: any) => ({
+        id: c.number,
+        name: c.name,
+        number: c.number,
+        status: 'pending'
+      }));
+      const uniqueMap = new Map<string, Contact>();
+      fetched.forEach((c: Contact) => uniqueMap.set(c.id, c));
+      setAllContacts(Array.from(uniqueMap.values()));
+      addLog(`Encontrados ${uniqueMap.size} contatos no WhatsApp.`, 'success');
+    } catch (e: any) {
+      alert(e?.response?.data?.error || "Erro ao buscar contatos do WhatsApp.");
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    let filesArray = Array.from(files);
+    
+    const availableSlots = Math.max(0, 3 - mediaAttachments.length);
+    if (filesArray.length > availableSlots) {
+      alert(`Você só pode anexar no máximo 3 mídias.`);
+      filesArray = filesArray.slice(0, availableSlots);
+    }
+    
+    filesArray.forEach(file => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1280; const MAX_HEIGHT = 1280;
+            let width = img.width; let height = img.height;
+            if (width > height) {
+              if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+            } else {
+              if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+            }
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            setMediaAttachments(current => {
+              if (current.length >= 3) return current;
+              return [...current, { id: Date.now().toString() + Math.random().toString(), base64: dataUrl, name: file.name.replace(/\.[^/.]+$/, "") + "_otimizada.jpg", type: 'image/jpeg' }];
+            });
+          };
+          img.src = event.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+          alert(`O arquivo "${file.name}" é muito grande. O limite para vídeos é 5MB.`);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setMediaAttachments(current => {
+            if (current.length >= 3) return current;
+            return [...current, { id: Date.now().toString() + Math.random().toString(), base64: reader.result as string, name: file.name, type: file.type }];
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    e.target.value = '';
+  };
+
   const handleAddNewContact = () => {
     if (!newContactPhone.trim()) {
       alert("O telefone é obrigatório.");
@@ -289,7 +373,7 @@ export default function BroadcastManager() {
       alert('A lista alvo está vazia.');
       return;
     }
-    if (!message.trim() && !mediaUrl.trim()) {
+    if (!message.trim() && mediaAttachments.length === 0) {
       alert('Digite uma mensagem ou adicione uma mídia para enviar.');
       return;
     }
@@ -318,25 +402,55 @@ export default function BroadcastManager() {
       
       try {
         const personalizedMessage = message.replace(/{nome}/gi, contact.name || 'cliente');
+        
+        // Anti-ban: Simular digitação
+        const textLength = personalizedMessage ? personalizedMessage.length : 10;
+        const typingDelayMs = Math.min(Math.max(textLength * 40, 2000), 15000) + Math.floor(Math.random() * 2000);
+        addLog(`Simulando digitação para ${contact.name || contact.number} (${(typingDelayMs/1000).toFixed(1)}s)...`, 'pending');
+        
+        try {
+          await axios.post(`${apiUrl}/api/broadcast/presence`, { number: contact.number, presence: 'composing', delay: typingDelayMs }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+        } catch(e) {}
+        
+        let typingWaited = 0;
+        while(typingWaited < typingDelayMs) {
+           if (isCancelledRef.current) break;
+           await unthrottledSleep(500);
+           typingWaited += 500;
+        }
+        if (isCancelledRef.current) break;
 
-        const payload = {
-          number: contact.number,
-          text: personalizedMessage,
-          mediaUrl: mediaUrl.trim() || undefined,
-          mediaType: mediaUrl.trim() ? mediaType : undefined
+        const sendText = async (txt: string) => {
+           await axios.post(`${apiUrl}/api/broadcast/send`, { number: contact.number, text: txt }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
         };
 
-        const res = await axios.post(`${apiUrl}/api/broadcast/send`, payload, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-
-        if (res.data.success) {
-           currentContacts[i] = { ...contact, status: 'sent' };
-           sentCount++;
-           addLog(`Enviado para ${contact.name || contact.number}`, 'success');
+        if (mediaAttachments.length > 0) {
+           if (textPosition === 'before' && personalizedMessage) {
+               await sendText(personalizedMessage);
+               await unthrottledSleep(2000);
+           }
+           for (let mIndex = 0; mIndex < mediaAttachments.length; mIndex++) {
+              const attachment = mediaAttachments[mIndex];
+              await axios.post(`${apiUrl}/api/broadcast/send`, {
+                number: contact.number,
+                mediaBase64: attachment.base64,
+                mediaType: attachment.type.startsWith('video') ? 'video' : 'image',
+                fileName: attachment.name,
+                text: (textPosition === 'caption' && mIndex === 0) ? personalizedMessage : ''
+              }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+              if (mIndex < mediaAttachments.length - 1) await unthrottledSleep(1500);
+           }
+           if (textPosition === 'after' && personalizedMessage) {
+               await unthrottledSleep(2000);
+               await sendText(personalizedMessage);
+           }
         } else {
-           throw new Error('Falha no envio');
+           await sendText(personalizedMessage);
         }
+
+        currentContacts[i] = { ...contact, status: 'sent' };
+        sentCount++;
+        addLog(`Enviado para ${contact.name || contact.number}`, 'success');
       } catch (error: any) {
         currentContacts[i] = { ...contact, status: 'error' };
         addLog(`Erro ao enviar para ${contact.number}: ${error?.response?.data?.error || error.message}`, 'error');
@@ -351,7 +465,6 @@ export default function BroadcastManager() {
            addLog('Disparo cancelado pelo usuário.', 'error');
            break;
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const delayMs = Math.floor(Math.random() * (maxDelay - minDelay + 1) + minDelay) * 1000;
         const delaySeconds = (delayMs / 1000).toFixed(1);
         addLog(`Aguardando ${delaySeconds}s (Anti-Ban)...`, 'pending');
@@ -507,13 +620,23 @@ const nextScreen = (screen: 1 | 2 | 3) => {
               <div className="relative z-10 flex flex-col h-full w-full">
                 <div className="p-5 pb-3 flex flex-col gap-4 border-b border-black/5 dark:border-white/5">
                   <div className="flex justify-between items-center px-1">
-                    <h2 className="font-podium text-sm lg:text-base tracking-widest text-black dark:text-white uppercase">Contatos da Instância</h2>
-                    <button 
-                      onClick={fetchDatabaseContacts}
-                      className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white"
-                    >
-                      <Users size={14} /> Sincronizar API
-                    </button>
+                    <h2 className="font-podium text-sm lg:text-base tracking-widest text-black dark:text-white uppercase">Contatos</h2>
+                    <div className="flex gap-2">
+                        <button 
+                          onClick={fetchWhatsAppContacts}
+                          title="Sincronizar com seu WhatsApp"
+                          className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white"
+                        >
+                          <Users size={14} /> WhatsApp
+                        </button>
+                        <button 
+                          onClick={fetchDatabaseContacts}
+                          title="Sincronizar Clientes do Cardápio"
+                          className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white"
+                        >
+                          <Users size={14} /> Clientes
+                        </button>
+                    </div>
                   </div>
                   <div className="relative">
                     <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40" />
@@ -775,24 +898,33 @@ const nextScreen = (screen: 1 | 2 | 3) => {
 
                  <div className="bg-white/50 dark:bg-black/40 p-5 rounded-2xl border border-black/5 dark:border-white/5 shadow-sm">
                    <div className="flex justify-between items-center mb-3">
-                     <label className="text-[10px] font-bold text-black/50 dark:text-white/50 uppercase tracking-widest">Mídias: (Opcional)</label>
+                     <label className="text-[10px] font-bold text-black/50 dark:text-white/50 uppercase tracking-widest">Mídias: (Opcional - Máx 3)</label>
                    </div>
-                   <div className="flex flex-col md:flex-row gap-3">
-                     <select 
-                       value={mediaType} 
-                       onChange={e => setMediaType(e.target.value as any)}
-                       className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 text-black dark:text-white text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 rounded-xl cursor-pointer"
-                     >
-                       <option value="image">Imagem (URL)</option>
-                       <option value="video">Vídeo (URL)</option>
-                     </select>
+                   <div className="flex flex-col gap-3">
                      <input
-                       type="text"
-                       value={mediaUrl}
-                       onChange={e => setMediaUrl(e.target.value)}
-                       placeholder="URL da mídia (https://...)"
-                       className="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 text-black dark:text-white text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-colors rounded-xl shadow-inner"
+                       type="file"
+                       multiple
+                       accept="image/*,video/*"
+                       onChange={handleFileUpload}
+                       className="text-xs text-black/50 dark:text-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-black dark:file:bg-white file:text-white dark:file:text-black hover:file:bg-black/80 dark:hover:file:bg-white/80 transition-colors cursor-pointer"
                      />
+                     {mediaAttachments.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {mediaAttachments.map(media => (
+                             <div key={media.id} className="relative group rounded-lg overflow-hidden border border-black/10 dark:border-white/10 w-16 h-16">
+                               {media.type.startsWith('image/') ? (
+                                  <img src={media.base64} alt={media.name} className="w-full h-full object-cover" />
+                               ) : (
+                                  <video src={media.base64} className="w-full h-full object-cover" />
+                               )}
+                               <button 
+                                 onClick={() => setMediaAttachments(prev => prev.filter(m => m.id !== media.id))}
+                                 className="absolute inset-0 bg-red-500/80 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-[10px] uppercase font-bold tracking-widest"
+                               >X</button>
+                             </div>
+                          ))}
+                        </div>
+                     )}
                    </div>
                  </div>
                </div>

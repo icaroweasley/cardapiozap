@@ -28,9 +28,71 @@ router.get('/customers', authenticate, async (req: any, res) => {
   }
 });
 
+router.get('/whatsapp-contacts', authenticate, async (req: any, res) => {
+  try {
+    const merchantId = req.merchantId;
+    const merchant = await prisma.merchant.findUnique({ where: { id: merchantId } });
+    if (!merchant) return res.status(404).json({ error: 'Lojista não encontrado' });
+    
+    if (merchant.whatsappProvider !== 'EVOLUTION') {
+       return res.status(400).json({ error: 'Sincronização de contatos só está disponível na Evolution API' });
+    }
+
+    let config: any = {};
+    try { config = JSON.parse(merchant.whatsappConfig || '{}'); } catch(e) {}
+    
+    const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
+    const instanceName = config.instanceName || 'cardapio_instance';
+    const apiKey = process.env.EVOLUTION_API_KEY || '';
+
+    const response = await axios.get(`${apiUrl}/v2/contact/fetchContacts/${instanceName}`, {
+       headers: { apikey: apiKey }
+    });
+    
+    const rawContacts = Array.isArray(response.data) ? response.data : (response.data?.contacts || []);
+    const customers = rawContacts.map((c: any) => ({
+       name: c.pushName || c.name || '',
+       number: (c.remoteJid || c.id || '').split('@')[0]
+    })).filter((c: any) => c.number && c.number.length >= 10);
+    
+    res.json(customers);
+  } catch (error: any) {
+    console.error('Error fetching whatsapp contacts:', error?.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch whatsapp contacts' });
+  }
+});
+
+router.post('/presence', authenticate, async (req: any, res) => {
+  try {
+    const { number, presence, delay } = req.body;
+    const merchantId = req.merchantId;
+    const merchant = await prisma.merchant.findUnique({ where: { id: merchantId } });
+    if (!merchant || merchant.whatsappProvider !== 'EVOLUTION') return res.json({ success: true });
+    
+    let config: any = {};
+    try { config = JSON.parse(merchant.whatsappConfig || '{}'); } catch(e) {}
+    
+    const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
+    const instanceName = config.instanceName || 'cardapio_instance';
+    const apiKey = process.env.EVOLUTION_API_KEY || '';
+    
+    const cleanPhone = number.replace(/\D/g, '');
+    
+    await axios.post(`${apiUrl}/chat/sendPresence/${instanceName}`, {
+      number: cleanPhone,
+      presence: presence || 'composing',
+      delay: delay || 2000
+    }, { headers: { apikey: apiKey } });
+    
+    res.json({ success: true });
+  } catch (error) {
+    res.json({ success: false });
+  }
+});
+
 router.post('/send', authenticate, async (req: any, res) => {
   try {
-    const { number, text, mediaUrl, mediaType } = req.body;
+    const { number, text, mediaUrl, mediaType, mediaBase64, fileName } = req.body;
     const userId = req.merchantId;
 
     const merchant = await prisma.merchant.findUnique({
@@ -46,9 +108,7 @@ router.post('/send', authenticate, async (req: any, res) => {
     if (merchant.whatsappConfig) {
       try {
         config = JSON.parse(merchant.whatsappConfig);
-      } catch (e) {
-        console.error('Failed to parse merchant whatsappConfig', e);
-      }
+      } catch (e) {}
     }
 
     const cleanPhone = number.replace(/\D/g, '');
@@ -57,49 +117,34 @@ router.post('/send', authenticate, async (req: any, res) => {
       const phoneNumberId = config.phoneNumberId;
       const accessToken = config.accessToken;
 
-      if (!phoneNumberId || !accessToken) {
-        return res.status(400).json({ error: 'Credenciais Meta API ausentes' });
-      }
+      if (!phoneNumberId || !accessToken) return res.status(400).json({ error: 'Credenciais Meta API ausentes' });
 
-      const payload: any = {
-        messaging_product: 'whatsapp',
-        recipient_type: 'individual',
-        to: cleanPhone,
-      };
+      const payload: any = { messaging_product: 'whatsapp', recipient_type: 'individual', to: cleanPhone };
 
       if (mediaUrl && mediaType) {
-        payload.type = mediaType; // 'image' or 'video'
-        payload[mediaType] = {
-          link: mediaUrl
-        };
-        if (text) {
-          payload[mediaType].caption = text;
-        }
+        payload.type = mediaType;
+        payload[mediaType] = { link: mediaUrl };
+        if (text) payload[mediaType].caption = text;
       } else {
         payload.type = 'text';
-        payload.text = {
-          preview_url: false,
-          body: text
-        };
+        payload.text = { preview_url: false, body: text };
       }
 
-      await axios.post(
-        `https://graph.facebook.com/v17.0/${phoneNumberId}/messages`,
-        payload,
-        {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      await axios.post(`https://graph.facebook.com/v17.0/${phoneNumberId}/messages`, payload, {
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' }
+      });
     } else {
       // Evolution API
       const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
       const instanceName = config.instanceName || process.env.EVOLUTION_INSTANCE_NAME || 'cardapio_instance';
       const apiKey = process.env.EVOLUTION_API_KEY || '';
 
-      if (mediaUrl && mediaType) {
+      if (mediaBase64 || mediaUrl) {
+        let finalMedia = mediaBase64 || mediaUrl;
+        if (finalMedia && finalMedia.includes('base64,')) {
+           finalMedia = finalMedia.split('base64,')[1];
+        }
+        
         await axios.post(
           `${apiUrl}/message/sendMedia/${instanceName}`,
           {
@@ -107,13 +152,13 @@ router.post('/send', authenticate, async (req: any, res) => {
             options: { delay: 1200, presence: 'composing' },
             mediaMessage: {
               mediatype: mediaType, // 'image' or 'video'
+              mimetype: mediaType === 'video' ? 'video/mp4' : 'image/jpeg',
+              fileName: fileName || 'media',
               caption: text || '',
-              media: mediaUrl
+              media: finalMedia
             }
           },
-          {
-            headers: { apikey: apiKey }
-          }
+          { headers: { apikey: apiKey } }
         );
       } else {
         await axios.post(
@@ -123,9 +168,7 @@ router.post('/send', authenticate, async (req: any, res) => {
             options: { delay: 1200, presence: 'composing' },
             textMessage: { text: text || '' }
           },
-          {
-            headers: { apikey: apiKey }
-          }
+          { headers: { apikey: apiKey } }
         );
       }
     }
