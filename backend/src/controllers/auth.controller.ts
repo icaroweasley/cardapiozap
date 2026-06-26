@@ -28,7 +28,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       expiresIn: '7d',
     });
 
-    res.status(201).json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug } });
+    res.status(201).json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, isAdmin: merchant.isAdmin } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
@@ -55,7 +55,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       expiresIn: '7d',
     });
 
-    res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug } });
+    res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, isAdmin: merchant.isAdmin } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
@@ -77,7 +77,8 @@ export const getSettings = async (req: AuthRequest, res: Response): Promise<void
 
     res.json({
       whatsappProvider: merchant.whatsappProvider,
-      whatsappConfig: merchant.whatsappConfig ? JSON.parse(merchant.whatsappConfig) : null
+      whatsappConfig: merchant.whatsappConfig ? JSON.parse(merchant.whatsappConfig) : null,
+      isAdmin: merchant.isAdmin
     });
   } catch (error) {
     console.error(error);

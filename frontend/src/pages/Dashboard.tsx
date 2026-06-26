@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Crown, Settings2, Megaphone } from 'lucide-react';
+import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Crown, Settings2, Megaphone, Server } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 import KanbanBoard from '../components/Dashboard/KanbanBoard';
 import ProductManager from '../components/Dashboard/ProductManager';
 import SettingsPanel from '../components/Dashboard/SettingsPanel';
 import BroadcastManager from '../components/Dashboard/BroadcastManager';
+import AdminPanel from '../components/Dashboard/AdminPanel';
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS' | 'BROADCAST'>('KANBAN');
+  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS' | 'BROADCAST' | 'ADMIN'>('KANBAN');
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useThemeStore();
 
@@ -81,6 +82,16 @@ export default function Dashboard() {
             <Megaphone size={18} />
             Disparos
           </button>
+          
+          {merchant.isAdmin && (
+            <button 
+              onClick={() => setActiveTab('ADMIN')}
+              className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'ADMIN' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+            >
+              <Server size={18} />
+              Painel Admin
+            </button>
+          )}
         </nav>
 
         <div className="p-6 mt-auto border-t border-black/10 dark:border-white/10">
@@ -97,6 +108,7 @@ export default function Dashboard() {
         {activeTab === 'PRODUCTS' && <ProductManager />}
         {activeTab === 'SETTINGS' && <SettingsPanel />}
         {activeTab === 'BROADCAST' && <BroadcastManager />}
+        {activeTab === 'ADMIN' && <AdminPanel />}
       </main>
     </div>
   );

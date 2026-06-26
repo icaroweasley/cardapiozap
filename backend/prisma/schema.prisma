@@ -16,11 +16,25 @@ model Merchant {
   whatsappProvider String    @default("EVOLUTION") // "EVOLUTION" or "OFFICIAL"
   whatsappConfig   String?   // JSON string for credentials
   active           Boolean   @default(true)
+  isAdmin          Boolean   @default(false)
   createdAt        DateTime  @default(now())
   products         Product[]
   orders           Order[]
+  savedLists       SavedList[]
 
   @@index([slug])
+}
+
+model SavedList {
+  id          String   @id @default(uuid())
+  merchantId  String
+  name        String
+  contacts    String   // JSON string of contacts
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId])
 }
 
 model Product {

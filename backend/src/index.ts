@@ -6,6 +6,7 @@ import productRoutes from './routes/products.routes';
 import orderRoutes from './routes/orders.routes';
 import menuRoutes from './routes/menu.routes';
 import broadcastRoutes from './routes/broadcast.routes';
+import adminRoutes from './routes/admin.routes';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/broadcast', broadcastRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

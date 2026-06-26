@@ -6,6 +6,46 @@ import { authenticate } from '../middlewares/auth.middleware';
 const router = Router();
 const prisma = new PrismaClient();
 
+// Lists CRUD
+router.get('/lists', authenticate, async (req: any, res) => {
+  try {
+    const lists = await prisma.savedList.findMany({
+      where: { merchantId: req.merchantId },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(lists);
+  } catch (error) {
+    res.status(500).json({ error: 'Falha ao buscar listas' });
+  }
+});
+
+router.post('/lists', authenticate, async (req: any, res) => {
+  try {
+    const { name, contacts } = req.body;
+    const newList = await prisma.savedList.create({
+      data: {
+        merchantId: req.merchantId,
+        name,
+        contacts: JSON.stringify(contacts)
+      }
+    });
+    res.json(newList);
+  } catch (error) {
+    res.status(500).json({ error: 'Falha ao salvar lista' });
+  }
+});
+
+router.delete('/lists/:id', authenticate, async (req: any, res) => {
+  try {
+    await prisma.savedList.delete({
+      where: { id: req.params.id }
+    });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Falha ao deletar lista' });
+  }
+});
+
 router.get('/customers', authenticate, async (req: any, res) => {
   try {
     const merchantId = req.merchantId;

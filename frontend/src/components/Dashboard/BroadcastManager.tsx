@@ -130,20 +130,41 @@ export default function BroadcastManager() {
   }, [providerInfo]);
 
   // Load Saved Lists
+  const fetchLists = async () => {
+    try {
+      const res = await axios.get(`${apiUrl}/api/broadcast/lists`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      const parsedLists = res.data.map((l: any) => ({
+        ...l,
+        contacts: JSON.parse(l.contacts)
+      }));
+      setSavedLists(parsedLists);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
-    const lists = localStorage.getItem('broadcast_saved_lists');
-    if (lists) setSavedLists(JSON.parse(lists));
+    fetchLists();
   }, []);
 
-  const saveCurrentList = () => {
+  const saveCurrentList = async () => {
     if (!saveListName.trim()) return alert('Digite um nome para salvar a lista.');
     if (targetContacts.length === 0) return alert('A lista alvo está vazia.');
-    const newList: SavedList = { id: Date.now().toString(), name: saveListName, contacts: targetContacts };
-    const updated = [...savedLists, newList];
-    setSavedLists(updated);
-    localStorage.setItem('broadcast_saved_lists', JSON.stringify(updated));
-    setSaveListName('');
-    alert('Lista salva com sucesso!');
+    try {
+      await axios.post(`${apiUrl}/api/broadcast/lists`, {
+        name: saveListName,
+        contacts: targetContacts
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setSaveListName('');
+      alert('Lista salva com sucesso!');
+      fetchLists();
+    } catch (error) {
+      alert('Erro ao salvar lista.');
+    }
   };
 
   const loadList = (id: string) => {
@@ -161,12 +182,17 @@ export default function BroadcastManager() {
     setTimeout(() => setSelectedListId(''), 100);
   };
   
-  const deleteSavedList = (id: string, e: React.MouseEvent) => {
+  const deleteSavedList = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm('Tem certeza que deseja apagar esta lista salva?')) return;
-    const updated = savedLists.filter(l => l.id !== id);
-    setSavedLists(updated);
-    localStorage.setItem('broadcast_saved_lists', JSON.stringify(updated));
+    try {
+      await axios.delete(`${apiUrl}/api/broadcast/lists/${id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      fetchLists();
+    } catch (e) {
+      alert('Erro ao deletar lista.');
+    }
   };
 
   useEffect(() => {
