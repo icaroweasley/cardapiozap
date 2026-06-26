@@ -235,19 +235,19 @@ export default function SettingsPanel() {
         {/* Tab Content */}
         <div className="flex-1 overflow-y-auto hide-scrollbar">
           {provider === 'EVOLUTION' ? (
-            <div className="flex flex-col md:flex-row gap-8 items-center md:items-start p-8 border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 rounded-2xl">
-              <div className="w-64 h-64 border border-black/20 dark:border-white/20 bg-white flex flex-col items-center justify-center p-4 rounded-2xl relative overflow-hidden shrink-0">
+            <div className="flex flex-col md:flex-row gap-6 items-center md:items-start p-6 border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 rounded-2xl">
+              <div className="w-48 h-48 border border-black/20 dark:border-white/20 bg-white flex flex-col items-center justify-center p-3 rounded-2xl relative overflow-hidden shrink-0">
                 {qrCode ? (
                   <img src={qrCode} alt="QR Code" className="w-full h-full object-contain" />
                 ) : (
-                  <div className="w-full h-full border-4 border-dashed border-black/30 dark:border-black/30 flex flex-col gap-2 items-center justify-center text-center p-4 rounded-xl">
-                    <span className="font-inter text-xs text-black/50 font-bold uppercase tracking-widest">
+                  <div className="w-full h-full border-4 border-dashed border-black/30 dark:border-black/30 flex flex-col gap-2 items-center justify-center text-center p-2 rounded-xl">
+                    <span className="font-inter text-[10px] text-black/50 font-bold uppercase tracking-widest">
                       {instanceStatus === 'Conectado' ? 'Instância Conectada' : 'Sem QR Code'}
                     </span>
                   </div>
                 )}
               </div>
-              <div className="flex-1 w-full space-y-6">
+              <div className="flex-1 w-full space-y-4">
                 <div>
                   <h4 className="font-inter text-sm font-bold uppercase tracking-widest text-black dark:text-white mb-2 flex items-center gap-2">
                     <span className={`w-2 h-2 rounded-full ${instanceStatus === 'Conectado' ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`}></span>
@@ -263,12 +263,12 @@ export default function SettingsPanel() {
                   </div>
                 </div>
                 <div>
-                  <label className="block font-inter text-xs font-bold uppercase tracking-widest text-black/70 dark:text-white/70 mb-2">Nome da Instância</label>
+                  <label className="block font-inter text-xs font-bold uppercase tracking-widest text-black/70 dark:text-white/70 mb-1">Nome da Instância</label>
                   <input
                     type="text"
                     value={config.instanceName || ''}
                     onChange={(e) => setConfig({ ...config, instanceName: e.target.value })}
-                    className="w-full bg-transparent border-b border-black/20 dark:border-white/20 px-0 py-3 text-black dark:text-white font-inter focus:outline-none focus:border-black dark:focus:border-white transition-colors"
+                    className="w-full bg-transparent border-b border-black/20 dark:border-white/20 px-0 py-2 text-black dark:text-white font-inter focus:outline-none focus:border-black dark:focus:border-white transition-colors"
                     placeholder="Ex: cardapio_loja1"
                   />
                   <p className="text-[10px] uppercase font-inter mt-1 opacity-50 tracking-widest">Salve a configuração antes de gerar o QR Code.</p>
@@ -277,7 +277,7 @@ export default function SettingsPanel() {
                     <button 
                       onClick={handleConnectInstance}
                       disabled={isChecking || !config.instanceName}
-                      className="mt-6 w-full bg-black dark:bg-white text-white dark:text-black px-4 py-4 text-xs uppercase tracking-widest font-bold rounded-xl disabled:opacity-50 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
+                      className="mt-4 w-full bg-black dark:bg-white text-white dark:text-black px-4 py-3 text-xs uppercase tracking-widest font-bold rounded-xl disabled:opacity-50 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
                     >
                       <Smartphone size={16} />
                       {isChecking ? 'Gerando...' : 'Gerar QR Code'}
