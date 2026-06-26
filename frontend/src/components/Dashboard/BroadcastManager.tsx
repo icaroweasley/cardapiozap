@@ -132,7 +132,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   }, [providerInfo]);
 
   useEffect(() => {
-    if (providerInfo?.whatsappProvider === 'EVOLUTION' && configObj?.instanceName) {
+    if (configObj?.instanceName) {
       const checkStatus = async () => {
         try {
           const res = await axios.get(`${apiUrl}/api/auth/evolution/instance/${configObj.instanceName}`, {
@@ -148,10 +148,8 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
         }
       };
       checkStatus();
-    } else if (providerInfo?.whatsappProvider === 'OFFICIAL') {
-      setActualInstanceStatus('Conectado');
     }
-  }, [providerInfo, configObj, apiUrl]);
+  }, [configObj, apiUrl]);
 
   // Load Saved Lists
   const fetchLists = async () => {
@@ -631,39 +629,26 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                  </>
               ) : (
                  <>
-                   {providerInfo.whatsappProvider === 'OFFICIAL' ? (
-                      <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 text-emerald-500 border border-emerald-500/20 shadow-lg">
-                        <Plug size={40} />
-                      </div>
-                   ) : (
-                      <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mb-6 text-blue-500 border border-blue-500/20 shadow-lg">
-                        <Plug size={40} />
-                      </div>
-                   )}
+                   <div className="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mb-6 text-blue-500 border border-blue-500/20 shadow-lg">
+                     <Plug size={40} />
+                   </div>
                    
                    <h2 className="font-podium text-xl uppercase tracking-widest text-black dark:text-white mb-2">
-                     {providerInfo.whatsappProvider === 'OFFICIAL' ? 'WhatsApp Conectado' : 'WhatsApp Conectado'}
+                     WhatsApp Conectado
                    </h2>
                    
-                   {providerInfo.whatsappProvider === 'EVOLUTION' ? (
-                     <div className="flex flex-col gap-1 items-center text-xs text-black/60 dark:text-white/60 mb-8 font-inter">
-                       <div className="flex gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5">
-                         <span className="uppercase tracking-widest font-bold opacity-50">Instância</span>
-                         <strong className="text-black dark:text-white">{configObj.instanceName || 'N/A'}</strong>
+                   <div className="flex flex-col gap-1 items-center text-xs text-black/60 dark:text-white/60 mb-8 font-inter">
+                     <div className="flex gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5">
+                       <span className="uppercase tracking-widest font-bold opacity-50">Instância</span>
+                       <strong className="text-black dark:text-white">{configObj.instanceName || 'N/A'}</strong>
+                     </div>
+                     {configObj.phoneNumber && (
+                       <div className="flex gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5 mt-1">
+                         <span className="uppercase tracking-widest font-bold opacity-50">Número</span>
+                         <strong className="text-black dark:text-white">{configObj.phoneNumber}</strong>
                        </div>
-                       {configObj.phoneNumber && (
-                         <div className="flex gap-2 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5 mt-1">
-                           <span className="uppercase tracking-widest font-bold opacity-50">Número</span>
-                           <strong className="text-black dark:text-white">{configObj.phoneNumber}</strong>
-                         </div>
-                       )}
-                     </div>
-                   ) : (
-                     <div className="flex gap-2 items-center text-xs text-black/60 dark:text-white/60 mb-8 font-inter bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-black/5 dark:border-white/5">
-                       <span className="uppercase tracking-widest font-bold opacity-50">Telefone ID</span>
-                       <strong className="text-black dark:text-white">{configObj.phoneNumberId || 'N/A'}</strong>
-                     </div>
-                   )}
+                     )}
+                   </div>
                  </>
               )}
 

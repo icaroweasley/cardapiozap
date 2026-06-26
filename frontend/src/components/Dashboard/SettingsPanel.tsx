@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Settings2, Save, CheckCircle2, AlertCircle, Smartphone } from 'lucide-react';
 
 export default function SettingsPanel() {
-  const [provider, setProvider] = useState<'EVOLUTION' | 'OFFICIAL'>('EVOLUTION');
   const [config, setConfig] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -18,7 +17,7 @@ export default function SettingsPanel() {
   }, []);
 
   const fetchInstanceStatus = async (currentConfig = config) => {
-    if (!currentConfig.instanceName || provider !== 'EVOLUTION') return;
+    if (!currentConfig.instanceName) return;
     try {
       const res = await fetch(`http://163.176.37.93:3001/api/auth/evolution/instance/${currentConfig.instanceName}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -45,12 +44,12 @@ export default function SettingsPanel() {
   };
 
   useEffect(() => {
-    if (provider === 'EVOLUTION' && config.instanceName) {
+    if (config.instanceName) {
       fetchInstanceStatus();
       const interval = setInterval(() => fetchInstanceStatus(), 5000);
       return () => clearInterval(interval);
     }
-  }, [provider, config.instanceName]);
+  }, [config.instanceName]);
 
   const handleConnectInstance = async () => {
     if (!config.instanceName) return alert('Digite um nome de instância e salve primeiro.');
@@ -111,7 +110,6 @@ export default function SettingsPanel() {
       });
       const data = await response.json();
       if (response.ok) {
-        setProvider(data.whatsappProvider || 'EVOLUTION');
         setConfig(data.whatsappConfig || {});
       }
     } catch (err) {
@@ -134,7 +132,7 @@ export default function SettingsPanel() {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({
-          whatsappProvider: provider,
+          whatsappProvider: 'EVOLUTION',
           whatsappConfig: config
         })
       });
@@ -197,48 +195,9 @@ export default function SettingsPanel() {
           </div>
         )}
 
-        {/* Provider Selection Tabs */}
-        <div className="flex gap-4 lg:gap-6 mb-8 lg:mb-10 w-full">
-          <button
-            onClick={() => setProvider('EVOLUTION')}
-            className={`flex-1 relative p-6 lg:p-8 transition-all flex flex-col items-center gap-4 rounded-[2rem] overflow-hidden group border ${
-              provider === 'EVOLUTION'
-                ? 'border-black/20 dark:border-white/20 bg-white/60 dark:bg-black/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.04)] scale-[1.02]'
-                : 'border-black/5 dark:border-white/5 bg-white/20 dark:bg-black/20 opacity-70 hover:opacity-100 hover:scale-[1.01]'
-            }`}
-          >
-            {provider === 'EVOLUTION' && <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent dark:from-white/5 pointer-events-none" />}
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center relative z-10 transition-colors ${provider === 'EVOLUTION' ? 'bg-black dark:bg-white text-white dark:text-black' : 'bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50 group-hover:bg-black/10 dark:group-hover:bg-white/10'}`}>
-               <Smartphone className="w-6 h-6" />
-            </div>
-            <div className="text-center relative z-10">
-              <h3 className="font-podium text-lg lg:text-xl tracking-widest uppercase text-black dark:text-white">Evolution API</h3>
-              <p className="font-inter text-[9px] lg:text-[10px] font-bold tracking-widest uppercase text-black/50 dark:text-white/50 mt-2">Instância Local / QR Code</p>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setProvider('OFFICIAL')}
-            className={`flex-1 relative p-6 lg:p-8 transition-all flex flex-col items-center gap-4 rounded-[2rem] overflow-hidden group border ${
-              provider === 'OFFICIAL'
-                ? 'border-emerald-500/30 dark:border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10 shadow-[0_8px_30px_rgba(16,185,129,0.1)] scale-[1.02]'
-                : 'border-black/5 dark:border-white/5 bg-white/20 dark:bg-black/20 opacity-70 hover:opacity-100 hover:scale-[1.01]'
-            }`}
-          >
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center relative z-10 transition-colors ${provider === 'OFFICIAL' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-black/5 dark:bg-white/5 text-black/50 dark:text-white/50 group-hover:bg-black/10 dark:group-hover:bg-white/10'}`}>
-              <Smartphone className="w-6 h-6" />
-            </div>
-            <div className="text-center relative z-10">
-              <h3 className="font-podium text-lg lg:text-xl tracking-widest uppercase text-black dark:text-white">API Oficial Meta</h3>
-              <p className="font-inter text-[9px] lg:text-[10px] font-bold tracking-widest uppercase text-black/50 dark:text-white/50 mt-2">WhatsApp Cloud API</p>
-            </div>
-          </button>
-        </div>
-
         {/* Tab Content */}
         <div className="w-full flex-1">
-          {provider === 'EVOLUTION' ? (
-            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 p-6 lg:p-8 border border-black/10 dark:border-white/10 bg-white/40 dark:bg-black/30 backdrop-blur-xl shadow-inner rounded-[2.5rem] relative overflow-hidden">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 p-6 lg:p-8 border border-black/10 dark:border-white/10 bg-white/40 dark:bg-black/30 backdrop-blur-xl shadow-inner rounded-[2.5rem] relative overflow-hidden">
                <div className="w-full lg:w-64 lg:h-64 shrink-0 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-[2rem] p-5 flex items-center justify-center relative shadow-lg group aspect-square lg:aspect-auto">
                    {qrCode ? (
                      <img src={qrCode} alt="QR Code" className="w-full h-full object-contain rounded-xl" />
@@ -309,54 +268,6 @@ export default function SettingsPanel() {
                  </div>
                </div>
             </div>
-          ) : (
-            <div className="space-y-6 p-8 border border-black/10 dark:border-white/10 bg-white/40 dark:bg-black/30 backdrop-blur-xl shadow-inner rounded-[2.5rem]">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className="block font-inter text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 ml-1">Phone Number ID</label>
-                  <input
-                    type="text"
-                    value={config.phoneNumberId || ''}
-                    onChange={(e) => setConfig({ ...config, phoneNumberId: e.target.value })}
-                    className="w-full bg-white/60 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-inner"
-                    placeholder="ID do número de telefone (ex: 104561234...)"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label className="block font-inter text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 ml-1">Business Account ID</label>
-                  <input
-                    type="text"
-                    value={config.businessAccountId || ''}
-                    onChange={(e) => setConfig({ ...config, businessAccountId: e.target.value })}
-                    className="w-full bg-white/60 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-inner"
-                    placeholder="ID da conta WhatsApp Business"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="block font-inter text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 ml-1">Access Token</label>
-                <textarea
-                  value={config.accessToken || ''}
-                  onChange={(e) => setConfig({ ...config, accessToken: e.target.value })}
-                  rows={3}
-                  className="w-full bg-white/60 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-inner resize-none"
-                  placeholder="Token de acesso temporário ou permanente"
-                />
-              </div>
-              
-              <div className="p-5 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-500 font-inter text-xs rounded-2xl flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-                  <AlertCircle size={16} />
-                </div>
-                <p>
-                  <strong className="uppercase tracking-widest block mb-1 text-[10px]">Aviso Importante</strong> 
-                  Certifique-se de usar um <strong className="text-amber-700 dark:text-amber-400">Token Permanente</strong> para uso em produção. Tokens temporários expiram em 24 horas e desativarão o serviço.
-                </p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
