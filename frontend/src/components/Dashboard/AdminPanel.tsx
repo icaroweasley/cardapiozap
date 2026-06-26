@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, Server, HardDrive, ShoppingCart, Key, Activity, ListOrdered } from 'lucide-react';
+import { Users, Server, ShoppingCart, Activity, ListOrdered } from 'lucide-react';
 
 export default function AdminPanel() {
   const [merchants, setMerchants] = useState<any[]>([]);
