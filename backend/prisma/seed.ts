@@ -45,6 +45,20 @@ async function main() {
   });
 
   console.log('Seed completed! Merchant: demo / Password: 123456');
+
+  await prisma.merchant.upsert({
+    where: { slug: 'admin' },
+    update: {},
+    create: {
+      name: 'Administrador',
+      slug: 'admin',
+      phone: '5511000000000',
+      password: hashedPassword,
+      isAdmin: true,
+      planStatus: 'active',
+    }
+  });
+  console.log('Admin seeded! Merchant: admin / Password: 123456');
 }
 
 main()
