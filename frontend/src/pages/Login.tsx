@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Crown, ArrowRight, Moon, Sun } from 'lucide-react';
+import { ArrowRight, Moon, Sun } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 
 export default function Login() {
