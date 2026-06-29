@@ -4,13 +4,15 @@ pm2 delete all || true
 pm2 save --force || true
 sudo docker rm -f $(sudo docker ps -aq) || true
 
-echo "=== Limpando VPS ==="
-rm -rf whatsapp-bulk whatsapp-bulk-backend docker-compose.yml deploy* delete_all.js cardapiozap
+echo "=== Atualizando ZapGarçom do GitHub ==="
+if [ ! -d "cardapiozap" ]; then
+  git clone https://github.com/icaroweasley/cardapiozap.git
+fi
 
-echo "=== Baixando ZapGarçom do GitHub ==="
-git clone https://github.com/icaroweasley/cardapiozap.git
+cd cardapiozap
+git pull origin main
 
-cd cardapiozap/backend
+cd backend
 echo "=== Configurando Backend ==="
 npm install
 npx prisma generate

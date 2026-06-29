@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { RefreshCw, MessageCircle } from 'lucide-react';
+import { RefreshCw, MessageCircle, DollarSign, ShoppingBag, TrendingUp, Clock } from 'lucide-react';
 
 interface OrderItem {
   id: string;
@@ -75,6 +75,11 @@ export default function KanbanBoard() {
   minDateObj.setFullYear(today.getFullYear() - 20);
   const minDate = minDateObj.toISOString().split('T')[0];
 
+  const totalRevenue = filteredOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+  const totalOrders = filteredOrders.length;
+  const avgTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+  const pendingOrders = filteredOrders.filter(o => o.status === 'PENDING').length;
+
   return (
     <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-3xl lg:m-2">
       <div className="p-6 border-b border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -99,6 +104,37 @@ export default function KanbanBoard() {
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
             <span className="hidden sm:inline">ATUALIZAR</span>
           </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 md:p-6 bg-white/30 dark:bg-black/30 border-b border-black/10 dark:border-white/10">
+        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 rounded-2xl flex items-center gap-4">
+          <div className="bg-green-500/20 text-green-600 dark:text-green-400 p-3 rounded-xl"><DollarSign size={24} /></div>
+          <div>
+            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase">Faturamento</p>
+            <p className="font-podium text-xl text-black dark:text-white">{(totalRevenue / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+          </div>
+        </div>
+        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 rounded-2xl flex items-center gap-4">
+          <div className="bg-blue-500/20 text-blue-600 dark:text-blue-400 p-3 rounded-xl"><ShoppingBag size={24} /></div>
+          <div>
+            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase">Pedidos</p>
+            <p className="font-podium text-xl text-black dark:text-white">{totalOrders}</p>
+          </div>
+        </div>
+        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 rounded-2xl flex items-center gap-4">
+          <div className="bg-purple-500/20 text-purple-600 dark:text-purple-400 p-3 rounded-xl"><TrendingUp size={24} /></div>
+          <div>
+            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase">Ticket Médio</p>
+            <p className="font-podium text-xl text-black dark:text-white">{(avgTicket / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+          </div>
+        </div>
+        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 rounded-2xl flex items-center gap-4">
+          <div className="bg-orange-500/20 text-orange-600 dark:text-orange-400 p-3 rounded-xl"><Clock size={24} /></div>
+          <div>
+            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase">Pendentes</p>
+            <p className="font-podium text-xl text-black dark:text-white">{pendingOrders}</p>
+          </div>
         </div>
       </div>
 
