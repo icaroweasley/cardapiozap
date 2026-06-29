@@ -39,6 +39,7 @@ export const getMenuBySlug = async (req: Request, res: Response): Promise<void> 
 
     res.json({ ...merchant, planStatus });
   } catch (error) {
+    console.error('Error fetching menu:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
