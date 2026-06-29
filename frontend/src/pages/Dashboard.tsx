@@ -84,7 +84,7 @@ export default function Dashboard() {
       <div className="h-screen flex items-center justify-center bg-neutral-100 dark:bg-black transition-colors duration-500 relative font-inter">
         <img src="/bg-burger.png" alt="Background" className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none" />
         <div className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 p-10 rounded-[2rem] shadow-2xl flex flex-col items-center text-center max-w-md z-10 animate-fade-up">
-          <Crown className="w-12 h-12 text-black/30 dark:text-white/30 mb-6" />
+          <img src="/logo-transparent.png" alt="ZapGarçom Logo" className="h-20 w-auto mb-6 drop-shadow-[0_0_15px_rgba(74,222,128,0.3)] animate-pulse-slow" />
           <h1 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white mb-4">Assinatura Inativa</h1>
           <p className="text-sm text-black/70 dark:text-white/70 leading-relaxed mb-8">
             O plano do seu estabelecimento expirou. Para voltar a receber pedidos e realizar disparos, por favor renove a sua assinatura.
@@ -162,8 +162,8 @@ export default function Dashboard() {
       {/* Sidebar */}
       <aside className="w-full md:w-[300px] shrink-0 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur-md relative z-20 flex flex-col md:h-screen transition-colors duration-500">
         <div className="p-8 border-b border-black/10 dark:border-white/10 flex flex-col items-start">
-          <Crown className="w-8 h-8 text-black/30 dark:text-white/30 mb-4" />
-          <h1 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white">{merchant.name || 'LOJA'}</h1>
+          <img src="/logo-transparent.png" alt="ZapGarçom Logo" className="h-12 w-auto mb-4 drop-shadow-[0_0_10px_rgba(74,222,128,0.3)] animate-pulse-slow" />
+          <h1 className="font-podium text-xl font-bold uppercase tracking-widest text-black dark:text-white">{merchant.name || 'LOJA'}</h1>
           <p className="font-inter text-black/60 dark:text-white/60 text-[10px] tracking-[0.2em] uppercase mt-2 flex items-center gap-2 font-bold">
             <Activity size={12} className="text-green-500" /> SISTEMA ONLINE
           </p>
