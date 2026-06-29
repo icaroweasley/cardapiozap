@@ -1,5 +1,5 @@
 import axios from 'axios';
-axios.defaults.baseURL = 'http://163.176.37.93:3001';
+axios.defaults.baseURL = 'https://api.zapgarcom.com.br';
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
