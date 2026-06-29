@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Crown, Settings2, Megaphone, Server, AlertTriangle, X } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 import KanbanBoard from '../components/Dashboard/KanbanBoard';
@@ -28,6 +29,25 @@ export default function Dashboard() {
 
   const [showGraceModal, setShowGraceModal] = useState(false);
   const [graceDaysLeft, setGraceDaysLeft] = useState(0);
+  const [isGeneratingPayment, setIsGeneratingPayment] = useState(false);
+
+  const handleRenewPlan = async () => {
+    try {
+      setIsGeneratingPayment(true);
+      const token = localStorage.getItem('token');
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      const res = await axios.post(`${apiUrl}/api/payment/checkout`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data?.init_point) {
+        window.location.href = res.data.init_point;
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao gerar link de pagamento. Tente novamente mais tarde.');
+      setIsGeneratingPayment(false);
+    }
+  };
 
   useEffect(() => {
     if (merchant.planExpiresAt && merchant.planStatus === 'active' && !merchant.isAdmin) {
@@ -53,8 +73,12 @@ export default function Dashboard() {
           <p className="text-sm text-black/70 dark:text-white/70 leading-relaxed mb-8">
             O plano do seu estabelecimento expirou. Para voltar a receber pedidos e realizar disparos, por favor renove a sua assinatura.
           </p>
-          <button className="w-full bg-black dark:bg-white text-white dark:text-black font-bold text-sm py-4 rounded-xl flex items-center justify-center hover:scale-105 transition-transform shadow-xl uppercase tracking-widest">
-            Renovar Plano
+          <button 
+            onClick={handleRenewPlan}
+            disabled={isGeneratingPayment}
+            className="w-full bg-black dark:bg-white text-white dark:text-black font-bold text-sm py-4 rounded-xl flex items-center justify-center hover:scale-105 transition-transform shadow-xl uppercase tracking-widest disabled:opacity-50 disabled:hover:scale-100"
+          >
+            {isGeneratingPayment ? 'Gerando Link...' : 'Renovar Plano'}
           </button>
           <button onClick={handleLogout} className="mt-6 text-[10px] text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white uppercase tracking-widest font-bold flex items-center gap-2">
             <LogOut size={12} /> Sair da conta
@@ -108,13 +132,11 @@ export default function Dashboard() {
                 para renová-la ou seu acesso será bloqueado.
               </p>
               <button 
-                onClick={() => {
-                  setShowGraceModal(false);
-                  setActiveTab('SETTINGS');
-                }} 
-                className="w-full bg-red-500 hover:bg-red-600 text-white font-bold text-xs py-4 rounded-xl uppercase tracking-widest transition-colors shadow-lg shadow-red-500/20"
+                onClick={handleRenewPlan}
+                disabled={isGeneratingPayment}
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-bold text-xs py-4 rounded-xl uppercase tracking-widest transition-colors shadow-lg shadow-red-500/20 disabled:opacity-50"
               >
-                Renovar Agora
+                {isGeneratingPayment ? 'Gerando Link...' : 'Renovar Agora'}
               </button>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Minus, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
 import { useDraggableScroll } from '../../hooks/useDraggableScroll';
@@ -34,13 +34,13 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
     }, 1000);
   };
 
-  const updateScrollButtons = () => {
+  const updateScrollButtons = useCallback(() => {
     if (ref.current) {
       const { scrollLeft, scrollWidth, clientWidth } = ref.current;
       setCanScrollLeft(scrollLeft > 30); // Use 30px to ignore the px-6 padding when snapping to the first card
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
     }
-  };
+  }, [ref]);
 
   useEffect(() => {
     const el = ref.current;
@@ -63,7 +63,7 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
       observer.disconnect();
       window.removeEventListener('resize', updateScrollButtons);
     };
-  }, [products]);
+  }, [products, updateScrollButtons, ref]);
 
   const scrollLeft = () => {
     if (ref.current) ref.current.scrollBy({ left: -300, behavior: 'smooth' });

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, useDeferredValue } from 'react';
+import { useState, useRef, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import axios from 'axios';
 import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, FolderOpen } from 'lucide-react';
 
@@ -152,7 +152,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   }, [configObj, apiUrl]);
 
   // Load Saved Lists
-  const fetchLists = async () => {
+  const fetchLists = useCallback(async () => {
     try {
       const res = await axios.get(`${apiUrl}/api/broadcast/lists`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -165,11 +165,11 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
     } catch (e) {
       console.error(e);
     }
-  };
+  }, [apiUrl]);
 
   useEffect(() => {
     fetchLists();
-  }, []);
+  }, [fetchLists]);
 
   const saveCurrentList = async () => {
     if (!saveListName.trim()) return alert('Digite um nome para salvar a lista.');

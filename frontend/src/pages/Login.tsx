@@ -46,9 +46,10 @@ export default function Login() {
       </button>
 
       <div className="relative z-10 bg-white/40 dark:bg-black/40 backdrop-blur-3xl p-10 max-w-md w-full border border-black/10 dark:border-white/10 shadow-2xl animate-fade-up rounded-3xl">
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-4">
           <Crown size={48} className="text-black dark:text-white" />
         </div>
+        <h1 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white text-center mb-2">ZapGarçom</h1>
         <p className="font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 text-center uppercase mb-8">
           Acesso Restrito
         </p>

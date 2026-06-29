@@ -7,7 +7,7 @@ sudo docker rm -f $(sudo docker ps -aq) || true
 echo "=== Limpando VPS ==="
 rm -rf whatsapp-bulk whatsapp-bulk-backend docker-compose.yml deploy* delete_all.js cardapiozap
 
-echo "=== Baixando Cardápio Digital do GitHub ==="
+echo "=== Baixando ZapGarçom do GitHub ==="
 git clone https://github.com/icaroweasley/cardapiozap.git
 
 cd cardapiozap/backend
