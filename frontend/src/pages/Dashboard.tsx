@@ -49,11 +49,27 @@ export default function Dashboard() {
     }
   };
 
-  useEffect(() => {
-    if (merchant.planExpiresAt && merchant.planStatus === 'active' && !merchant.isAdmin) {
+  let isTotalBlock = false;
+  if (!merchant.isAdmin) {
+    if (merchant.planStatus === 'inactive') {
+      isTotalBlock = true;
+    } else if (merchant.planExpiresAt) {
       const expiresAt = new Date(merchant.planExpiresAt).getTime();
       const now = new Date().getTime();
-      if (now >= expiresAt) {
+      const gracePeriodEnd = expiresAt + (3 * 24 * 60 * 60 * 1000);
+      if (now > gracePeriodEnd) {
+        isTotalBlock = true;
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (merchant.planExpiresAt && merchant.planStatus === 'active' && !merchant.isAdmin && !isTotalBlock) {
+      const expiresAt = new Date(merchant.planExpiresAt).getTime();
+      const now = new Date().getTime();
+      const gracePeriodEnd = expiresAt + (3 * 24 * 60 * 60 * 1000);
+      
+      if (now >= expiresAt && now <= gracePeriodEnd) {
         const msPassed = now - expiresAt;
         const daysPassed = Math.floor(msPassed / (1000 * 60 * 60 * 24));
         const daysLeft = Math.max(0, 3 - daysPassed);
@@ -61,9 +77,9 @@ export default function Dashboard() {
         setShowGraceModal(true);
       }
     }
-  }, [merchant.planExpiresAt, merchant.planStatus, merchant.isAdmin]);
+  }, [merchant.planExpiresAt, merchant.planStatus, merchant.isAdmin, isTotalBlock]);
 
-  if (merchant.planStatus === 'inactive' && !merchant.isAdmin) {
+  if (isTotalBlock) {
     return (
       <div className="h-screen flex items-center justify-center bg-neutral-100 dark:bg-black transition-colors duration-500 relative font-inter">
         <img src="/bg-burger.png" alt="Background" className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none" />
