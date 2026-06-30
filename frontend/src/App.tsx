@@ -8,6 +8,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/:slug" element={<ClientMenu />} />
         <Route path="/menu/:slug" element={<ClientMenu />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />

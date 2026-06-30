@@ -115,62 +115,69 @@ export default function ProductManager() {
             <p className="font-inter font-bold tracking-widest text-xs uppercase animate-pulse text-black/50 dark:text-white/50">Carregando Produtos...</p>
           </div>
         ) : (
-          <div className="space-y-12">
-            {Object.entries(
-              products.reduce((acc, product) => {
-                if (!acc[product.category]) acc[product.category] = [];
-                acc[product.category].push(product);
-                return acc;
-              }, {} as Record<string, Product[]>)
-            ).map(([category, categoryProducts]) => (
-              <div key={category}>
-                <h3 className="font-podium text-xl uppercase tracking-widest text-black dark:text-white mb-6 border-b border-black/10 dark:border-white/10 pb-3">
-                  {category}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {categoryProducts.map(product => (
-                    <div key={product.id} className={`flex flex-col bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-xl transition-all ${!product.available ? 'opacity-50 grayscale' : ''} rounded-2xl overflow-hidden`}>
-                      {product.imageUrl ? (
-                        <img src={product.imageUrl} alt={product.name} className="w-full h-40 object-cover border-b border-black/10 dark:border-white/10" />
-                      ) : (
-                        <div className="w-full h-40 bg-black/5 dark:bg-white/5 flex items-center justify-center border-b border-black/10 dark:border-white/10">
-                          <span className="font-podium text-xs tracking-widest uppercase text-black/30 dark:text-white/30">NO IMAGE</span>
-                        </div>
-                      )}
-                      
-                      <div className="p-5 flex-1 flex flex-col">
-                        <div className="flex justify-between items-start mb-3">
-                          <h3 className="font-podium uppercase text-lg text-black dark:text-white tracking-wider truncate mr-2">{product.name}</h3>
-                          <span className="bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/10 text-black dark:text-white px-2 py-1 text-[9px] font-inter font-bold tracking-widest uppercase shrink-0 rounded-lg">
-                            {product.category}
-                          </span>
-                        </div>
+          products.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full opacity-50 space-y-4 pt-10">
+              <p className="font-podium text-xl uppercase tracking-widest text-black dark:text-white text-center">Nenhum produto cadastrado</p>
+              <p className="font-inter text-xs tracking-widest uppercase text-black/50 dark:text-white/50 text-center max-w-md">Adicione produtos ao seu cardápio clicando no botão "Novo Produto" acima.</p>
+            </div>
+          ) : (
+            <div className="space-y-12">
+              {Object.entries(
+                products.reduce((acc, product) => {
+                  if (!acc[product.category]) acc[product.category] = [];
+                  acc[product.category].push(product);
+                  return acc;
+                }, {} as Record<string, Product[]>)
+              ).map(([category, categoryProducts]) => (
+                <div key={category}>
+                  <h3 className="font-podium text-xl uppercase tracking-widest text-black dark:text-white mb-6 border-b border-black/10 dark:border-white/10 pb-3">
+                    {category}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {categoryProducts.map(product => (
+                      <div key={product.id} className={`flex flex-col bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-xl transition-all ${!product.available ? 'opacity-50 grayscale' : ''} rounded-2xl overflow-hidden`}>
+                        {product.imageUrl ? (
+                          <img src={product.imageUrl} alt={product.name} className="w-full h-40 object-cover border-b border-black/10 dark:border-white/10" />
+                        ) : (
+                          <div className="w-full h-40 bg-black/5 dark:bg-white/5 flex items-center justify-center border-b border-black/10 dark:border-white/10">
+                            <span className="font-podium text-xs tracking-widest uppercase text-black/30 dark:text-white/30">NO IMAGE</span>
+                          </div>
+                        )}
                         
-                        <p className="font-inter font-bold text-base text-black dark:text-white tracking-widest mb-6">
-                          {(product.price / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                        </p>
-                        
-                        <div className="flex gap-2 mt-auto">
-                          <button 
-                            onClick={() => handleEdit(product)} 
-                            className="flex-1 border border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5 py-3 text-[10px] font-inter font-bold tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black dark:text-white rounded-xl"
-                          >
-                            <Edit size={14}/> EDITAR
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(product.id)} 
-                            className="flex-1 border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 py-3 text-[10px] font-inter font-bold tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-red-500/20 transition-colors rounded-xl"
-                          >
-                            <Trash2 size={14}/> EXCLUIR
-                          </button>
+                        <div className="p-5 flex-1 flex flex-col">
+                          <div className="flex justify-between items-start mb-3">
+                            <h3 className="font-podium uppercase text-lg text-black dark:text-white tracking-wider truncate mr-2">{product.name}</h3>
+                            <span className="bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/10 text-black dark:text-white px-2 py-1 text-[9px] font-inter font-bold tracking-widest uppercase shrink-0 rounded-lg">
+                              {product.category}
+                            </span>
+                          </div>
+                          
+                          <p className="font-inter font-bold text-base text-black dark:text-white tracking-widest mb-6">
+                            {(product.price / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                          </p>
+                          
+                          <div className="flex gap-2 mt-auto">
+                            <button 
+                              onClick={() => handleEdit(product)} 
+                              className="flex-1 border border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5 py-3 text-[10px] font-inter font-bold tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black dark:text-white rounded-xl"
+                            >
+                              <Edit size={14}/> EDITAR
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(product.id)} 
+                              className="flex-1 border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 py-3 text-[10px] font-inter font-bold tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-red-500/20 transition-colors rounded-xl"
+                            >
+                              <Trash2 size={14}/> EXCLUIR
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )
         )}
       </div>
 
