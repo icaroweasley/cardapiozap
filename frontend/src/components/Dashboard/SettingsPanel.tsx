@@ -9,6 +9,8 @@ export default function SettingsPanel() {
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
 
+  const apiUrl = import.meta.env.VITE_API_URL || '';
+
   useEffect(() => {
     fetchSettings();
   }, []);
@@ -16,7 +18,7 @@ export default function SettingsPanel() {
   const fetchInstanceStatus = async (currentConfig = config) => {
     if (!currentConfig.instanceName) return;
     try {
-      const res = await fetch(`http://163.176.37.93:3001/api/auth/evolution/instance/${currentConfig.instanceName}`, {
+      const res = await fetch(`${apiUrl}/api/auth/evolution/instance/${currentConfig.instanceName}`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) {
@@ -55,7 +57,7 @@ export default function SettingsPanel() {
     setQrCode(null);
     try {
       // Salva as configurações automaticamente antes de gerar
-      await fetch('http://163.176.37.93:3001/api/auth/settings', {
+      await fetch(`${apiUrl}/api/auth/settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +69,7 @@ export default function SettingsPanel() {
         })
       });
 
-      const res = await fetch('http://163.176.37.93:3001/api/auth/evolution/instance', {
+      const res = await fetch(`${apiUrl}/api/auth/evolution/instance`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +100,7 @@ export default function SettingsPanel() {
   const handleDisconnectInstance = async () => {
     if (!confirm('Deseja realmente desconectar e apagar esta instância?')) return;
     try {
-      await fetch(`http://163.176.37.93:3001/api/auth/evolution/instance/${config.instanceName}`, {
+      await fetch(`${apiUrl}/api/auth/evolution/instance/${config.instanceName}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -113,7 +115,7 @@ export default function SettingsPanel() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('http://163.176.37.93:3001/api/auth/settings', {
+      const response = await fetch(`${apiUrl}/api/auth/settings`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
