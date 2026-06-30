@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { Users, Server, ShoppingCart, Activity, ListOrdered, Edit3, X, Save } from 'lucide-react';
+import { useToastStore } from '../../store/useToastStore';
 
 export default function AdminPanel() {
   const [merchants, setMerchants] = useState<any[]>([]);
@@ -46,7 +47,7 @@ export default function AdminPanel() {
       setEditingMerchant(null);
     } catch (error) {
       console.error('Failed to update plan', error);
-      alert('Erro ao atualizar plano');
+      useToastStore.getState().addToast('Erro ao atualizar plano', 'error');
     } finally {
       setSavingPlan(false);
     }

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Minus, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
+import { useToastStore } from '../../store/useToastStore';
 
 interface ProductDetailsModalProps {
   product: any;
@@ -54,7 +55,7 @@ export function ProductDetailsModal({ product, onClose, onAdded }: ProductDetail
             [group.id]: [option]
           }));
         } else {
-          alert(`Você pode escolher no máximo ${group.maxChoices} opções.`);
+          useToastStore.getState().addToast(`Você pode escolher no máximo ${group.maxChoices} opções.`, 'error');
         }
       } else {
         setSelectedOptions(prev => ({
@@ -70,7 +71,7 @@ export function ProductDetailsModal({ product, onClose, onAdded }: ProductDetail
       for (const group of product.optionGroups) {
         const selected = selectedOptions[group.id] || [];
         if (group.required && selected.length < group.minChoices) {
-          alert(`Por favor, selecione pelo menos ${group.minChoices} opção em: ${group.name}`);
+          useToastStore.getState().addToast(`Por favor, selecione pelo menos ${group.minChoices} opção em: ${group.name}`, 'error');
           return;
         }
       }

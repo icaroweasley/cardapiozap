@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { RefreshCw, MessageCircle, DollarSign, ShoppingBag, TrendingUp, Clock, Printer } from 'lucide-react';
 import { io } from 'socket.io-client';
+import { useToastStore } from '../../store/useToastStore';
 
 interface OrderItem {
   id: string;
@@ -81,7 +82,7 @@ export default function KanbanBoard() {
   const printReceipt = (order: Order) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
-      alert("Por favor, permita pop-ups para imprimir.");
+      useToastStore.getState().addToast("Por favor, permita pop-ups para imprimir.", 'error');
       return;
     }
 
@@ -146,7 +147,7 @@ export default function KanbanBoard() {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
     } catch (error) {
-      alert('Erro ao atualizar status');
+      useToastStore.getState().addToast('Erro ao atualizar status', 'error');
       fetchOrders(); // Revert on failure
     }
   };

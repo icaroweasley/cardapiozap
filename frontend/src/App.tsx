@@ -2,10 +2,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import ClientMenu from './pages/ClientMenu';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import ToastContainer from './components/ToastContainer';
 
 function App() {
   return (
     <Router>
+      <ToastContainer />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/:slug" element={<ClientMenu />} />

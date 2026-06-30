@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Settings2, Smartphone } from 'lucide-react';
+import { useToastStore } from '../../store/useToastStore';
 
 export default function SettingsPanel() {
   const [config, setConfig] = useState<any>({});
@@ -51,7 +52,10 @@ export default function SettingsPanel() {
   }, [config.instanceName]);
 
   const handleConnectInstance = async () => {
-    if (!config.instanceName) return alert('Digite um nome de instância primeiro.');
+    if (!config.instanceName) {
+      useToastStore.getState().addToast('Digite um nome de instância primeiro.', 'error');
+      return;
+    }
     setIsChecking(true);
     setInstanceStatus('Gerando QR Code...');
     setQrCode(null);
@@ -91,7 +95,7 @@ export default function SettingsPanel() {
       }
     } catch (e: any) {
       console.error(e);
-      alert(e.message || 'Erro ao criar/conectar instância.');
+      useToastStore.getState().addToast(e.message || 'Erro ao criar/conectar instância.', 'error');
     } finally {
       setIsChecking(false);
     }
@@ -106,10 +110,10 @@ export default function SettingsPanel() {
       });
       setInstanceStatus('Desconectado');
       setQrCode(null);
-      alert('Instância desconectada e removida com sucesso.');
+      useToastStore.getState().addToast('Instância desconectada e removida com sucesso.', 'success');
     } catch (e) {
       console.error(e);
-      alert('Erro ao desconectar instância.');
+      useToastStore.getState().addToast('Erro ao desconectar instância.', 'error');
     }
   };
 

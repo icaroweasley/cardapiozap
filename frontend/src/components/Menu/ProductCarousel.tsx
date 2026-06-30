@@ -3,6 +3,7 @@ import { Minus, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
 import { useDraggableScroll } from '../../hooks/useDraggableScroll';
 import { ProductDetailsModal } from './ProductDetailsModal';
+import { useToastStore } from '../../store/useToastStore';
 
 interface Product {
   id: string;
@@ -32,7 +33,7 @@ export function ProductCarousel({ products, isOpen = true }: ProductCarouselProp
   const handleAdd = (product: any, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!isOpen) {
-      alert("A loja está fechada no momento.");
+      useToastStore.getState().addToast("A loja está fechada no momento.", 'error');
       return;
     }
     
@@ -117,7 +118,7 @@ export function ProductCarousel({ products, isOpen = true }: ProductCarouselProp
             onDragStart={(e) => e.preventDefault()}
             onClick={() => {
               if (!isOpen) {
-                alert("A loja está fechada no momento.");
+                useToastStore.getState().addToast("A loja está fechada no momento.", 'error');
                 return;
               }
               setSelectedProduct(product);

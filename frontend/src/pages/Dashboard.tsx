@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Settings2, Megaphone, Server, AlertTriangle, X } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
+import { useToastStore } from '../store/useToastStore';
 import KanbanBoard from '../components/Dashboard/KanbanBoard';
 import ProductManager from '../components/Dashboard/ProductManager';
 import SettingsPanel from '../components/Dashboard/SettingsPanel';
@@ -45,7 +46,7 @@ export default function Dashboard() {
       }
     } catch (error) {
       console.error(error);
-      alert('Erro ao gerar link de pagamento. Tente novamente mais tarde.');
+      useToastStore.getState().addToast('Erro ao gerar link de pagamento. Tente novamente mais tarde.', 'error');
       setIsGeneratingPayment(false);
     }
   };

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
+import { useToastStore } from '../../store/useToastStore';
 
 interface ProductOption {
   id?: string;
@@ -135,8 +136,9 @@ export default function ProductManager() {
       }
       setIsModalOpen(false);
       fetchProducts();
+      useToastStore.getState().addToast('Produto salvo com sucesso!', 'success');
     } catch (error) {
-      alert('Erro ao salvar produto');
+      useToastStore.getState().addToast('Erro ao salvar produto', 'error');
     }
   };
 
@@ -172,8 +174,9 @@ export default function ProductManager() {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       fetchProducts();
+      useToastStore.getState().addToast('Produto excluído com sucesso.', 'success');
     } catch (error) {
-      alert('Erro ao excluir');
+      useToastStore.getState().addToast('Erro ao excluir', 'error');
     }
   };
 
@@ -189,13 +192,13 @@ export default function ProductManager() {
     if (!files.length) return;
     
     if (productImages.length + files.length > 3) {
-      alert('Máximo de 3 fotos por produto.');
+      useToastStore.getState().addToast('Máximo de 3 fotos por produto.', 'error');
       return;
     }
 
     files.forEach(file => {
       if (file.size > 5 * 1024 * 1024) {
-        alert(`O arquivo ${file.name} excede o limite de 5MB.`);
+        useToastStore.getState().addToast(`O arquivo ${file.name} excede o limite de 5MB.`, 'error');
         return;
       }
       

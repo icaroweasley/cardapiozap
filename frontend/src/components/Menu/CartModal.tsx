@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useCartStore } from '../../store/useCartStore';
+import { useToastStore } from '../../store/useToastStore';
 import { X, Minus, Plus, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface CartModalProps {
@@ -57,7 +58,7 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
       clearCart();
       setStep(3);
     } catch (error) {
-      alert('Erro ao realizar pedido. Tente novamente.');
+      useToastStore.getState().addToast('Erro ao realizar pedido. Tente novamente.', 'error');
     } finally {
       setLoading(false);
     }
