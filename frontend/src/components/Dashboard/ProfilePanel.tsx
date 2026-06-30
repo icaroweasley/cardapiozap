@@ -212,7 +212,7 @@ export default function ProfilePanel() {
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Taxa de Entrega Fixa (R$)</label>
                 <input 
                   type="number" step="0.01" min="0"
-                  className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
+                  className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                   placeholder="0.00"
                   value={deliveryFee} onChange={e => setDeliveryFee(e.target.value)} 
                 />
@@ -221,7 +221,7 @@ export default function ProfilePanel() {
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Valor Mínimo do Pedido (R$)</label>
                 <input 
                   type="number" step="0.01" min="0"
-                  className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
+                  className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
                   placeholder="0.00"
                   value={minOrderValue} onChange={e => setMinOrderValue(e.target.value)} 
                 />
