@@ -16,8 +16,14 @@ export default function ProfilePanel() {
   const [openTime, setOpenTime] = useState('');
   const [closeTime, setCloseTime] = useState('');
 
-  const PAYMENT_OPTIONS = ['Pix', 'Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'PicPay', 'VR', 'Ticket Restaurante', 'Sodexo'];
+  const PAYMENT_OPTIONS = ['Pix', 'Dinheiro', 'Cartão de Crédito', 'Cartão de Débito'];
   const DAYS_OF_WEEK = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+  
+  const TIME_OPTIONS = Array.from({ length: 48 }).map((_, i) => {
+    const h = Math.floor(i / 2).toString().padStart(2, '0');
+    const m = i % 2 === 0 ? '00' : '30';
+    return `${h}:${m}`;
+  });
   
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -236,19 +242,33 @@ export default function ProfilePanel() {
               <div className="flex flex-col md:flex-row gap-4 mt-2">
                 <div className="flex-1">
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Abertura</label>
-                  <input 
-                    type="time"
-                    className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
-                    value={openTime} onChange={e => setOpenTime(e.target.value)} 
-                  />
+                  <div className="relative">
+                    <select 
+                      className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter appearance-none cursor-pointer" 
+                      value={openTime} onChange={e => setOpenTime(e.target.value)}
+                    >
+                      <option value="">Selecione...</option>
+                      {TIME_OPTIONS.map(time => <option key={time} value={time}>{time}</option>)}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-black/50 dark:text-white/50">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex-1">
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Fechamento</label>
-                  <input 
-                    type="time"
-                    className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
-                    value={closeTime} onChange={e => setCloseTime(e.target.value)} 
-                  />
+                  <div className="relative">
+                    <select 
+                      className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter appearance-none cursor-pointer" 
+                      value={closeTime} onChange={e => setCloseTime(e.target.value)}
+                    >
+                      <option value="">Selecione...</option>
+                      {TIME_OPTIONS.map(time => <option key={time} value={time}>{time}</option>)}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-black/50 dark:text-white/50">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
