@@ -207,11 +207,13 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
     const list = savedLists.find(l => l.id === id);
     if (list) {
-      const existingIds = new Set(targetContacts.map(c => c.id));
-      const toAdd = list.contacts.filter(c => !existingIds.has(c.id));
-      if (toAdd.length > 0) {
-        setTargetContacts(prev => [...prev, ...toAdd]);
+      if (targetContacts.length > 0 && !confirm(`Deseja substituir a Lista Alvo atual pela lista "${list.name}"? (Os contatos atuais serão removidos do alvo)`)) {
+          setTimeout(() => setSelectedListId(''), 100);
+          return;
       }
+      setTargetContacts(list.contacts);
+      setSelectedTargetContacts(new Set());
+      setSaveListName(list.name);
     }
     // reset select
     setTimeout(() => setSelectedListId(''), 100);
