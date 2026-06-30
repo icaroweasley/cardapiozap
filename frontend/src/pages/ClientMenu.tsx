@@ -100,7 +100,17 @@ export default function ClientMenu() {
             {merchant.businessHours && (
               <div className="flex items-start gap-2 text-black/80 dark:text-white/80 font-inter text-[10px] sm:text-xs tracking-[0.2em] uppercase">
                 <Clock size={14} className="text-black/50 dark:text-white/50 shrink-0 mt-0.5" /> 
-                <span className="leading-relaxed">{merchant.businessHours}</span>
+                <span className="leading-relaxed">
+                  {merchant.businessHours.includes(' das ') ? (
+                    <>
+                      {merchant.businessHours.split(' das ')[0]}
+                      <br />
+                      <span className="text-black/50 dark:text-white/50">das {merchant.businessHours.split(' das ')[1]}</span>
+                    </>
+                  ) : (
+                    merchant.businessHours
+                  )}
+                </span>
               </div>
             )}
             <p className="font-inter text-black dark:text-white text-xs sm:text-sm tracking-widest uppercase font-semibold">
