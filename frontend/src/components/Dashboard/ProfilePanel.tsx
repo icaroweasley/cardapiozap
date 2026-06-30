@@ -55,7 +55,29 @@ export default function ProfilePanel() {
           if (res.data.businessHours) {
             const match = res.data.businessHours.match(/(.*)\s+das\s+(.*)\s+às\s+(.*)/i);
             if (match) {
-              setSelectedDays(match[1].split(',').map((d: string) => d.trim().replace(' e ', '')));
+              const rawDays = match[1];
+              
+              // Smart parse days
+              const selected = new Set<string>();
+              const parts = rawDays.replace(/ e /g, ',').split(',').map((s: string) => s.trim());
+              parts.forEach((part: string) => {
+                const rangeMatch = part.match(/(.*)\s+a\s+(.*)/i);
+                if (rangeMatch) {
+                  const start = DAYS_OF_WEEK.findIndex(d => d.toLowerCase() === rangeMatch[1].toLowerCase());
+                  const end = DAYS_OF_WEEK.findIndex(d => d.toLowerCase() === rangeMatch[2].toLowerCase());
+                  if (start !== -1 && end !== -1 && start <= end) {
+                    for (let i = start; i <= end; i++) selected.add(DAYS_OF_WEEK[i]);
+                  }
+                } else {
+                  const found = DAYS_OF_WEEK.find(d => d.toLowerCase() === part.toLowerCase());
+                  if (found) selected.add(found);
+                }
+              });
+              if (rawDays.toLowerCase() === 'todos os dias') {
+                DAYS_OF_WEEK.forEach(d => selected.add(d));
+              }
+
+              setSelectedDays(Array.from(selected));
               setOpenTime(match[2]);
               setCloseTime(match[3]);
             }
@@ -94,6 +116,38 @@ export default function ProfilePanel() {
     reader.readAsDataURL(file);
   };
 
+  const formatDays = (days: string[]) => {
+    if (days.length === 7) return 'Todos os dias';
+    if (days.length === 0) return '';
+    
+    const sortedIndexes = days.map(d => DAYS_OF_WEEK.indexOf(d)).sort((a, b) => a - b);
+    const result: string[] = [];
+    let start = sortedIndexes[0];
+    let end = sortedIndexes[0];
+
+    const pushRange = () => {
+      if (start === end) result.push(DAYS_OF_WEEK[start]);
+      else if (end === start + 1) result.push(`${DAYS_OF_WEEK[start]} e ${DAYS_OF_WEEK[end]}`);
+      else result.push(`${DAYS_OF_WEEK[start]} a ${DAYS_OF_WEEK[end]}`);
+    };
+
+    for (let i = 1; i < sortedIndexes.length; i++) {
+      if (sortedIndexes[i] === end + 1) {
+        end = sortedIndexes[i];
+      } else {
+        pushRange();
+        start = sortedIndexes[i];
+        end = sortedIndexes[i];
+      }
+    }
+    pushRange();
+
+    if (result.length > 1) {
+      return result.slice(0, -1).join(', ') + ' e ' + result[result.length - 1];
+    }
+    return result[0];
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -102,13 +156,7 @@ export default function ProfilePanel() {
     try {
       let formattedHours = '';
       if (selectedDays.length > 0 && openTime && closeTime) {
-        const sortedDays = selectedDays.sort((a, b) => DAYS_OF_WEEK.indexOf(a) - DAYS_OF_WEEK.indexOf(b));
-        // Replace last comma with ' e ' for natural reading
-        let daysStr = sortedDays.join(', ');
-        if (sortedDays.length > 1) {
-          daysStr = daysStr.replace(/,([^,]*)$/, ' e$1');
-        }
-        formattedHours = `${daysStr} das ${openTime} às ${closeTime}`;
+        formattedHours = `${formatDays(selectedDays)} das ${openTime} às ${closeTime}`;
       }
 
       const updateData: any = {
