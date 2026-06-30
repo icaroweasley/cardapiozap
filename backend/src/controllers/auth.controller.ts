@@ -105,6 +105,11 @@ export const getSettings = async (req: AuthRequest, res: Response): Promise<void
       slug: merchant.slug,
       phone: merchant.phone,
       logoUrl: merchant.logoUrl,
+      deliveryFee: merchant.deliveryFee,
+      minOrderValue: merchant.minOrderValue,
+      businessHours: merchant.businessHours,
+      address: merchant.address,
+      paymentMethods: merchant.paymentMethods,
       whatsappProvider: merchant.whatsappProvider,
       whatsappConfig: merchant.whatsappConfig ? JSON.parse(merchant.whatsappConfig) : null,
       isAdmin: merchant.isAdmin,
@@ -141,7 +146,7 @@ export const updateSettings = async (req: AuthRequest, res: Response): Promise<v
 
 export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { name, slug, phone, password, logoUrl } = req.body;
+    const { name, slug, phone, password, logoUrl, deliveryFee, minOrderValue, businessHours, address, paymentMethods } = req.body;
     
     if (slug) {
       const existing = await prisma.merchant.findUnique({ where: { slug } });
@@ -156,6 +161,11 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
     if (slug) updateData.slug = slug;
     if (phone) updateData.phone = phone;
     if (logoUrl !== undefined) updateData.logoUrl = logoUrl;
+    if (deliveryFee !== undefined) updateData.deliveryFee = deliveryFee;
+    if (minOrderValue !== undefined) updateData.minOrderValue = minOrderValue;
+    if (businessHours !== undefined) updateData.businessHours = businessHours;
+    if (address !== undefined) updateData.address = address;
+    if (paymentMethods !== undefined) updateData.paymentMethods = paymentMethods;
     
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
@@ -172,6 +182,11 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
       slug: merchant.slug,
       phone: merchant.phone,
       logoUrl: merchant.logoUrl,
+      deliveryFee: merchant.deliveryFee,
+      minOrderValue: merchant.minOrderValue,
+      businessHours: merchant.businessHours,
+      address: merchant.address,
+      paymentMethods: merchant.paymentMethods,
       isAdmin: merchant.isAdmin
     });
   } catch (error) {

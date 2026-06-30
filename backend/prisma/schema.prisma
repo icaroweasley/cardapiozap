@@ -16,6 +16,11 @@ model Merchant {
   whatsappProvider String    @default("EVOLUTION") // "EVOLUTION" or "OFFICIAL"
   whatsappConfig   String?   // JSON string for credentials
   logoUrl          String?
+  deliveryFee      Int       @default(0) // cents
+  minOrderValue    Int       @default(0) // cents
+  businessHours    String?   // JSON
+  address          String?
+  paymentMethods   String?   // JSON
   active           Boolean   @default(true)
   isAdmin          Boolean   @default(false)
   planStatus       String    @default("active") // "active", "inactive"

@@ -22,6 +22,11 @@ interface Merchant {
   slug: string;
   planStatus?: string;
   logoUrl?: string;
+  businessHours?: string;
+  deliveryFee?: number;
+  minOrderValue?: number;
+  address?: string;
+  paymentMethods?: string;
   products: Product[];
 }
 
@@ -92,16 +97,37 @@ export default function ClientMenu() {
           </div>
 
           <div className="space-y-4 mb-10 pb-10 border-b border-black/10 dark:border-white/10">
-            <div className="flex items-center gap-2 text-black/80 dark:text-white/80 font-inter text-[10px] sm:text-xs tracking-[0.2em] uppercase">
-              <Clock size={14} className="text-black/50 dark:text-white/50" /> ABERTO ATÉ 23:40
-            </div>
-            <p className="font-inter text-black dark:text-white text-xs sm:text-sm tracking-widest uppercase font-semibold">PEDIDO MÍN R$ 10,00 • 80 MIN</p>
-            <div className="border-l border-black/30 dark:border-white/30 pl-4 py-1">
-              <p className="font-inter text-black/60 dark:text-white/60 text-[10px] leading-relaxed uppercase tracking-wider">
-                10,00 / 16,00 / 23,00 PARA PIX E DINHEIRO <br/>
-                +1,00 DE ACRÉSCIMO PARA CARTÕES
-              </p>
-            </div>
+            {merchant.businessHours && (
+              <div className="flex items-start gap-2 text-black/80 dark:text-white/80 font-inter text-[10px] sm:text-xs tracking-[0.2em] uppercase">
+                <Clock size={14} className="text-black/50 dark:text-white/50 shrink-0 mt-0.5" /> 
+                <span className="leading-relaxed">{merchant.businessHours}</span>
+              </div>
+            )}
+            <p className="font-inter text-black dark:text-white text-xs sm:text-sm tracking-widest uppercase font-semibold">
+              {(merchant.minOrderValue || 0) > 0 ? `PEDIDO MÍN ${(merchant.minOrderValue! / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} • ` : ''}
+              {(merchant.deliveryFee || 0) > 0 ? `ENTREGA ${(merchant.deliveryFee! / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}` : 'ENTREGA GRÁTIS'}
+            </p>
+            {(merchant.paymentMethods || merchant.address) && (
+              <div className="border-l border-black/30 dark:border-white/30 pl-4 py-1 flex flex-col gap-2">
+                {merchant.paymentMethods && (
+                  <p className="font-inter text-black/60 dark:text-white/60 text-[10px] leading-relaxed uppercase tracking-wider">
+                    {(() => {
+                      try {
+                        const methods = JSON.parse(merchant.paymentMethods);
+                        return Array.isArray(methods) ? methods.join(' • ') : merchant.paymentMethods;
+                      } catch {
+                        return merchant.paymentMethods;
+                      }
+                    })()}
+                  </p>
+                )}
+                {merchant.address && (
+                  <p className="font-inter text-black/40 dark:text-white/40 text-[9px] leading-relaxed uppercase tracking-widest">
+                    {merchant.address}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Categories Navigation */}

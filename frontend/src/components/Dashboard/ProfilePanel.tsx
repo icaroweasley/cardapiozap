@@ -8,6 +8,11 @@ export default function ProfilePanel() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [deliveryFee, setDeliveryFee] = useState('');
+  const [minOrderValue, setMinOrderValue] = useState('');
+  const [address, setAddress] = useState('');
+  const [paymentMethods, setPaymentMethods] = useState('');
+  const [businessHours, setBusinessHours] = useState('');
   
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -26,6 +31,11 @@ export default function ProfilePanel() {
           setSlug(res.data.slug || '');
           setPhone(res.data.phone || '');
           setLogoUrl(res.data.logoUrl || '');
+          setDeliveryFee(res.data.deliveryFee ? (res.data.deliveryFee / 100).toFixed(2) : '');
+          setMinOrderValue(res.data.minOrderValue ? (res.data.minOrderValue / 100).toFixed(2) : '');
+          setAddress(res.data.address || '');
+          setPaymentMethods(res.data.paymentMethods ? JSON.parse(res.data.paymentMethods).join(', ') : '');
+          setBusinessHours(res.data.businessHours || '');
         }
       } catch (err) {
         console.error(err);
@@ -66,7 +76,14 @@ export default function ProfilePanel() {
     setError('');
     setSuccess('');
     try {
-      const updateData: any = { name, slug, phone, logoUrl };
+      const updateData: any = { 
+        name, slug, phone, logoUrl,
+        deliveryFee: deliveryFee ? Math.round(parseFloat(deliveryFee.replace(',', '.')) * 100) : 0,
+        minOrderValue: minOrderValue ? Math.round(parseFloat(minOrderValue.replace(',', '.')) * 100) : 0,
+        address,
+        paymentMethods: paymentMethods ? JSON.stringify(paymentMethods.split(',').map(s => s.trim()).filter(Boolean)) : null,
+        businessHours
+      };
       if (password) updateData.password = password;
 
       const res = await axios.put(`${apiUrl}/api/auth/profile`, updateData, {
@@ -90,15 +107,15 @@ export default function ProfilePanel() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden animate-fade-in font-inter max-w-3xl mx-auto w-full relative z-10">
-      <div className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl rounded-[2rem] p-8 mt-10">
+    <div className="flex-1 flex flex-col h-full overflow-y-auto hide-scrollbar animate-fade-in font-inter w-full relative z-10 pb-20">
+      <div className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl rounded-[2rem] p-8 max-w-3xl mx-auto w-full mt-10">
         <h2 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white mb-2">Perfil da Loja</h2>
-        <p className="text-sm text-black/60 dark:text-white/60 mb-8">Personalize a identidade do seu restaurante.</p>
+        <p className="text-sm text-black/60 dark:text-white/60 mb-8">Personalize a identidade e configurações do seu restaurante.</p>
 
         {success && <div className="mb-6 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-4 rounded-xl text-xs uppercase tracking-widest font-bold text-center">{success}</div>}
         {error && <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-xs uppercase tracking-widest font-bold text-center">{error}</div>}
 
-        <form onSubmit={handleSave} className="space-y-6">
+        <form onSubmit={handleSave} className="space-y-8">
           <div className="flex flex-col md:flex-row gap-6">
             {/* Logo Upload */}
             <div className="flex flex-col gap-3 shrink-0 items-center justify-center">
@@ -163,6 +180,61 @@ export default function ProfilePanel() {
                   />
                 </div>
               </div>
+            </div>
+          </div>
+
+          <hr className="border-black/10 dark:border-white/10" />
+          
+          <div className="space-y-4">
+            <h3 className="font-podium text-lg uppercase tracking-widest text-black dark:text-white mb-4">Informações de Atendimento</h3>
+            
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Dias e Horários de Atendimento</label>
+                <input 
+                  className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
+                  placeholder="Ex: Terça a Domingo das 18h às 23:40"
+                  value={businessHours} onChange={e => setBusinessHours(e.target.value)} 
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Endereço Físico (Opcional)</label>
+                <input 
+                  className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
+                  placeholder="Rua das Flores, 123"
+                  value={address} onChange={e => setAddress(e.target.value)} 
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Taxa de Entrega Fixa (R$)</label>
+                <input 
+                  type="number" step="0.01" min="0"
+                  className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
+                  placeholder="0.00"
+                  value={deliveryFee} onChange={e => setDeliveryFee(e.target.value)} 
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Valor Mínimo do Pedido (R$)</label>
+                <input 
+                  type="number" step="0.01" min="0"
+                  className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
+                  placeholder="0.00"
+                  value={minOrderValue} onChange={e => setMinOrderValue(e.target.value)} 
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Formas de Pagamento (Separadas por vírgula)</label>
+              <input 
+                className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
+                placeholder="Ex: Pix, Dinheiro, Cartão de Crédito"
+                value={paymentMethods} onChange={e => setPaymentMethods(e.target.value)} 
+              />
             </div>
           </div>
 

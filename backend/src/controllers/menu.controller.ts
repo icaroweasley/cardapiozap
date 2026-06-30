@@ -12,6 +12,11 @@ export const getMenuBySlug = async (req: Request, res: Response): Promise<void> 
         name: true,
         logoUrl: true,
         phone: true,
+        deliveryFee: true,
+        minOrderValue: true,
+        businessHours: true,
+        address: true,
+        paymentMethods: true,
         planStatus: true,
         planExpiresAt: true,
         products: {
