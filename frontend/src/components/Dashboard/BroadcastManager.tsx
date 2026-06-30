@@ -1011,14 +1011,14 @@ const nextScreen = (screen: 1 | 2 | 3) => {
             </div>
 
             {/* Right Panel: Preview & Logs */}
-            <div className="flex-1 flex flex-col gap-6 h-full w-full lg:w-1/2">
+            <div className="flex-1 flex flex-col gap-6 h-full w-full lg:w-1/2 min-h-0">
               
               {/* Preview */}
-              <div className="bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] p-6 flex flex-col items-center justify-center min-h-[250px] relative">
-                <div className="absolute top-5 w-full text-center text-[10px] text-black/50 dark:text-white/50 uppercase tracking-widest font-bold">Preview da Mensagem</div>
-                <div className="w-full max-w-sm mt-8">
+              <div className="flex-1 bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] p-6 flex flex-col items-center min-h-0 relative overflow-y-auto hide-scrollbar">
+                <div className="w-full text-center text-[10px] text-black/50 dark:text-white/50 uppercase tracking-widest font-bold shrink-0 mb-6">Preview da Mensagem</div>
+                <div className="w-full max-w-sm shrink-0">
                   <div className="bg-[#e5ddd5] dark:bg-[#0b141a] rounded-2xl p-5 w-full border border-black/5 dark:border-white/5 shadow-2xl relative">
-                    <div className="absolute inset-0 bg-white dark:bg-white opacity-[0.05] rounded-2xl"></div>
+                    <div className="absolute inset-0 bg-white dark:bg-white opacity-[0.05] rounded-2xl pointer-events-none"></div>
                     <div className="relative z-10 flex flex-col gap-2 items-end w-full">
                       {mediaAttachments.length === 0 ? (
                         <div className="bg-[#d9fdd3] dark:bg-[#005c4b] text-[#111b21] dark:text-white p-3 px-4 rounded-2xl rounded-tr-sm text-sm shadow-sm inline-block max-w-[90%] break-words font-inter leading-relaxed relative">
