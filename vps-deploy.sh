@@ -22,7 +22,7 @@ npm run build
 pm2 start dist/index.js --name "cardapio-backend"
 
 echo "=== Subindo Evolution API no Docker ==="
-sudo docker-compose up -d
+sudo docker compose -f /home/ubuntu/evolution-compose.yml up -d
 
 cd ../frontend
 echo "=== Configurando Frontend ==="
