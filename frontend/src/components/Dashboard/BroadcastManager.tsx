@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import axios from 'axios';
-import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, FolderOpen } from 'lucide-react';
+import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, FolderOpen, Pencil } from 'lucide-react';
 
 const createSleepWorker = () => {
   if (typeof window === 'undefined') return null;
@@ -99,6 +99,9 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   
   const [minDelay] = useState(10);
   const [maxDelay] = useState(25);
+  
+  const [editingContactId, setEditingContactId] = useState<string | null>(null);
+  const [editingContactName, setEditingContactName] = useState("");
 
   const isPausedRef = useRef(false);
   const isCancelledRef = useRef(false);
@@ -431,6 +434,22 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
     const newTarget = targetContacts.filter(c => !selectedTargetContacts.has(c.id));
     setTargetContacts(newTarget);
     setSelectedTargetContacts(new Set());
+  };
+
+  const startEditingContact = (e: React.MouseEvent, contact: Contact) => {
+    e.stopPropagation();
+    setEditingContactId(contact.id);
+    setEditingContactName(contact.name || contact.pushName || '');
+  };
+
+  const saveContactName = (e?: React.MouseEvent | React.KeyboardEvent) => {
+    if (e) e.stopPropagation();
+    if (!editingContactId) return;
+    
+    setTargetContacts(prev => prev.map(c => 
+      c.id === editingContactId ? { ...c, name: editingContactName } : c
+    ));
+    setEditingContactId(null);
   };
 
   const startBroadcast = async () => {
@@ -905,7 +924,32 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                             className="mr-3 w-4 h-4 accent-black dark:accent-white cursor-pointer rounded-sm"
                           />
                           <div className="flex-1 flex flex-col min-w-0">
-                            <span className="text-sm font-bold text-black dark:text-white truncate font-inter">{contact.name || contact.pushName || 'Desconhecido'}</span>
+                            {editingContactId === contact.id ? (
+                              <input
+                                autoFocus
+                                value={editingContactName}
+                                onChange={e => setEditingContactName(e.target.value)}
+                                onClick={e => e.stopPropagation()}
+                                onBlur={() => saveContactName()}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter') saveContactName(e);
+                                  if (e.key === 'Escape') setEditingContactId(null);
+                                }}
+                                className="text-sm font-bold text-black dark:text-white bg-transparent border-b border-black/20 dark:border-white/20 focus:outline-none focus:border-black/50 dark:focus:border-white/50 w-full mb-1"
+                              />
+                            ) : (
+                              <div className="flex items-center gap-2 group/edit">
+                                <span className="text-sm font-bold text-black dark:text-white truncate font-inter">
+                                  {contact.name || contact.pushName || 'Desconhecido'}
+                                </span>
+                                <button 
+                                  onClick={(e) => startEditingContact(e, contact)}
+                                  className="text-black/30 dark:text-white/30 hover:text-black dark:hover:text-white opacity-0 group-hover/edit:opacity-100 transition-opacity"
+                                >
+                                  <Pencil size={12} />
+                                </button>
+                              </div>
+                            )}
                             <span className="text-[10px] text-black/50 dark:text-white/50 mt-1 tracking-widest">{contact.number}</span>
                           </div>
                           {contact.status === 'sent' && <CheckCircle2 size={16} className="text-emerald-500 ml-2" />}
