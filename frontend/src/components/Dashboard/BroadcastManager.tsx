@@ -109,6 +109,25 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   const [editingContactId, setEditingContactId] = useState<string | null>(null);
   const [editingContactName, setEditingContactName] = useState("");
 
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    type: 'alert' | 'confirm';
+    message: string;
+    resolve?: (value: boolean) => void;
+  } | null>(null);
+
+  const showAlert = (message: string) => {
+    return new Promise<void>((resolve) => {
+      setModalConfig({ isOpen: true, type: 'alert', message, resolve: () => resolve() });
+    });
+  };
+
+  const showConfirm = (message: string) => {
+    return new Promise<boolean>((resolve) => {
+      setModalConfig({ isOpen: true, type: 'confirm', message, resolve });
+    });
+  };
+
   const isPausedRef = useRef(false);
   const isCancelledRef = useRef(false);
   const logsEndRef = useRef<HTMLDivElement>(null);
@@ -181,8 +200,8 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   }, [fetchLists]);
 
   const saveCurrentList = async () => {
-    if (!saveListName.trim()) return alert('Digite um nome para salvar a lista.');
-    if (targetContacts.length === 0) return alert('A lista alvo está vazia.');
+    if (!saveListName.trim()) { showAlert('Digite um nome para salvar a lista.'); return; }
+    if (targetContacts.length === 0) { showAlert('A lista alvo está vazia.'); return; }
     try {
       await axios.post(`${apiUrl}/api/broadcast/lists`, {
         name: saveListName,
@@ -191,21 +210,24 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       setSaveListName('');
-      alert('Lista salva com sucesso!');
+      showAlert('Lista salva com sucesso!');
       fetchLists();
     } catch (error) {
-      alert('Erro ao salvar lista.');
+      showAlert('Erro ao salvar lista.');
     }
   };
 
-  const loadList = (id: string) => {
+  const loadList = async (id: string) => {
     setSelectedListId(id);
     if (!id) return;
 
     if (id === 'NEW') {
-       if (targetContacts.length > 0 && !confirm('Isso vai esvaziar a Lista Alvo atual para você criar uma nova lista. Continuar?')) {
-           setTimeout(() => setSelectedListId(''), 100);
-           return;
+       if (targetContacts.length > 0) {
+           const confirmed = await showConfirm('Isso vai esvaziar a Lista Alvo atual para você criar uma nova lista. Continuar?');
+           if (!confirmed) {
+             setTimeout(() => setSelectedListId(''), 100);
+             return;
+           }
        }
        setTargetContacts([]);
        setSelectedTargetContacts(new Set());
@@ -216,9 +238,12 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
     const list = savedLists.find(l => l.id === id);
     if (list) {
-      if (targetContacts.length > 0 && !confirm(`Deseja substituir a Lista Alvo atual pela lista "${list.name}"? (Os contatos atuais serão removidos do alvo)`)) {
-          setTimeout(() => setSelectedListId(''), 100);
-          return;
+      if (targetContacts.length > 0) {
+          const confirmed = await showConfirm(`Deseja substituir a Lista Alvo atual pela lista "${list.name}"? (Os contatos atuais serão removidos do alvo)`);
+          if (!confirmed) {
+             setTimeout(() => setSelectedListId(''), 100);
+             return;
+          }
       }
       setTargetContacts(list.contacts);
       setSelectedTargetContacts(new Set());
@@ -230,14 +255,15 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   
   const deleteSavedList = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm('Tem certeza que deseja apagar esta lista salva?')) return;
+    const confirmed = await showConfirm('Tem certeza que deseja apagar esta lista salva?');
+    if (!confirmed) return;
     try {
       await axios.delete(`${apiUrl}/api/broadcast/lists/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       fetchLists();
     } catch (e) {
-      alert('Erro ao deletar lista.');
+      showAlert('Erro ao deletar lista.');
     }
   };
 
@@ -265,7 +291,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
       fetched.forEach((c: Contact) => uniqueMap.set(c.id, c));
       setAllContacts(Array.from(uniqueMap.values()));
     } catch (e) {
-      alert("Erro ao buscar clientes do banco de dados.");
+      showAlert("Erro ao buscar clientes do banco de dados.");
     }
   };
 
@@ -286,7 +312,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
       setAllContacts(Array.from(uniqueMap.values()));
       addLog(`Encontrados ${uniqueMap.size} contatos no WhatsApp.`, 'success');
     } catch (e: any) {
-      alert(e?.response?.data?.error || "Erro ao buscar contatos do WhatsApp.");
+      showAlert(e?.response?.data?.error || "Erro ao buscar contatos do WhatsApp.");
     }
   };
 
@@ -297,7 +323,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
     
     const availableSlots = Math.max(0, 3 - mediaAttachments.length);
     if (filesArray.length > availableSlots) {
-      alert(`Você só pode anexar no máximo 3 mídias.`);
+      showAlert(`Você só pode anexar no máximo 3 mídias.`);
       filesArray = filesArray.slice(0, availableSlots);
     }
     
@@ -330,7 +356,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
       } else {
         const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
-          alert(`O arquivo "${file.name}" é muito grande. O limite para vídeos é 5MB.`);
+          showAlert(`O arquivo "${file.name}" é muito grande. O limite para vídeos é 5MB.`);
           return;
         }
         const reader = new FileReader();
@@ -348,12 +374,12 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
   const handleAddNewContact = () => {
     if (!newContactPhone.trim()) {
-      alert("O telefone é obrigatório.");
+      showAlert("O telefone é obrigatório.");
       return;
     }
     const cleanPhone = newContactPhone.replace(/\D/g, '');
     if (cleanPhone.length < 10) {
-      alert("Número de telefone inválido.");
+      showAlert("Número de telefone inválido.");
       return;
     }
     
@@ -365,7 +391,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
     };
     
     if (targetContacts.some(c => c.id === newContact.id)) {
-       alert("Este número já está na lista alvo.");
+       showAlert("Este número já está na lista alvo.");
        return;
     }
     
@@ -460,11 +486,11 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
   const startBroadcast = async () => {
     if (targetContacts.length === 0) {
-      alert('A lista alvo está vazia.');
+      showAlert('A lista alvo está vazia.');
       return;
     }
     if (!message.trim() && mediaAttachments.length === 0) {
-      alert('Digite uma mensagem ou adicione uma mídia para enviar.');
+      showAlert('Digite uma mensagem ou adicione uma mídia para enviar.');
       return;
     }
 
@@ -590,7 +616,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
     addLog(`Disparo concluído! ${sentCount} mensagens enviadas.`, 'success');
     setIsSending(false);
-    alert(`Disparo concluído! ${sentCount} mensagens enviadas com sucesso.`);
+    showAlert(`Disparo concluído! ${sentCount} mensagens enviadas com sucesso.`);
   };
 const nextScreen = (screen: 1 | 2 | 3) => {
     if (screen === 2 && allContacts.length === 0) {
@@ -1162,8 +1188,9 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                       {isPausedUI ? 'Retomar' : 'Pausar'}
                     </button>
                     <button
-                      onClick={() => {
-                        if (confirm('Tem certeza que deseja cancelar o disparo?')) {
+                      onClick={async () => {
+                        const confirmed = await showConfirm('Tem certeza que deseja cancelar o disparo?');
+                        if (confirmed) {
                           isCancelledRef.current = true;
                           addLog('Cancelando...', 'error');
                         }
@@ -1181,6 +1208,29 @@ const nextScreen = (screen: 1 | 2 | 3) => {
           </div>
         )}
       </main>
+
+      {/* CUSTOM MODAL */}
+      {modalConfig?.isOpen && (
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white dark:bg-[#121215] border border-black/10 dark:border-white/10 rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-fade-up flex flex-col items-center text-center">
+             {modalConfig.type === 'alert' ? <AlertCircle size={48} className="text-blue-500 mb-4" /> : <AlertCircle size={48} className="text-yellow-500 mb-4" />}
+             <p className="text-black dark:text-white font-inter text-sm mb-6">{modalConfig.message}</p>
+             <div className="flex gap-3 w-full">
+               {modalConfig.type === 'confirm' && (
+                 <button 
+                   onClick={() => { setModalConfig(null); if (modalConfig.resolve) modalConfig.resolve(false); }}
+                   className="flex-1 py-3 rounded-xl border border-black/10 dark:border-white/10 text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5 font-bold uppercase tracking-widest text-[10px] transition-colors"
+                 >Cancelar</button>
+               )}
+               <button 
+                 onClick={() => { setModalConfig(null); if (modalConfig.resolve) modalConfig.resolve(true); }}
+                 className="flex-1 py-3 rounded-xl bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-widest text-[10px] hover:scale-105 transition-transform"
+               >OK</button>
+             </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
