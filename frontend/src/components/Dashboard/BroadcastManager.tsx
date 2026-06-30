@@ -792,7 +792,7 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                         className="w-full bg-transparent border-none focus:outline-none focus:ring-0 pl-9 pr-3 py-2 text-xs font-inter text-black dark:text-white appearance-none cursor-pointer"
                       >
                         <option value="" disabled className="text-black dark:text-white bg-white dark:bg-black">Carregar lista salva...</option>
-                        <option value="NEW" className="text-black dark:text-white bg-black/5 dark:bg-white/5 font-bold">+ Nova Lista Vazia</option>
+                        <option value="NEW" className="text-black dark:text-white bg-white dark:bg-black font-bold">+ Nova Lista Vazia</option>
                         {savedLists.map(list => (
                           <option key={list.id} value={list.id} className="text-black dark:text-white bg-white dark:bg-black">
                             {list.name} ({list.contacts.length} contatos)
