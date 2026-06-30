@@ -92,6 +92,12 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   const [mediaAttachments, setMediaAttachments] = useState<MediaAttachment[]>([]);
   const [textPosition, setTextPosition] = useState<'before' | 'after' | 'caption'>('after');
   
+  useEffect(() => {
+    if (mediaAttachments.length > 1 && textPosition === 'caption') {
+      setTextPosition('after');
+    }
+  }, [mediaAttachments.length, textPosition]);
+  
   // Broadcast State
   const [isSending, setIsSending] = useState(false);
   const [isPausedUI, setIsPausedUI] = useState(false);
@@ -499,8 +505,8 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
         let typingWaited = 0;
         while(typingWaited < typingDelayMs) {
            if (isCancelledRef.current) break;
-           await unthrottledSleep(500);
-           typingWaited += 500;
+           await unthrottledSleep(100);
+           typingWaited += 100;
         }
         if (isCancelledRef.current) break;
 
@@ -508,10 +514,20 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
            await axios.post(`${apiUrl}/api/broadcast/send`, { number: contact.number, text: txt }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
         };
 
+        const sleepCheck = async (ms: number) => {
+           let w = 0;
+           while(w < ms) {
+              if (isCancelledRef.current) return false;
+              await unthrottledSleep(100);
+              w += 100;
+           }
+           return true;
+        }
+
         if (mediaAttachments.length > 0) {
            if (textPosition === 'before' && personalizedMessage) {
                await sendText(personalizedMessage);
-               await unthrottledSleep(2000);
+               if (!(await sleepCheck(2000))) break;
            }
            for (let mIndex = 0; mIndex < mediaAttachments.length; mIndex++) {
               const attachment = mediaAttachments[mIndex];
@@ -522,10 +538,12 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                 fileName: attachment.name,
                 text: (textPosition === 'caption' && mIndex === 0) ? personalizedMessage : ''
               }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
-              if (mIndex < mediaAttachments.length - 1) await unthrottledSleep(1500);
+              if (mIndex < mediaAttachments.length - 1) {
+                  if (!(await sleepCheck(1500))) break;
+              }
            }
            if (textPosition === 'after' && personalizedMessage) {
-               await unthrottledSleep(2000);
+               if (!(await sleepCheck(2000))) break;
                await sendText(personalizedMessage);
            }
         } else {
@@ -560,8 +578,8 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
             await unthrottledSleep(100);
           }
           if (isCancelledRef.current) break;
-          await unthrottledSleep(500);
-          waited += 500;
+          await unthrottledSleep(100);
+          waited += 100;
         }
         if (isCancelledRef.current) {
            addLog('Disparo cancelado pelo usuário.', 'error');
@@ -572,6 +590,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
     addLog(`Disparo concluído! ${sentCount} mensagens enviadas.`, 'success');
     setIsSending(false);
+    alert(`Disparo concluído! ${sentCount} mensagens enviadas com sucesso.`);
   };
 const nextScreen = (screen: 1 | 2 | 3) => {
     if (screen === 2 && allContacts.length === 0) {
@@ -1022,9 +1041,9 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                          <input type="radio" value="before" checked={textPosition === 'before'} onChange={() => setTextPosition('before')} className="accent-black dark:accent-white w-4 h-4" />
                          <span className="text-xs text-black/70 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors font-inter">Texto separado, ANTES da mídia</span>
                        </label>
-                       <label className="flex items-center gap-3 cursor-pointer group">
-                         <input type="radio" value="caption" checked={textPosition === 'caption'} onChange={() => setTextPosition('caption')} className="accent-black dark:accent-white w-4 h-4" />
-                         <span className="text-xs text-black/70 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors font-inter">Texto embutido como legenda na imagem</span>
+                       <label className={`flex items-center gap-3 cursor-pointer group ${mediaAttachments.length > 1 ? 'opacity-50 pointer-events-none' : ''}`}>
+                         <input type="radio" value="caption" checked={textPosition === 'caption'} onChange={() => setTextPosition('caption')} disabled={mediaAttachments.length > 1} className="accent-black dark:accent-white w-4 h-4" />
+                         <span className="text-xs text-black/70 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors font-inter">Texto embutido como legenda na imagem {mediaAttachments.length > 1 && <span className="text-[10px] text-red-500 font-bold ml-2 uppercase">(Apenas para 1 mídia)</span>}</span>
                        </label>
                      </div>
                      <input
