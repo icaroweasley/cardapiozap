@@ -11,6 +11,7 @@ export default function ProfilePanel() {
   const [deliveryFee, setDeliveryFee] = useState('');
   const [minOrderValue, setMinOrderValue] = useState('');
   const [address, setAddress] = useState('');
+  const [neighborhood, setNeighborhood] = useState('');
   const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [openTime, setOpenTime] = useState('');
@@ -44,7 +45,15 @@ export default function ProfilePanel() {
           setLogoUrl(res.data.logoUrl || '');
           setDeliveryFee(res.data.deliveryFee ? (res.data.deliveryFee / 100).toFixed(2) : '');
           setMinOrderValue(res.data.minOrderValue ? (res.data.minOrderValue / 100).toFixed(2) : '');
-          setAddress(res.data.address || '');
+          if (res.data.address) {
+            if (res.data.address.includes(' - ')) {
+              const parts = res.data.address.split(' - ');
+              setAddress(parts[0]);
+              setNeighborhood(parts.slice(1).join(' - '));
+            } else {
+              setAddress(res.data.address);
+            }
+          }
           if (res.data.paymentMethods) {
             try {
               setPaymentMethods(JSON.parse(res.data.paymentMethods));
@@ -163,7 +172,7 @@ export default function ProfilePanel() {
         name, slug, phone, logoUrl,
         deliveryFee: deliveryFee ? Math.round(parseFloat(deliveryFee.replace(',', '.')) * 100) : 0,
         minOrderValue: minOrderValue ? Math.round(parseFloat(minOrderValue.replace(',', '.')) * 100) : 0,
-        address,
+        address: [address, neighborhood].filter(Boolean).join(' - ') || null,
         paymentMethods: paymentMethods.length > 0 ? JSON.stringify(paymentMethods) : null,
         businessHours: formattedHours || null
       };
@@ -322,12 +331,20 @@ export default function ProfilePanel() {
             </div>
 
             <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Endereço Físico (Opcional)</label>
+              <div className="flex-[2]">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Endereço Físico (Rua e Nº)</label>
                 <input 
                   className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
                   placeholder="Rua das Flores, 123"
                   value={address} onChange={e => setAddress(e.target.value)} 
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Bairro</label>
+                <input 
+                  className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
+                  placeholder="Centro"
+                  value={neighborhood} onChange={e => setNeighborhood(e.target.value)} 
                 />
               </div>
             </div>
