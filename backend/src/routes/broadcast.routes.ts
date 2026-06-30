@@ -112,16 +112,10 @@ router.get('/whatsapp-contacts', authenticate, async (req: any, res) => {
         
         const rawContacts = Array.isArray(response.data) ? response.data : (response.data?.contacts || response.data?.data || []);
         
-        customers = rawContacts
-          .filter((c: any) => {
-             const jid = c.remoteJid || c.id || c.number || '';
-             return jid && !jid.includes('@g.us') && !jid.includes('@broadcast');
-          })
-          .map((c: any) => ({
-             name: c.pushName || c.name || '',
-             number: (c.remoteJid || c.id || c.number || '').split('@')[0]
-          }))
-          .filter((c: any) => c.number && c.number.length >= 10);
+        customers = rawContacts.map((c: any) => ({
+           name: c.pushName || c.name || '',
+           number: (c.remoteJid || c.id || c.number || '').split('@')[0]
+        })).filter((c: any) => c.number && c.number.length >= 10);
         
         success = true;
         break; // Stop at first successful endpoint
