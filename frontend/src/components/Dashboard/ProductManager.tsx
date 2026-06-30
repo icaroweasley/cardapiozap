@@ -48,7 +48,11 @@ export default function ProductManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const payload = { ...formData, price: Math.round(parseFloat(formData.price) * 100) };
+      const payload = { 
+        ...formData, 
+        price: Math.round(parseFloat(formData.price) * 100),
+        imageUrl: productImages.length > 0 ? JSON.stringify(productImages) : ''
+      };
       if (editingId) {
         await axios.put(`/api/products/${editingId}`, payload, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -66,6 +70,15 @@ export default function ProductManager() {
   };
 
   const handleEdit = (p: Product) => {
+    let loadedImages: string[] = [];
+    if (p.imageUrl) {
+      if (p.imageUrl.startsWith('[')) {
+        try { loadedImages = JSON.parse(p.imageUrl); } catch(e) { loadedImages = [p.imageUrl]; }
+      } else {
+        loadedImages = [p.imageUrl];
+      }
+    }
+    setProductImages(loadedImages);
     setFormData({
       name: p.name,
       description: p.description,
@@ -77,6 +90,8 @@ export default function ProductManager() {
     setEditingId(p.id);
     setIsModalOpen(true);
   };
+
+  const [productImages, setProductImages] = useState<string[]>([]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir?')) return;
@@ -92,8 +107,55 @@ export default function ProductManager() {
 
   const openNewModal = () => {
     setFormData({ name: '', description: '', price: '', category: '', imageUrl: '', available: true });
+    setProductImages([]);
     setEditingId(null);
     setIsModalOpen(true);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    
+    if (productImages.length + files.length > 3) {
+      alert('Máximo de 3 fotos por produto.');
+      return;
+    }
+
+    files.forEach(file => {
+      if (file.size > 5 * 1024 * 1024) {
+        alert(`O arquivo ${file.name} excede o limite de 5MB.`);
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_SIZE = 1024;
+          let width = img.width; let height = img.height;
+          if (width > height) {
+            if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+          } else {
+            if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+          }
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) ctx.drawImage(img, 0, 0, width, height);
+          
+          const compressed = canvas.toDataURL('image/jpeg', 0.8);
+          setProductImages(prev => [...prev, compressed].slice(0, 3));
+        };
+        img.src = event.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+    // Reset file input
+    e.target.value = '';
+  };
+
+  const removeImage = (index: number) => {
+    setProductImages(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -136,8 +198,26 @@ export default function ProductManager() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {categoryProducts.map(product => (
                       <div key={product.id} className={`flex flex-col bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-xl transition-all ${!product.available ? 'opacity-50 grayscale' : ''} rounded-2xl overflow-hidden`}>
-                        {product.imageUrl ? (
-                          <img src={product.imageUrl} alt={product.name} className="w-full h-40 object-cover border-b border-black/10 dark:border-white/10" />
+                        {product.imageUrl && (product.imageUrl.startsWith('[') ? (JSON.parse(product.imageUrl)[0]) : product.imageUrl) ? (
+                          <div className="relative w-full h-40 group/img">
+                            {(() => {
+                              const imgUrl = product.imageUrl!;
+                              let images = [imgUrl];
+                              if (imgUrl.startsWith('[')) {
+                                try { images = JSON.parse(imgUrl); } catch(e) {}
+                              }
+                              return (
+                                <>
+                                  <img src={images[0]} alt={product.name} className="w-full h-full object-cover border-b border-black/10 dark:border-white/10" />
+                                  {images.length > 1 && (
+                                    <div className="absolute inset-0 hidden group-hover/img:flex bg-black/50 backdrop-blur-sm flex-col items-center justify-center p-2 text-white">
+                                      <span className="text-[10px] font-podium tracking-widest text-center">{images.length} FOTOS</span>
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
                         ) : (
                           <div className="w-full h-40 bg-black/5 dark:bg-white/5 flex items-center justify-center border-b border-black/10 dark:border-white/10">
                             <span className="font-podium text-xs tracking-widest uppercase text-black/30 dark:text-white/30">NO IMAGE</span>
@@ -226,12 +306,33 @@ export default function ProductManager() {
                 </div>
               </div>
               <div>
-                <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">URL da Imagem</label>
-                <input 
-                  className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
-                  value={formData.imageUrl} 
-                  onChange={e => setFormData({...formData, imageUrl: e.target.value})} 
-                />
+                <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Imagens (Até 3 fotos, Max 5MB cada)</label>
+                <div className="flex items-center gap-3">
+                  {productImages.map((img, idx) => (
+                    <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-black/10 dark:border-white/10 group">
+                      <img src={img} alt="Preview" className="w-full h-full object-cover" />
+                      <button 
+                        type="button" 
+                        onClick={() => removeImage(idx)}
+                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))}
+                  {productImages.length < 3 && (
+                    <label className="w-16 h-16 rounded-xl border border-dashed border-black/30 dark:border-white/30 flex items-center justify-center cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                      <Plus size={20} className="text-black/50 dark:text-white/50" />
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        multiple 
+                        className="hidden" 
+                        onChange={handleImageUpload} 
+                      />
+                    </label>
+                  )}
+                </div>
               </div>
               <div>
                 <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Descrição</label>

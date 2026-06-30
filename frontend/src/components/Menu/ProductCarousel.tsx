@@ -107,9 +107,25 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
                 <h3 className="font-podium text-lg sm:text-xl text-black dark:text-white uppercase tracking-wider truncate mb-2">{product.name}</h3>
                 <p className="font-inter text-black/60 dark:text-white/50 text-xs line-clamp-3 leading-relaxed font-medium pr-2">{product.description}</p>
               </div>
-              {product.imageUrl ? (
-                <div className="w-24 h-24 sm:w-28 sm:h-28 shrink-0 overflow-hidden bg-white dark:bg-black/80 border border-black/10 dark:border-white/10 shadow-inner rounded-2xl">
-                  <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+              {product.imageUrl && (product.imageUrl.startsWith('[') ? (JSON.parse(product.imageUrl)[0]) : product.imageUrl) ? (
+                <div className="w-24 h-24 sm:w-28 sm:h-28 shrink-0 overflow-hidden bg-white dark:bg-black/80 border border-black/10 dark:border-white/10 shadow-inner rounded-2xl relative group/img">
+                  {(() => {
+                    const imgUrl = product.imageUrl!;
+                    let images = [imgUrl];
+                    if (imgUrl.startsWith('[')) {
+                      try { images = JSON.parse(imgUrl); } catch(e) {}
+                    }
+                    return (
+                      <>
+                        <img src={images[0]} alt={product.name} className="w-full h-full object-cover" />
+                        {images.length > 1 && (
+                          <div className="absolute inset-0 hidden group-hover/img:flex bg-black/50 backdrop-blur-sm flex-col items-center justify-center p-2 text-white">
+                            <span className="text-[10px] font-podium tracking-widest text-center">{images.length} FOTOS</span>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               ) : (
                  <div className="w-24 h-24 sm:w-28 sm:h-28 shrink-0 border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 backdrop-blur-3xl flex flex-col items-center justify-center gap-2 shadow-inner relative overflow-hidden rounded-2xl">
