@@ -98,13 +98,16 @@ export default function Login() {
           
           <div>
             <label className="block font-inter text-[10px] tracking-widest text-black/70 dark:text-white/70 uppercase mb-2 font-bold">URL da Loja {isRegistering && '(Sem espaços)'}</label>
-            <input 
-              className="w-full bg-white/50 dark:bg-black/50 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
-              placeholder="lanchonete-ze" 
-              value={slug} 
-              onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} 
-              required 
-            />
+            <div className="relative flex items-center">
+              <span className="absolute left-4 text-black/40 dark:text-white/40 text-xs font-bold">zapgarcom.com.br/</span>
+              <input 
+                className="w-full bg-white/50 dark:bg-black/50 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 pl-[140px] font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
+                placeholder="lanchonete-ze" 
+                value={slug} 
+                onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} 
+                required 
+              />
+            </div>
           </div>
           <div>
             <label className="block font-inter text-[10px] tracking-widest text-black/70 dark:text-white/70 uppercase mb-2 font-bold">Senha de Acesso</label>
