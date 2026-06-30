@@ -91,7 +91,7 @@ export default function ClientMenu() {
               {merchant.logoUrl && (
                 <img src={merchant.logoUrl} alt="Logo" className="w-20 h-20 rounded-[2rem] object-cover shadow-lg border-2 border-black/10 dark:border-white/10" />
               )}
-              <h1 className="font-podium text-3xl sm:text-4xl font-bold uppercase tracking-wider text-black dark:text-white break-words w-full leading-tight">{merchant.name}</h1>
+              <h1 className="font-podium text-xl sm:text-2xl font-bold uppercase tracking-wider text-black dark:text-white break-words w-full leading-tight" style={{ wordBreak: 'break-word' }}>{merchant.name}</h1>
             </div>
             {!merchant.logoUrl && <Crown className="w-8 h-8 shrink-0 text-black/30 dark:text-white/30 hidden lg:block" />}
           </div>
