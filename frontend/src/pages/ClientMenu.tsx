@@ -27,6 +27,7 @@ interface Merchant {
   minOrderValue?: number;
   address?: string;
   paymentMethods?: string;
+  isOpen?: boolean;
   products: Product[];
 }
 
@@ -95,6 +96,15 @@ export default function ClientMenu() {
             </div>
             {!merchant.logoUrl && <Crown className="w-8 h-8 shrink-0 text-black/30 dark:text-white/30 hidden lg:block" />}
           </div>
+
+          {!merchant.isOpen && (
+            <div className="mb-8 border border-red-500/30 bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 p-4 rounded-2xl flex flex-col items-center justify-center text-center">
+              <span className="font-podium text-xl tracking-widest uppercase mb-1">Estamos Fechados</span>
+              <span className="font-inter text-[10px] tracking-wider uppercase font-bold opacity-70">
+                Os pedidos estão temporariamente suspensos
+              </span>
+            </div>
+          )}
 
           <div className="space-y-4 mb-10 pb-10 border-b border-black/10 dark:border-white/10">
             {merchant.businessHours && (
@@ -168,6 +178,7 @@ export default function ClientMenu() {
             <ProductCarousel 
               category={category} 
               products={merchant.products.filter(p => (p.category || '').trim().toUpperCase() === category)} 
+              isOpen={merchant.isOpen !== false}
             />
             
           </section>

@@ -50,7 +50,8 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
         items: items.map(item => ({
           productId: item.productId,
           quantity: item.quantity,
-          price: item.price
+          price: item.price,
+          options: item.options
         }))
       });
       clearCart();
@@ -87,19 +88,33 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
               ) : (
                 <div className="space-y-8">
                   <ul className="space-y-6">
-                    {items.map(item => (
-                      <li key={item.productId} className="flex justify-between items-center border-b border-black/10 dark:border-white/10 pb-6">
+                    {items.map(item => {
+                      const optionsPrice = item.options ? item.options.reduce((acc: number, opt: any) => acc + opt.price, 0) : 0;
+                      const itemTotal = item.price + optionsPrice;
+
+                      return (
+                      <li key={item.id} className="flex justify-between items-center border-b border-black/10 dark:border-white/10 pb-6">
                         <div className="flex-1 pr-4">
                           <p className="font-inter text-sm font-semibold uppercase tracking-wider text-black/90 dark:text-white/90 mb-1">{item.name}</p>
-                          <p className="font-inter text-xs text-black/50 dark:text-white/50 tracking-widest">{(item.price / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+                          {item.options && item.options.length > 0 && (
+                            <ul className="mb-2 space-y-1">
+                              {item.options.map((opt: any, idx: number) => (
+                                <li key={idx} className="font-inter text-[10px] text-black/50 dark:text-white/50 tracking-widest flex items-center gap-1">
+                                  <span className="w-1 h-1 bg-black/30 dark:bg-white/30 rounded-full inline-block"></span>
+                                  {opt.name} {opt.price > 0 ? `(+ ${(opt.price / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })})` : ''}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          <p className="font-inter text-xs text-black/50 dark:text-white/50 tracking-widest">{(itemTotal / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
                         </div>
                         <div className="flex items-center gap-4 border border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5 p-1 rounded-lg">
-                          <button onClick={() => updateQuantity(item.productId, item.quantity - 1)} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70 rounded-md"><Minus size={14} /></button>
+                          <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70 rounded-md"><Minus size={14} /></button>
                           <span className="font-inter font-bold text-sm w-4 text-center text-black dark:text-white">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.productId, item.quantity + 1)} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70 rounded-md"><Plus size={14} /></button>
+                          <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-black/70 dark:text-white/70 rounded-md"><Plus size={14} /></button>
                         </div>
                       </li>
-                    ))}
+                    )})}
                   </ul>
                   
                   <button onClick={onClose} className="w-full font-inter text-[10px] tracking-[0.2em] text-black/60 dark:text-white/60 uppercase flex justify-center items-center gap-2 py-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors border border-black/20 dark:border-white/20 hover:border-black/50 dark:hover:border-white/50 border-dashed rounded-xl">

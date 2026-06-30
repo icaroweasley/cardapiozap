@@ -9,6 +9,7 @@ router.post('/register', auth_controller_1.register);
 router.post('/login', auth_controller_1.login);
 router.get('/settings', auth_middleware_1.authenticate, auth_controller_1.getSettings);
 router.put('/settings', auth_middleware_1.authenticate, auth_controller_1.updateSettings);
+router.put('/profile', auth_middleware_1.authenticate, auth_controller_1.updateProfile);
 router.get('/evolution/instance/:instanceName', auth_middleware_1.authenticate, evolution_controller_1.getEvolutionState);
 router.post('/evolution/instance', auth_middleware_1.authenticate, evolution_controller_1.createEvolutionInstance);
 router.delete('/evolution/instance/:instanceName', auth_middleware_1.authenticate, evolution_controller_1.deleteEvolutionInstance);

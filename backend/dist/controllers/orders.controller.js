@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateOrderStatus = exports.getOrders = exports.createOrder = void 0;
 const prisma_1 = require("../config/prisma");
 const whatsapp_service_1 = require("../services/whatsapp.service");
+const index_1 = require("../index");
 const createOrder = async (req, res) => {
     try {
         const { merchantId, customerName, customerPhone, deliveryType, address, paymentMethod, observation, items } = req.body;
@@ -15,11 +16,21 @@ const createOrder = async (req, res) => {
                 res.status(400).json({ error: `Product ${item.productId} not available` });
                 return;
             }
-            totalAmount += product.price * item.quantity;
+            let itemPrice = product.price;
+            let optionsPayload = null;
+            if (item.options && Array.isArray(item.options)) {
+                optionsPayload = JSON.stringify(item.options);
+                item.options.forEach((opt) => {
+                    if (opt.price)
+                        itemPrice += opt.price;
+                });
+            }
+            totalAmount += itemPrice * item.quantity;
             orderItemsData.push({
                 productId: product.id,
                 quantity: item.quantity,
-                priceAtPurchase: product.price
+                priceAtPurchase: itemPrice,
+                options: optionsPayload
             });
         }
         if (deliveryType === 'DELIVERY') {
@@ -44,6 +55,8 @@ const createOrder = async (req, res) => {
                 merchant: true
             }
         });
+        // Notify connected frontend clients
+        index_1.io.to(merchantId).emit('new-order', order);
         // Fire and forget notifications
         (0, whatsapp_service_1.notifyCustomerOrderReceived)(order);
         (0, whatsapp_service_1.notifyMerchantNewOrder)(order);

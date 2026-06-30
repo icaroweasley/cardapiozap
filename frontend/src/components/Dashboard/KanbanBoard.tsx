@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { RefreshCw, MessageCircle, DollarSign, ShoppingBag, TrendingUp, Clock } from 'lucide-react';
+import { RefreshCw, MessageCircle, DollarSign, ShoppingBag, TrendingUp, Clock, Printer } from 'lucide-react';
+import { io } from 'socket.io-client';
 
 interface OrderItem {
   id: string;
   quantity: number;
   product: { name: string };
+  options?: string;
 }
 
 interface Order {
@@ -16,6 +18,8 @@ interface Order {
   status: 'PENDING' | 'PREPARING' | 'SHIPPED' | 'FINISHED';
   createdAt: string;
   observation?: string;
+  deliveryType?: string;
+  address?: string;
   items: OrderItem[];
 }
 
@@ -46,9 +50,93 @@ export default function KanbanBoard() {
 
   useEffect(() => {
     fetchOrders();
-    const interval = setInterval(fetchOrders, 10000); // Poll every 10s
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchOrders, 30000); // Poll every 30s as fallback
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const socket = io(import.meta.env.VITE_API_URL || '', {
+      auth: { token }
+    });
+
+    socket.on('new-order', (order: Order) => {
+      // Tocar alerta sonoro
+      try {
+        const audio = new Audio('/notification.mp3');
+        audio.play().catch(() => console.log('Audio auto-play blocked by browser.'));
+      } catch {}
+      
+      setOrders(prev => {
+        if (prev.find(o => o.id === order.id)) return prev;
+        return [order, ...prev];
+      });
+    });
+
+    return () => {
+      clearInterval(interval);
+      socket.disconnect();
+    };
   }, []);
+
+  const printReceipt = (order: Order) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert("Por favor, permita pop-ups para imprimir.");
+      return;
+    }
+
+    let itemsHtml = order.items.map(item => {
+      let optionsHtml = '';
+      if (item.options) {
+        try {
+          const opts = JSON.parse(item.options);
+          optionsHtml = opts.map((opt: any) => `<div>+ ${opt.name}</div>`).join('');
+        } catch {}
+      }
+      return `
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+          <div><b>${item.quantity}x</b> ${item.product.name}</div>
+        </div>
+        ${optionsHtml ? `<div style="padding-left: 15px; font-size: 10px;">${optionsHtml}</div>` : ''}
+      `;
+    }).join('');
+
+    const html = `
+      <html>
+        <head>
+          <style>
+            body { font-family: monospace; width: 80mm; margin: 0; padding: 0; color: black; font-size: 12px; }
+            .header { text-align: center; margin-bottom: 15px; border-bottom: 1px dashed black; padding-bottom: 10px; }
+            .section { margin-bottom: 15px; border-bottom: 1px dashed black; padding-bottom: 10px; }
+            .total { font-size: 16px; font-weight: bold; text-align: right; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h2>PEDIDO #${order.id.slice(-4).toUpperCase()}</h2>
+            <div>${new Date(order.createdAt).toLocaleString('pt-BR')}</div>
+          </div>
+          <div class="section">
+            <div><b>Cliente:</b> ${order.customerName}</div>
+            <div><b>Tel:</b> ${order.customerPhone}</div>
+            ${order.deliveryType === 'DELIVERY' ? `<div><b>Endereço:</b> ${order.address || ''}</div>` : '<div><b>RETIRADA NO LOCAL</b></div>'}
+          </div>
+          <div class="section">
+            ${itemsHtml}
+          </div>
+          ${order.observation ? `<div class="section"><b>Observação:</b><br/>${order.observation}</div>` : ''}
+          <div class="section total">
+            TOTAL: ${(order.totalAmount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+          </div>
+          <div style="text-align: center; margin-top: 20px;">*** ZAPGARÇOM ***</div>
+          <script>window.onload = function() { window.print(); window.close(); }</script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
 
   const updateStatus = async (id: string, newStatus: string) => {
     // Optimistic update
@@ -156,14 +244,40 @@ export default function KanbanBoard() {
                       </span>
                     </div>
                     
-                    <a href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs font-inter font-semibold tracking-wider mb-4 hover:underline text-black/70 dark:text-white/70">
-                      <MessageCircle size={14} className="text-green-500" /> {order.customerPhone}
-                    </a>
+                    <div className="flex justify-between items-center mb-4">
+                      <a href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs font-inter font-semibold tracking-wider hover:underline text-black/70 dark:text-white/70">
+                        <MessageCircle size={14} className="text-green-500" /> {order.customerPhone}
+                      </a>
+                      <button 
+                        onClick={() => printReceipt(order)}
+                        className="text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors p-1"
+                        title="Imprimir Comanda"
+                      >
+                        <Printer size={16} />
+                      </button>
+                    </div>
 
                     <ul className="text-xs space-y-2 mb-4 border-l border-black/20 dark:border-white/20 pl-3 font-inter text-black/80 dark:text-white/80">
-                      {order.items.map(item => (
-                        <li key={item.id} className="truncate uppercase tracking-wider"><span className="font-bold">{item.quantity}X</span> {item.product.name}</li>
-                      ))}
+                      {order.items.map(item => {
+                        let parsedOptions: any[] = [];
+                        if (item.options) {
+                          try { parsedOptions = JSON.parse(item.options); } catch(e) {}
+                        }
+                        return (
+                          <li key={item.id} className="tracking-wider">
+                            <span className="font-bold uppercase">{item.quantity}X</span> <span className="uppercase">{item.product.name}</span>
+                            {parsedOptions.length > 0 && (
+                              <div className="pl-4 mt-1 space-y-1">
+                                {parsedOptions.map((opt: any, idx: number) => (
+                                  <div key={idx} className="text-[10px] text-black/50 dark:text-white/50 tracking-widest uppercase">
+                                    + {opt.name}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </li>
+                        );
+                      })}
                     </ul>
 
                     {order.observation && (

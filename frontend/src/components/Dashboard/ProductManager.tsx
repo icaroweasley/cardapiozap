@@ -3,6 +3,21 @@ import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
 
+interface ProductOption {
+  id?: string;
+  name: string;
+  price: number;
+}
+
+interface ProductOptionGroup {
+  id?: string;
+  name: string;
+  required: boolean;
+  minChoices: number;
+  maxChoices: number;
+  options: ProductOption[];
+}
+
 interface Product {
   id: string;
   name: string;
@@ -11,6 +26,7 @@ interface Product {
   imageUrl: string;
   category: string;
   available: boolean;
+  optionGroups?: ProductOptionGroup[];
 }
 
 export default function ProductManager() {
@@ -19,14 +35,69 @@ export default function ProductManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    price: string;
+    category: string;
+    imageUrl: string;
+    available: boolean;
+    optionGroups: ProductOptionGroup[];
+  }>({
     name: '',
     description: '',
     price: '',
     category: '',
     imageUrl: '',
-    available: true
+    available: true,
+    optionGroups: []
   });
+
+  const addOptionGroup = () => {
+    setFormData(prev => ({
+      ...prev,
+      optionGroups: [...prev.optionGroups, { name: '', required: false, minChoices: 0, maxChoices: 1, options: [] }]
+    }));
+  };
+
+  const removeOptionGroup = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      optionGroups: prev.optionGroups.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateOptionGroup = (index: number, field: keyof ProductOptionGroup, value: any) => {
+    setFormData(prev => {
+      const newGroups = [...prev.optionGroups];
+      newGroups[index] = { ...newGroups[index], [field]: value };
+      return { ...prev, optionGroups: newGroups };
+    });
+  };
+
+  const addOption = (groupIndex: number) => {
+    setFormData(prev => {
+      const newGroups = [...prev.optionGroups];
+      newGroups[groupIndex].options.push({ name: '', price: 0 });
+      return { ...prev, optionGroups: newGroups };
+    });
+  };
+
+  const removeOption = (groupIndex: number, optionIndex: number) => {
+    setFormData(prev => {
+      const newGroups = [...prev.optionGroups];
+      newGroups[groupIndex].options = newGroups[groupIndex].options.filter((_, i) => i !== optionIndex);
+      return { ...prev, optionGroups: newGroups };
+    });
+  };
+
+  const updateOption = (groupIndex: number, optionIndex: number, field: keyof ProductOption, value: any) => {
+    setFormData(prev => {
+      const newGroups = [...prev.optionGroups];
+      newGroups[groupIndex].options[optionIndex] = { ...newGroups[groupIndex].options[optionIndex], [field]: value };
+      return { ...prev, optionGroups: newGroups };
+    });
+  };
 
   const fetchProducts = async () => {
     try {
@@ -85,7 +156,8 @@ export default function ProductManager() {
       price: (p.price / 100).toString(),
       category: p.category,
       imageUrl: p.imageUrl || '',
-      available: p.available
+      available: p.available,
+      optionGroups: p.optionGroups || []
     });
     setEditingId(p.id);
     setIsModalOpen(true);
@@ -106,7 +178,7 @@ export default function ProductManager() {
   };
 
   const openNewModal = () => {
-    setFormData({ name: '', description: '', price: '', category: '', imageUrl: '', available: true });
+    setFormData({ name: '', description: '', price: '', category: '', imageUrl: '', available: true, optionGroups: [] });
     setProductImages([]);
     setEditingId(null);
     setIsModalOpen(true);
@@ -342,6 +414,97 @@ export default function ProductManager() {
                   value={formData.description} 
                   onChange={e => setFormData({...formData, description: e.target.value})} 
                 />
+              </div>
+
+              {/* OPCIONAIS E COMPLEMENTOS */}
+              <div className="pt-4 border-t border-black/10 dark:border-white/10 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-podium text-lg uppercase tracking-widest text-black dark:text-white">Opcionais e Complementos</h3>
+                  <button 
+                    type="button" 
+                    onClick={addOptionGroup}
+                    className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white text-[10px] font-inter font-bold tracking-widest uppercase px-3 py-2 rounded-lg flex items-center gap-1 transition-colors border border-black/10 dark:border-white/10"
+                  >
+                    <Plus size={12} /> GRUPO
+                  </button>
+                </div>
+
+                {formData.optionGroups.map((group, gIdx) => (
+                  <div key={gIdx} className="bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-4 rounded-2xl relative space-y-4">
+                    <button 
+                      type="button" 
+                      onClick={() => removeOptionGroup(gIdx)}
+                      className="absolute top-4 right-4 text-red-500 hover:text-red-600 p-1"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                    
+                    <div>
+                      <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-1">Nome do Grupo (Ex: Adicionais, Ponto da Carne)</label>
+                      <input 
+                        className="w-full bg-transparent border-b border-black/20 dark:border-white/20 text-black dark:text-white py-2 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors" 
+                        value={group.name} 
+                        onChange={e => updateOptionGroup(gIdx, 'name', e.target.value)} 
+                        required 
+                      />
+                    </div>
+                    
+                    <div className="flex items-center gap-6">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={group.required}
+                          onChange={e => updateOptionGroup(gIdx, 'required', e.target.checked)}
+                          className="w-4 h-4 accent-black dark:accent-white"
+                        />
+                        <span className="font-inter text-[10px] font-bold tracking-widest text-black/70 dark:text-white/70 uppercase">Obrigatório</span>
+                      </label>
+                      
+                      <div className="flex items-center gap-2">
+                        <label className="font-inter text-[10px] font-bold tracking-widest text-black/70 dark:text-white/70 uppercase">Mín:</label>
+                        <input type="number" min="0" value={group.minChoices} onChange={e => updateOptionGroup(gIdx, 'minChoices', parseInt(e.target.value) || 0)} className="w-12 bg-transparent border-b border-black/20 dark:border-white/20 text-black dark:text-white text-center text-sm focus:outline-none" />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <label className="font-inter text-[10px] font-bold tracking-widest text-black/70 dark:text-white/70 uppercase">Máx:</label>
+                        <input type="number" min="1" value={group.maxChoices} onChange={e => updateOptionGroup(gIdx, 'maxChoices', parseInt(e.target.value) || 1)} className="w-12 bg-transparent border-b border-black/20 dark:border-white/20 text-black dark:text-white text-center text-sm focus:outline-none" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-2">
+                      {group.options.map((opt, oIdx) => (
+                        <div key={oIdx} className="flex items-center gap-2">
+                          <input 
+                            placeholder="Nome da opção"
+                            className="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white px-3 py-2 text-xs rounded-lg focus:outline-none"
+                            value={opt.name}
+                            onChange={e => updateOption(gIdx, oIdx, 'name', e.target.value)}
+                            required
+                          />
+                          <div className="relative w-24">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-black/50 dark:text-white/50">R$</span>
+                            <input 
+                              type="number" step="0.01" min="0"
+                              placeholder="0,00"
+                              className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white pl-8 pr-2 py-2 text-xs rounded-lg focus:outline-none"
+                              value={opt.price ? (opt.price / 100).toString() : ''}
+                              onChange={e => updateOption(gIdx, oIdx, 'price', Math.round(parseFloat(e.target.value || '0') * 100))}
+                            />
+                          </div>
+                          <button type="button" onClick={() => removeOption(gIdx, oIdx)} className="p-2 text-black/30 dark:text-white/30 hover:text-red-500">
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                      <button 
+                        type="button" 
+                        onClick={() => addOption(gIdx)}
+                        className="text-[10px] font-inter font-bold tracking-widest uppercase text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white flex items-center gap-1 pt-2 transition-colors"
+                      >
+                        <Plus size={12} /> Adicionar Opção
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
               
               <div className="flex items-center gap-3 pt-2">

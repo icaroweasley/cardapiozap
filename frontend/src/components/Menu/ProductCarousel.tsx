@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Minus, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
 import { useDraggableScroll } from '../../hooks/useDraggableScroll';
+import { ProductDetailsModal } from './ProductDetailsModal';
 
 interface Product {
   id: string;
@@ -10,23 +11,36 @@ interface Product {
   price: number;
   category: string;
   imageUrl?: string;
+  optionGroups?: any[];
 }
 
 interface ProductCarouselProps {
   products: Product[];
   category: string;
+  isOpen?: boolean;
 }
 
-export function ProductCarousel({ products }: ProductCarouselProps) {
+export function ProductCarousel({ products, isOpen = true }: ProductCarouselProps) {
   const { ref, onMouseDown, onMouseLeave, onMouseUp, onMouseMove, className } = useDraggableScroll();
   const { items, addItem, updateQuantity } = useCartStore();
   
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [justAdded, setJustAdded] = useState<string[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const handleAdd = (product: any, e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!isOpen) {
+      alert("A loja está fechada no momento.");
+      return;
+    }
+    
+    if (product.optionGroups && product.optionGroups.length > 0) {
+      setSelectedProduct(product);
+      return;
+    }
+
     addItem({ productId: product.id, name: product.name, price: product.price });
     setJustAdded(prev => [...prev, product.id]);
     setTimeout(() => {
@@ -99,8 +113,15 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
           return (
           <div 
             key={product.id} 
-            className="shrink-0 w-[85vw] sm:w-[380px] lg:w-[420px] flex flex-col justify-between bg-white/40 dark:bg-white/10 backdrop-blur-2xl shadow-xl border border-black/10 dark:border-white/20 p-5 hover:border-black/30 dark:hover:border-white/40 transition-all cursor-default select-none snap-start rounded-3xl"
+            className="shrink-0 w-[85vw] sm:w-[380px] lg:w-[420px] flex flex-col justify-between bg-white/40 dark:bg-white/10 backdrop-blur-2xl shadow-xl border border-black/10 dark:border-white/20 p-5 hover:border-black/30 dark:hover:border-white/40 transition-all cursor-pointer select-none snap-start rounded-3xl"
             onDragStart={(e) => e.preventDefault()}
+            onClick={() => {
+              if (!isOpen) {
+                alert("A loja está fechada no momento.");
+                return;
+              }
+              setSelectedProduct(product);
+            }}
           >
             <div className="flex gap-4 justify-between items-start mb-6">
               <div className="flex-1 min-w-0">
@@ -188,6 +209,19 @@ export function ProductCarousel({ products }: ProductCarouselProps) {
         >
           <ChevronRight className="w-6 h-6 text-black dark:text-white" />
         </button>
+      )}
+
+      {selectedProduct && (
+        <ProductDetailsModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          onAdded={() => {
+            setJustAdded(prev => [...prev, selectedProduct.id]);
+            setTimeout(() => {
+              setJustAdded(prev => prev.filter(id => id !== selectedProduct.id));
+            }, 1000);
+          }}
+        />
       )}
     </div>
   );

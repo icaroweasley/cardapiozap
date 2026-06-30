@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import { prisma } from '../config/prisma';
 import { notifyCustomerOrderReceived, notifyMerchantNewOrder, notifyCustomerOrderStatus } from '../services/whatsapp.service';
+import { io } from '../index';
 
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -17,11 +18,22 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
         res.status(400).json({ error: `Product ${item.productId} not available` });
         return;
       }
-      totalAmount += product.price * item.quantity;
+      
+      let itemPrice = product.price;
+      let optionsPayload: any = null;
+      if (item.options && Array.isArray(item.options)) {
+        optionsPayload = JSON.stringify(item.options);
+        item.options.forEach((opt: any) => {
+          if (opt.price) itemPrice += opt.price;
+        });
+      }
+      
+      totalAmount += itemPrice * item.quantity;
       orderItemsData.push({
         productId: product.id,
         quantity: item.quantity,
-        priceAtPurchase: product.price
+        priceAtPurchase: itemPrice,
+        options: optionsPayload
       });
     }
 
@@ -48,6 +60,9 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
         merchant: true
       }
     });
+
+    // Notify connected frontend clients
+    io.to(merchantId).emit('new-order', order);
 
     // Fire and forget notifications
     notifyCustomerOrderReceived(order);
