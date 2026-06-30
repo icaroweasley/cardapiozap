@@ -192,6 +192,19 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   const loadList = (id: string) => {
     setSelectedListId(id);
     if (!id) return;
+
+    if (id === 'NEW') {
+       if (targetContacts.length > 0 && !confirm('Isso vai esvaziar a Lista Alvo atual para você criar uma nova lista. Continuar?')) {
+           setTimeout(() => setSelectedListId(''), 100);
+           return;
+       }
+       setTargetContacts([]);
+       setSelectedTargetContacts(new Set());
+       setSaveListName('');
+       setTimeout(() => setSelectedListId(''), 100);
+       return;
+    }
+
     const list = savedLists.find(l => l.id === id);
     if (list) {
       const existingIds = new Set(targetContacts.map(c => c.id));
@@ -763,19 +776,6 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                       >
                         <UserPlus size={14} /> Novo
                       </button>
-                      <button 
-                        onClick={() => {
-                          if (targetContacts.length > 0 && confirm('Isso vai esvaziar a Lista Alvo atual para você criar uma nova lista. Continuar?')) {
-                            setTargetContacts([]);
-                            setSelectedTargetContacts(new Set());
-                            setSaveListName('');
-                            setSelectedListId('');
-                          }
-                        }}
-                        className="bg-black/5 dark:bg-white/5 hover:bg-red-500/10 border border-black/10 dark:border-white/10 hover:border-red-500/20 hover:text-red-500 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white"
-                      >
-                        <Trash2 size={14} /> Limpar
-                      </button>
                       <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-1 rounded-lg text-[10px] font-bold tracking-widest flex items-center">
                         {targetContacts.length} contatos
                       </span>
@@ -792,6 +792,7 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                         className="w-full bg-transparent border-none focus:outline-none focus:ring-0 pl-9 pr-3 py-2 text-xs font-inter text-black dark:text-white appearance-none cursor-pointer"
                       >
                         <option value="" disabled className="text-black dark:text-white bg-white dark:bg-black">Carregar lista salva...</option>
+                        <option value="NEW" className="text-black dark:text-white bg-black/5 dark:bg-white/5 font-bold">+ Nova Lista Vazia</option>
                         {savedLists.map(list => (
                           <option key={list.id} value={list.id} className="text-black dark:text-white bg-white dark:bg-black">
                             {list.name} ({list.contacts.length} contatos)
