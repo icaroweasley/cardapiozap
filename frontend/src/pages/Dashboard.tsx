@@ -168,7 +168,7 @@ export default function Dashboard() {
           ) : (
             <img src="/logo-transparent.png" alt="ZapGarçom Logo" className="h-16 w-auto mb-4 drop-shadow-[0_0_10px_rgba(74,222,128,0.3)] animate-pulse-slow" />
           )}
-          <h1 className="font-podium text-xl font-bold uppercase tracking-widest text-black dark:text-white">{merchant.name || 'LOJA'}</h1>
+          <h1 className="font-podium text-xl font-bold uppercase tracking-widest text-black dark:text-white w-full truncate block" title={merchant.name || 'LOJA'}>{merchant.name || 'LOJA'}</h1>
           <p className="font-inter text-black/60 dark:text-white/60 text-[10px] tracking-[0.2em] uppercase mt-2 flex items-center gap-2 font-bold">
             <Activity size={12} className="text-green-500" /> SISTEMA ONLINE
           </p>

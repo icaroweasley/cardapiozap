@@ -74,10 +74,14 @@ export default function ProfilePanel() {
       });
       
       const merchantData = JSON.parse(localStorage.getItem('merchant') || '{}');
-      localStorage.setItem('merchant', JSON.stringify({ ...merchantData, name: res.data.name, slug: res.data.slug }));
+      localStorage.setItem('merchant', JSON.stringify({ ...merchantData, name: res.data.name, slug: res.data.slug, logoUrl: res.data.logoUrl }));
       
       setSuccess('Perfil atualizado com sucesso!');
       setPassword('');
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Erro ao atualizar perfil.');
     } finally {
