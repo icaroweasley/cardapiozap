@@ -8,6 +8,7 @@ echo "=== Criando arquivo de configuração do Nginx ==="
 cat << 'EOF' | sudo tee /etc/nginx/sites-available/zapgarcom
 server {
     server_name zapgarcom.com.br www.zapgarcom.com.br;
+    client_max_body_size 50M;
 
     location / {
         proxy_pass http://localhost:5173;
@@ -21,6 +22,7 @@ server {
 
 server {
     server_name api.zapgarcom.com.br;
+    client_max_body_size 50M;
 
     location / {
         proxy_pass http://localhost:3001;
