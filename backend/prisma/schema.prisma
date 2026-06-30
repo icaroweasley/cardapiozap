@@ -15,6 +15,7 @@ model Merchant {
   password         String
   whatsappProvider String    @default("EVOLUTION") // "EVOLUTION" or "OFFICIAL"
   whatsappConfig   String?   // JSON string for credentials
+  logoUrl          String?
   active           Boolean   @default(true)
   isAdmin          Boolean   @default(false)
   planStatus       String    @default("active") // "active", "inactive"

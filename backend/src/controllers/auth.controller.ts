@@ -21,6 +21,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         slug,
         phone,
         password: hashedPassword,
+        planExpiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days free trial
       },
     });
 
@@ -67,7 +68,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       expiresIn: '7d',
     });
 
-    res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, isAdmin: merchant.isAdmin, planStatus, planExpiresAt: merchant.planExpiresAt } });
+    res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, phone: merchant.phone, logoUrl: merchant.logoUrl, isAdmin: merchant.isAdmin, planStatus, planExpiresAt: merchant.planExpiresAt } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
@@ -100,6 +101,10 @@ export const getSettings = async (req: AuthRequest, res: Response): Promise<void
     }
 
     res.json({
+      name: merchant.name,
+      slug: merchant.slug,
+      phone: merchant.phone,
+      logoUrl: merchant.logoUrl,
       whatsappProvider: merchant.whatsappProvider,
       whatsappConfig: merchant.whatsappConfig ? JSON.parse(merchant.whatsappConfig) : null,
       isAdmin: merchant.isAdmin,
@@ -127,6 +132,47 @@ export const updateSettings = async (req: AuthRequest, res: Response): Promise<v
     res.json({
       whatsappProvider: merchant.whatsappProvider,
       whatsappConfig: merchant.whatsappConfig ? JSON.parse(merchant.whatsappConfig) : null
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { name, slug, phone, password, logoUrl } = req.body;
+    
+    if (slug) {
+      const existing = await prisma.merchant.findUnique({ where: { slug } });
+      if (existing && existing.id !== req.merchantId) {
+        res.status(400).json({ error: 'Este slug/URL já está em uso.' });
+        return;
+      }
+    }
+
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (slug) updateData.slug = slug;
+    if (phone) updateData.phone = phone;
+    if (logoUrl !== undefined) updateData.logoUrl = logoUrl;
+    
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    const merchant = await prisma.merchant.update({
+      where: { id: req.merchantId },
+      data: updateData
+    });
+
+    res.json({
+      id: merchant.id,
+      name: merchant.name,
+      slug: merchant.slug,
+      phone: merchant.phone,
+      logoUrl: merchant.logoUrl,
+      isAdmin: merchant.isAdmin
     });
   } catch (error) {
     console.error(error);

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, getSettings, updateSettings } from '../controllers/auth.controller';
+import { register, login, getSettings, updateSettings, updateProfile } from '../controllers/auth.controller';
 import { getEvolutionState, createEvolutionInstance, deleteEvolutionInstance } from '../controllers/evolution.controller';
 import { authenticate } from '../middlewares/auth.middleware';
 
@@ -10,6 +10,7 @@ router.post('/login', login);
 
 router.get('/settings', authenticate, getSettings);
 router.put('/settings', authenticate, updateSettings);
+router.put('/profile', authenticate, updateProfile);
 
 router.get('/evolution/instance/:instanceName', authenticate, getEvolutionState);
 router.post('/evolution/instance', authenticate, createEvolutionInstance);

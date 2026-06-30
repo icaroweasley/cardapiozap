@@ -21,6 +21,7 @@ interface Merchant {
   name: string;
   slug: string;
   planStatus?: string;
+  logoUrl?: string;
   products: Product[];
 }
 
@@ -81,8 +82,13 @@ export default function ClientMenu() {
         <div className="p-6 sm:p-10 flex-1 flex flex-col h-full lg:overflow-y-auto hide-scrollbar overflow-x-hidden">
           
           <div className="flex items-center justify-between mb-8 gap-4">
-            <h1 className="font-podium text-3xl sm:text-4xl font-bold uppercase tracking-wider text-black dark:text-white break-words w-full leading-tight">{merchant.name}</h1>
-            <Crown className="w-8 h-8 shrink-0 text-black/30 dark:text-white/30 hidden lg:block" />
+            <div className="flex flex-col gap-4 w-full">
+              {merchant.logoUrl && (
+                <img src={merchant.logoUrl} alt="Logo" className="w-20 h-20 rounded-[2rem] object-cover shadow-lg border-2 border-black/10 dark:border-white/10" />
+              )}
+              <h1 className="font-podium text-3xl sm:text-4xl font-bold uppercase tracking-wider text-black dark:text-white break-words w-full leading-tight">{merchant.name}</h1>
+            </div>
+            {!merchant.logoUrl && <Crown className="w-8 h-8 shrink-0 text-black/30 dark:text-white/30 hidden lg:block" />}
           </div>
 
           <div className="space-y-4 mb-10 pb-10 border-b border-black/10 dark:border-white/10">

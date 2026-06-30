@@ -10,6 +10,7 @@ export const getMenuBySlug = async (req: Request, res: Response): Promise<void> 
       select: {
         id: true,
         name: true,
+        logoUrl: true,
         phone: true,
         planStatus: true,
         planExpiresAt: true,

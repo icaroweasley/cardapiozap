@@ -8,9 +8,10 @@ import ProductManager from '../components/Dashboard/ProductManager';
 import SettingsPanel from '../components/Dashboard/SettingsPanel';
 import BroadcastManager from '../components/Dashboard/BroadcastManager';
 import AdminPanel from '../components/Dashboard/AdminPanel';
+import ProfilePanel from '../components/Dashboard/ProfilePanel';
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS' | 'BROADCAST' | 'ADMIN'>('KANBAN');
+  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS' | 'BROADCAST' | 'ADMIN' | 'PROFILE'>('KANBAN');
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useThemeStore();
 
@@ -162,7 +163,11 @@ export default function Dashboard() {
       {/* Sidebar */}
       <aside className="w-full md:w-[300px] shrink-0 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur-md relative z-20 flex flex-col md:h-screen transition-colors duration-500">
         <div className="p-8 border-b border-black/10 dark:border-white/10 flex flex-col items-start">
-          <img src="/logo-transparent.png" alt="ZapGarçom Logo" className="h-16 w-auto mb-4 drop-shadow-[0_0_10px_rgba(74,222,128,0.3)] animate-pulse-slow" />
+          {merchant.logoUrl ? (
+            <img src={merchant.logoUrl} alt="Logo da Loja" className="h-16 w-16 object-cover rounded-full mb-4 shadow-lg ring-2 ring-black/10 dark:ring-white/10" />
+          ) : (
+            <img src="/logo-transparent.png" alt="ZapGarçom Logo" className="h-16 w-auto mb-4 drop-shadow-[0_0_10px_rgba(74,222,128,0.3)] animate-pulse-slow" />
+          )}
           <h1 className="font-podium text-xl font-bold uppercase tracking-widest text-black dark:text-white">{merchant.name || 'LOJA'}</h1>
           <p className="font-inter text-black/60 dark:text-white/60 text-[10px] tracking-[0.2em] uppercase mt-2 flex items-center gap-2 font-bold">
             <Activity size={12} className="text-green-500" /> SISTEMA ONLINE
@@ -198,6 +203,13 @@ export default function Dashboard() {
             <Megaphone size={18} />
             Disparos
           </button>
+          <button 
+            onClick={() => setActiveTab('PROFILE')}
+            className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'PROFILE' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+          >
+            <Settings2 size={18} />
+            Perfil da Loja
+          </button>
           
           {merchant.isAdmin && (
             <button 
@@ -225,6 +237,7 @@ export default function Dashboard() {
         {activeTab === 'SETTINGS' && <SettingsPanel />}
         {activeTab === 'BROADCAST' && <BroadcastManager setActiveTab={setActiveTab} />}
         {activeTab === 'ADMIN' && <AdminPanel />}
+        {activeTab === 'PROFILE' && <ProfilePanel />}
       </main>
     </div>
   );
