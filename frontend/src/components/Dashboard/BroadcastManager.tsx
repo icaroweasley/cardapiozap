@@ -763,6 +763,19 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                       >
                         <UserPlus size={14} /> Novo
                       </button>
+                      <button 
+                        onClick={() => {
+                          if (targetContacts.length > 0 && confirm('Isso vai esvaziar a Lista Alvo atual para você criar uma nova lista. Continuar?')) {
+                            setTargetContacts([]);
+                            setSelectedTargetContacts(new Set());
+                            setSaveListName('');
+                            setSelectedListId('');
+                          }
+                        }}
+                        className="bg-black/5 dark:bg-white/5 hover:bg-red-500/10 border border-black/10 dark:border-white/10 hover:border-red-500/20 hover:text-red-500 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white"
+                      >
+                        <Trash2 size={14} /> Limpar
+                      </button>
                       <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-1 rounded-lg text-[10px] font-bold tracking-widest flex items-center">
                         {targetContacts.length} contatos
                       </span>
