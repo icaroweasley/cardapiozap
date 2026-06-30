@@ -11,8 +11,13 @@ export default function ProfilePanel() {
   const [deliveryFee, setDeliveryFee] = useState('');
   const [minOrderValue, setMinOrderValue] = useState('');
   const [address, setAddress] = useState('');
-  const [paymentMethods, setPaymentMethods] = useState('');
-  const [businessHours, setBusinessHours] = useState('');
+  const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [openTime, setOpenTime] = useState('');
+  const [closeTime, setCloseTime] = useState('');
+
+  const PAYMENT_OPTIONS = ['Pix', 'Dinheiro', 'Cartão de Crédito', 'Cartão de Débito', 'PicPay', 'VR', 'Ticket Restaurante', 'Sodexo'];
+  const DAYS_OF_WEEK = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
   
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -34,8 +39,21 @@ export default function ProfilePanel() {
           setDeliveryFee(res.data.deliveryFee ? (res.data.deliveryFee / 100).toFixed(2) : '');
           setMinOrderValue(res.data.minOrderValue ? (res.data.minOrderValue / 100).toFixed(2) : '');
           setAddress(res.data.address || '');
-          setPaymentMethods(res.data.paymentMethods ? JSON.parse(res.data.paymentMethods).join(', ') : '');
-          setBusinessHours(res.data.businessHours || '');
+          if (res.data.paymentMethods) {
+            try {
+              setPaymentMethods(JSON.parse(res.data.paymentMethods));
+            } catch {
+              setPaymentMethods(res.data.paymentMethods.split(',').map((s: string) => s.trim()).filter(Boolean));
+            }
+          }
+          if (res.data.businessHours) {
+            const match = res.data.businessHours.match(/(.*)\s+das\s+(.*)\s+às\s+(.*)/i);
+            if (match) {
+              setSelectedDays(match[1].split(',').map((d: string) => d.trim().replace(' e ', '')));
+              setOpenTime(match[2]);
+              setCloseTime(match[3]);
+            }
+          }
         }
       } catch (err) {
         console.error(err);
@@ -76,13 +94,24 @@ export default function ProfilePanel() {
     setError('');
     setSuccess('');
     try {
-      const updateData: any = { 
+      let formattedHours = '';
+      if (selectedDays.length > 0 && openTime && closeTime) {
+        const sortedDays = selectedDays.sort((a, b) => DAYS_OF_WEEK.indexOf(a) - DAYS_OF_WEEK.indexOf(b));
+        // Replace last comma with ' e ' for natural reading
+        let daysStr = sortedDays.join(', ');
+        if (sortedDays.length > 1) {
+          daysStr = daysStr.replace(/,([^,]*)$/, ' e$1');
+        }
+        formattedHours = `${daysStr} das ${openTime} às ${closeTime}`;
+      }
+
+      const updateData: any = {
         name, slug, phone, logoUrl,
         deliveryFee: deliveryFee ? Math.round(parseFloat(deliveryFee.replace(',', '.')) * 100) : 0,
         minOrderValue: minOrderValue ? Math.round(parseFloat(minOrderValue.replace(',', '.')) * 100) : 0,
         address,
-        paymentMethods: paymentMethods ? JSON.stringify(paymentMethods.split(',').map(s => s.trim()).filter(Boolean)) : null,
-        businessHours
+        paymentMethods: paymentMethods.length > 0 ? JSON.stringify(paymentMethods) : null,
+        businessHours: formattedHours || null
       };
       if (password) updateData.password = password;
 
@@ -188,15 +217,43 @@ export default function ProfilePanel() {
           <div className="space-y-4">
             <h3 className="font-podium text-lg uppercase tracking-widest text-black dark:text-white mb-4">Informações de Atendimento</h3>
             
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Dias e Horários de Atendimento</label>
-                <input 
-                  className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
-                  placeholder="Ex: Terça a Domingo das 18h às 23:40"
-                  value={businessHours} onChange={e => setBusinessHours(e.target.value)} 
-                />
+            <div className="flex flex-col gap-4 border border-black/10 dark:border-white/10 rounded-[2rem] p-6 bg-white/30 dark:bg-black/30">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-3">Dias de Atendimento</label>
+                <div className="flex flex-wrap gap-2">
+                  {DAYS_OF_WEEK.map(day => (
+                    <button
+                      type="button"
+                      key={day}
+                      onClick={() => setSelectedDays(prev => prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day])}
+                      className={`px-3 py-2 text-[10px] uppercase tracking-widest font-bold rounded-xl border transition-all ${selectedDays.includes(day) ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white shadow-md scale-105' : 'bg-white/50 dark:bg-black/50 text-black/60 dark:text-white/60 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30'}`}
+                    >
+                      {day.substring(0, 3)}
+                    </button>
+                  ))}
+                </div>
               </div>
+              <div className="flex flex-col md:flex-row gap-4 mt-2">
+                <div className="flex-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Abertura</label>
+                  <input 
+                    type="time"
+                    className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
+                    value={openTime} onChange={e => setOpenTime(e.target.value)} 
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Fechamento</label>
+                  <input 
+                    type="time"
+                    className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
+                    value={closeTime} onChange={e => setCloseTime(e.target.value)} 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Endereço Físico (Opcional)</label>
                 <input 
@@ -229,12 +286,19 @@ export default function ProfilePanel() {
             </div>
 
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Formas de Pagamento (Separadas por vírgula)</label>
-              <input 
-                className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter" 
-                placeholder="Ex: Pix, Dinheiro, Cartão de Crédito"
-                value={paymentMethods} onChange={e => setPaymentMethods(e.target.value)} 
-              />
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Formas de Pagamento Aceitas</label>
+              <div className="flex flex-wrap gap-2">
+                {PAYMENT_OPTIONS.map(opt => (
+                  <button
+                    type="button"
+                    key={opt}
+                    onClick={() => setPaymentMethods(prev => prev.includes(opt) ? prev.filter(p => p !== opt) : [...prev, opt])}
+                    className={`px-4 py-2 text-[10px] uppercase tracking-widest font-bold rounded-xl border transition-all ${paymentMethods.includes(opt) ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white shadow-lg scale-105' : 'bg-white/50 dark:bg-black/50 text-black/60 dark:text-white/60 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30'}`}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
