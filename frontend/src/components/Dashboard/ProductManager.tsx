@@ -338,7 +338,7 @@ export default function ProductManager() {
 
       {isModalOpen && createPortal(
         <div className="fixed inset-0 bg-white/80 dark:bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-neutral-100 dark:bg-[#050505] w-full max-w-lg p-8 border border-black/10 dark:border-white/10 shadow-2xl relative rounded-3xl overflow-hidden">
+          <div className="bg-neutral-100 dark:bg-[#050505] w-full max-w-lg p-8 border border-black/10 dark:border-white/10 shadow-2xl relative rounded-3xl overflow-y-auto max-h-[90vh] hide-scrollbar">
             <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors">
               <X size={20} />
             </button>
