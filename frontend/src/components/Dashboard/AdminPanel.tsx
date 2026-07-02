@@ -116,21 +116,21 @@ export default function AdminPanel() {
           <div className="p-6 border-b border-black/5 dark:border-white/5 flex justify-between items-center shrink-0">
             <h2 className="font-podium text-lg uppercase tracking-widest text-black dark:text-white">Lojistas / Clientes</h2>
           </div>
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto custom-scrollbar">
             <table className="w-full text-left border-collapse font-inter text-sm relative">
               <thead className="sticky top-0 z-10 bg-white/90 dark:bg-black/90 backdrop-blur-md">
-                <tr className="bg-black/5 dark:bg-white/5 text-[10px] uppercase tracking-widest text-black/50 dark:text-white/50">
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Nome</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Slug</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Status</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">API / Instância</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Plano</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Tipo Conta</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Mensalidade</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Vencimento</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Pedidos</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Produtos</th>
-                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Ações</th>
+                <tr className="bg-black/5 dark:bg-white/5 text-xs uppercase tracking-widest text-black/70 dark:text-white/70">
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Nome</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Slug</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Status</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">API / Instância</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Plano</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Tipo Conta</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Mensalidade</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Vencimento</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Pedidos</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Produtos</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -140,14 +140,14 @@ export default function AdminPanel() {
                   
                   return (
                     <tr key={merchant.id} className={`text-black dark:text-white transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${i !== merchants.length - 1 ? 'border-b border-black/5 dark:border-white/5' : ''}`}>
-                      <td className="p-4 font-bold">{merchant.name}</td>
-                      <td className="p-4 text-black/60 dark:text-white/60">/{merchant.slug}</td>
-                      <td className="p-4">
+                      <td className="p-4 font-bold whitespace-nowrap">{merchant.name}</td>
+                      <td className="p-4 text-black/60 dark:text-white/60 whitespace-nowrap">/{merchant.slug}</td>
+                      <td className="p-4 whitespace-nowrap">
                         <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest ${merchant.active ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'}`}>
                           {merchant.active ? 'Ativo' : 'Inativo'}
                         </span>
                       </td>
-                      <td className="p-4">
+                      <td className="p-4 whitespace-nowrap">
                         {merchant.whatsappProvider === 'EVOLUTION' ? (
                           <div className="flex flex-col gap-1">
                             <span className="text-[10px] bg-black/5 dark:bg-white/5 px-2 py-1 rounded-md max-w-max border border-black/10 dark:border-white/10 font-mono tracking-widest">Evolution</span>
@@ -159,25 +159,25 @@ export default function AdminPanel() {
                           </div>
                         )}
                       </td>
-                      <td className="p-4">
+                      <td className="p-4 whitespace-nowrap">
                         <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest ${merchant.planStatus === 'active' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'}`}>
                           {merchant.planStatus === 'active' ? 'Ativo' : 'Inativo'}
                         </span>
                       </td>
-                      <td className="p-4">
+                      <td className="p-4 whitespace-nowrap">
                         <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10`}>
                           {merchant.accountType === 'BROADCAST_ONLY' ? 'Disparos' : 'Completa'}
                         </span>
                       </td>
-                      <td className="p-4 text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                      <td className="p-4 text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
                         R$ {Number(merchant.subscriptionPrice ?? 49.90).toFixed(2).replace('.', ',')}
                       </td>
-                      <td className="p-4 text-xs font-bold font-mono">
+                      <td className="p-4 text-xs font-bold font-mono whitespace-nowrap">
                         {merchant.planExpiresAt ? new Date(merchant.planExpiresAt).toLocaleDateString('pt-BR') : 'N/A'}
                       </td>
-                      <td className="p-4 font-bold">{merchant._count.orders}</td>
-                      <td className="p-4 font-bold">{merchant._count.products}</td>
-                      <td className="p-4">
+                      <td className="p-4 font-bold whitespace-nowrap">{merchant._count.orders}</td>
+                      <td className="p-4 font-bold whitespace-nowrap">{merchant._count.products}</td>
+                      <td className="p-4 whitespace-nowrap">
                         <button 
                           onClick={() => handleEditPlan(merchant)}
                           className="bg-black/10 dark:bg-white/10 p-2 rounded-xl hover:bg-black/20 dark:hover:bg-white/20 transition-colors"
