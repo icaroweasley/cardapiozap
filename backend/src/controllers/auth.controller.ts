@@ -22,7 +22,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         phone,
         password: hashedPassword,
         accountType: accountType || 'FULL',
-        planExpiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days free trial
+        isTrial: true,
+        planExpiresAt: new Date(Date.now() + (parseInt(process.env.DEFAULT_TRIAL_DAYS || '3') * 24 * 60 * 60 * 1000)),
       },
     });
 

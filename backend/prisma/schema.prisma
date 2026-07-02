@@ -23,6 +23,7 @@ model Merchant {
   paymentMethods   String?   // JSON
   active           Boolean   @default(true)
   isAdmin          Boolean   @default(false)
+  isTrial          Boolean   @default(true)
   accountType      String    @default("FULL") // "FULL" or "BROADCAST_ONLY"
   subscriptionPrice Float    @default(49.90)
   planStatus       String    @default("active") // "active", "inactive"

@@ -81,7 +81,8 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
             where: { id: merchantId },
             data: {
               planStatus: 'active',
-              planExpiresAt: nextMonth
+              planExpiresAt: nextMonth,
+              isTrial: false
             }
           });
           console.log(`[Mercado Pago] Assinatura renovada para Merchant ID: ${merchantId}. Vence em: ${nextMonth.toISOString()}`);

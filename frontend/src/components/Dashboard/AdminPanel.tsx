@@ -8,7 +8,7 @@ export default function AdminPanel() {
   const [merchants, setMerchants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingMerchant, setEditingMerchant] = useState<any>(null);
-  const [planForm, setPlanForm] = useState({ planStatus: 'active', planExpiresAt: '', accountType: 'FULL', subscriptionPrice: 49.90 });
+  const [planForm, setPlanForm] = useState({ planStatus: 'active', planExpiresAt: '', accountType: 'FULL', subscriptionPrice: 49.90, isTrial: true });
   const [savingPlan, setSavingPlan] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL || '';
 
@@ -34,7 +34,8 @@ export default function AdminPanel() {
       planStatus: merchant.planStatus || 'active',
       planExpiresAt: merchant.planExpiresAt ? new Date(merchant.planExpiresAt).toISOString().split('T')[0] : '',
       accountType: merchant.accountType || 'FULL',
-      subscriptionPrice: merchant.subscriptionPrice ?? 49.90
+      subscriptionPrice: merchant.subscriptionPrice ?? 49.90,
+      isTrial: merchant.isTrial ?? true
     });
   };
 
@@ -246,6 +247,21 @@ export default function AdminPanel() {
                   onChange={e => setPlanForm({ ...planForm, subscriptionPrice: parseFloat(e.target.value) })}
                   className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white font-inter focus:outline-none"
                 />
+              </div>
+              <div>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <div className="relative">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only"
+                      checked={planForm.isTrial}
+                      onChange={e => setPlanForm({ ...planForm, isTrial: e.target.checked })}
+                    />
+                    <div className={`block w-10 h-6 rounded-full transition-colors ${planForm.isTrial ? 'bg-blue-500' : 'bg-black/20 dark:bg-white/20'}`}></div>
+                    <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${planForm.isTrial ? 'transform translate-x-4' : ''}`}></div>
+                  </div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50">Está em período de teste? (Ignora tolerância de 3 dias no bloqueio)</div>
+                </label>
               </div>
             </div>
 

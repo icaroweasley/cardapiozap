@@ -61,9 +61,16 @@ export default function Dashboard() {
     } else if (merchant.planExpiresAt) {
       const expiresAt = new Date(merchant.planExpiresAt).getTime();
       const now = new Date().getTime();
-      const gracePeriodEnd = expiresAt + (3 * 24 * 60 * 60 * 1000);
-      if (now > gracePeriodEnd) {
-        isTotalBlock = true;
+      
+      if (merchant.isTrial) {
+        if (now > expiresAt) {
+          isTotalBlock = true;
+        }
+      } else {
+        const gracePeriodEnd = expiresAt + (3 * 24 * 60 * 60 * 1000);
+        if (now > gracePeriodEnd) {
+          isTotalBlock = true;
+        }
       }
     }
   }
@@ -72,17 +79,20 @@ export default function Dashboard() {
     if (merchant.planExpiresAt && merchant.planStatus === 'active' && !merchant.isAdmin && !isTotalBlock) {
       const expiresAt = new Date(merchant.planExpiresAt).getTime();
       const now = new Date().getTime();
-      const gracePeriodEnd = expiresAt + (3 * 24 * 60 * 60 * 1000);
       
-      if (now >= expiresAt && now <= gracePeriodEnd) {
+      if (!merchant.isTrial) {
+        const gracePeriodEnd = expiresAt + (3 * 24 * 60 * 60 * 1000);
+        
+        if (now >= expiresAt && now <= gracePeriodEnd) {
         const msPassed = now - expiresAt;
         const daysPassed = Math.floor(msPassed / (1000 * 60 * 60 * 24));
         const daysLeft = Math.max(0, 3 - daysPassed);
         setGraceDaysLeft(daysLeft);
         setShowGraceModal(true);
+        }
       }
     }
-  }, [merchant.planExpiresAt, merchant.planStatus, merchant.isAdmin, isTotalBlock]);
+  }, [merchant.planExpiresAt, merchant.planStatus, merchant.isAdmin, isTotalBlock, merchant.isTrial]);
 
   if (isTotalBlock) {
     return (
@@ -90,9 +100,13 @@ export default function Dashboard() {
         <img src="/bg-burger.png" alt="Background" className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none" />
         <div className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 p-10 rounded-[2rem] shadow-2xl flex flex-col items-center text-center max-w-md z-10 animate-fade-up">
           <img src="/logo-transparent.png" alt="ZapGarçom Logo" className="h-28 w-auto mb-6 drop-shadow-[0_0_15px_rgba(74,222,128,0.3)] animate-pulse-slow" />
-          <h1 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white mb-4">Assinatura Inativa</h1>
+          <h1 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white mb-4">
+            {merchant.isTrial ? 'Período de Teste Encerrado' : 'Assinatura Inativa'}
+          </h1>
           <p className="text-sm text-black/70 dark:text-white/70 leading-relaxed mb-8">
-            O plano do seu estabelecimento expirou. Para voltar a receber pedidos e realizar disparos, por favor renove a sua assinatura.
+            {merchant.isTrial 
+              ? 'Seu período de teste gratuito acabou. Para continuar recebendo pedidos e realizando disparos, por favor assine o plano mensal.'
+              : 'O plano do seu estabelecimento expirou. Para voltar a receber pedidos e realizar disparos, por favor renove a sua assinatura.'}
           </p>
           <button 
             onClick={handleRenewPlan}
