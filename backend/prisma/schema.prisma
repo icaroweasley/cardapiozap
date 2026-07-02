@@ -24,6 +24,7 @@ model Merchant {
   active           Boolean   @default(true)
   isAdmin          Boolean   @default(false)
   accountType      String    @default("FULL") // "FULL" or "BROADCAST_ONLY"
+  subscriptionPrice Float    @default(49.90)
   planStatus       String    @default("active") // "active", "inactive"
   planExpiresAt    DateTime? 
   createdAt        DateTime  @default(now())

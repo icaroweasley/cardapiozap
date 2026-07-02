@@ -11,6 +11,9 @@ export const createCheckout = async (req: AuthRequest, res: Response): Promise<v
     const merchantId = req.merchantId;
     if (!merchantId) { res.status(401).json({ error: 'Unauthorized' }); return; }
 
+    const merchant = await prisma.merchant.findUnique({ where: { id: merchantId } });
+    if (!merchant) { res.status(404).json({ error: 'Merchant not found' }); return; }
+
     if (!process.env.MP_ACCESS_TOKEN) {
       res.status(500).json({ error: 'Mercado Pago não configurado no servidor' });
       return;
@@ -31,7 +34,7 @@ export const createCheckout = async (req: AuthRequest, res: Response): Promise<v
             id: 'vanguard_monthly',
             title: 'Assinatura Mensal - ZapGarçom',
             quantity: 1,
-            unit_price: 49.90,
+            unit_price: merchant.subscriptionPrice || 49.90,
             currency_id: 'BRL',
           }
         ],

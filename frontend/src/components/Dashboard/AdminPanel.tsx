@@ -8,7 +8,7 @@ export default function AdminPanel() {
   const [merchants, setMerchants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingMerchant, setEditingMerchant] = useState<any>(null);
-  const [planForm, setPlanForm] = useState({ planStatus: 'active', planExpiresAt: '', accountType: 'FULL' });
+  const [planForm, setPlanForm] = useState({ planStatus: 'active', planExpiresAt: '', accountType: 'FULL', subscriptionPrice: 49.90 });
   const [savingPlan, setSavingPlan] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL || '';
 
@@ -33,7 +33,8 @@ export default function AdminPanel() {
     setPlanForm({
       planStatus: merchant.planStatus || 'active',
       planExpiresAt: merchant.planExpiresAt ? new Date(merchant.planExpiresAt).toISOString().split('T')[0] : '',
-      accountType: merchant.accountType || 'FULL'
+      accountType: merchant.accountType || 'FULL',
+      subscriptionPrice: merchant.subscriptionPrice ?? 49.90
     });
   };
 
@@ -122,6 +123,7 @@ export default function AdminPanel() {
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">API / Instância</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Plano</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Tipo Conta</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Mensalidade</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Vencimento</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Pedidos</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10">Produtos</th>
@@ -163,6 +165,9 @@ export default function AdminPanel() {
                         <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10`}>
                           {merchant.accountType === 'BROADCAST_ONLY' ? 'Disparos' : 'Completa'}
                         </span>
+                      </td>
+                      <td className="p-4 text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                        R$ {Number(merchant.subscriptionPrice ?? 49.90).toFixed(2).replace('.', ',')}
                       </td>
                       <td className="p-4 text-xs font-bold font-mono">
                         {merchant.planExpiresAt ? new Date(merchant.planExpiresAt).toLocaleDateString('pt-BR') : 'N/A'}
@@ -230,6 +235,17 @@ export default function AdminPanel() {
                   <option className="bg-white dark:bg-[#121215] text-black dark:text-white" value="FULL">CRM + Disparos (Completa)</option>
                   <option className="bg-white dark:bg-[#121215] text-black dark:text-white" value="BROADCAST_ONLY">Apenas Disparos</option>
                 </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Preço da Mensalidade (R$)</label>
+                <input 
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={planForm.subscriptionPrice}
+                  onChange={e => setPlanForm({ ...planForm, subscriptionPrice: parseFloat(e.target.value) })}
+                  className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white font-inter focus:outline-none"
+                />
               </div>
             </div>
 

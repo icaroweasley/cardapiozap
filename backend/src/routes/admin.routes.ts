@@ -28,6 +28,7 @@ router.get('/merchants', authenticate, requireAdmin, async (req: any, res) => {
         whatsappProvider: true,
         whatsappConfig: true,
         accountType: true,
+        subscriptionPrice: true,
         _count: {
           select: { savedLists: true, products: true, orders: true }
         }
@@ -43,7 +44,7 @@ router.get('/merchants', authenticate, requireAdmin, async (req: any, res) => {
 router.put('/merchants/:id/plan', authenticate, requireAdmin, async (req: any, res) => {
   try {
     const { id } = req.params;
-    const { planStatus, planExpiresAt, accountType } = req.body;
+    const { planStatus, planExpiresAt, accountType, subscriptionPrice } = req.body;
 
     const data: any = {
       planStatus,
@@ -51,6 +52,9 @@ router.put('/merchants/:id/plan', authenticate, requireAdmin, async (req: any, r
     };
     if (accountType) {
       data.accountType = accountType;
+    }
+    if (subscriptionPrice !== undefined) {
+      data.subscriptionPrice = Number(subscriptionPrice);
     }
 
     const updated = await prisma.merchant.update({
@@ -61,6 +65,7 @@ router.put('/merchants/:id/plan', authenticate, requireAdmin, async (req: any, r
         planStatus: true,
         planExpiresAt: true,
         accountType: true,
+        subscriptionPrice: true,
       }
     });
 
