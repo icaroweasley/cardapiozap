@@ -8,6 +8,7 @@ export default function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [accountType, setAccountType] = useState('FULL');
   const [slug, setSlug] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ export default function Login() {
     setError('');
     try {
       if (isRegistering) {
-        const res = await axios.post('/api/auth/register', { name, slug, phone, password });
+        const res = await axios.post('/api/auth/register', { name, slug, phone, password, accountType });
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('merchant', JSON.stringify(res.data.merchant));
         navigate('/dashboard');
@@ -92,6 +93,41 @@ export default function Login() {
                   onChange={e => setPhone(e.target.value)} 
                   required 
                 />
+              </div>
+              
+              <div className="pt-2">
+                <label className="block font-inter text-[10px] tracking-widest text-black/70 dark:text-white/70 uppercase mb-3 font-bold">Tipo de Conta</label>
+                <div className="flex gap-4">
+                  <label className="flex-1 cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="accountType" 
+                      value="FULL" 
+                      checked={accountType === 'FULL'} 
+                      onChange={() => setAccountType('FULL')}
+                      className="hidden peer"
+                    />
+                    <div className="h-full p-4 border border-black/20 dark:border-white/20 rounded-xl peer-checked:border-black dark:peer-checked:border-white peer-checked:bg-black/5 dark:peer-checked:bg-white/5 transition-all text-center">
+                      <div className="font-bold text-[10px] uppercase tracking-widest text-black dark:text-white mb-1">CRM + Disparos</div>
+                      <div className="text-[9px] text-black/50 dark:text-white/50 leading-tight">Cardápio digital, Kanban e mensagens em massa</div>
+                    </div>
+                  </label>
+                  
+                  <label className="flex-1 cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="accountType" 
+                      value="BROADCAST_ONLY" 
+                      checked={accountType === 'BROADCAST_ONLY'} 
+                      onChange={() => setAccountType('BROADCAST_ONLY')}
+                      className="hidden peer"
+                    />
+                    <div className="h-full p-4 border border-black/20 dark:border-white/20 rounded-xl peer-checked:border-black dark:peer-checked:border-white peer-checked:bg-black/5 dark:peer-checked:bg-white/5 transition-all text-center">
+                      <div className="font-bold text-[10px] uppercase tracking-widest text-black dark:text-white mb-1">Apenas Disparos</div>
+                      <div className="text-[9px] text-black/50 dark:text-white/50 leading-tight">Sistema focado apenas em mensagens em massa</div>
+                    </div>
+                  </label>
+                </div>
               </div>
             </>
           )}

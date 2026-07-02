@@ -5,7 +5,7 @@ import { prisma } from '../config/prisma';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, slug, phone, password } = req.body;
+    const { name, slug, phone, password, accountType } = req.body;
 
     const existingMerchant = await prisma.merchant.findUnique({ where: { slug } });
     if (existingMerchant) {
@@ -21,6 +21,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         slug,
         phone,
         password: hashedPassword,
+        accountType: accountType || 'FULL',
         planExpiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days free trial
       },
     });
@@ -29,7 +30,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       expiresIn: '7d',
     });
 
-    res.status(201).json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, isAdmin: merchant.isAdmin } });
+    res.status(201).json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, isAdmin: merchant.isAdmin, accountType: merchant.accountType } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
@@ -68,7 +69,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       expiresIn: '7d',
     });
 
-    res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, phone: merchant.phone, logoUrl: merchant.logoUrl, isAdmin: merchant.isAdmin, planStatus, planExpiresAt: merchant.planExpiresAt } });
+    res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, phone: merchant.phone, logoUrl: merchant.logoUrl, isAdmin: merchant.isAdmin, planStatus, planExpiresAt: merchant.planExpiresAt, accountType: merchant.accountType } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });

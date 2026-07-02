@@ -9,7 +9,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const prisma_1 = require("../config/prisma");
 const register = async (req, res) => {
     try {
-        const { name, slug, phone, password } = req.body;
+        const { name, slug, phone, password, accountType } = req.body;
         const existingMerchant = await prisma_1.prisma.merchant.findUnique({ where: { slug } });
         if (existingMerchant) {
             res.status(400).json({ error: 'Slug already in use' });
@@ -22,13 +22,14 @@ const register = async (req, res) => {
                 slug,
                 phone,
                 password: hashedPassword,
+                accountType: accountType || 'FULL',
                 planExpiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days free trial
             },
         });
         const token = jsonwebtoken_1.default.sign({ id: merchant.id }, process.env.JWT_SECRET || 'secret', {
             expiresIn: '7d',
         });
-        res.status(201).json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, isAdmin: merchant.isAdmin } });
+        res.status(201).json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, isAdmin: merchant.isAdmin, accountType: merchant.accountType } });
     }
     catch (error) {
         console.error(error);
@@ -63,7 +64,7 @@ const login = async (req, res) => {
         const token = jsonwebtoken_1.default.sign({ id: merchant.id }, process.env.JWT_SECRET || 'secret', {
             expiresIn: '7d',
         });
-        res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, phone: merchant.phone, logoUrl: merchant.logoUrl, isAdmin: merchant.isAdmin, planStatus, planExpiresAt: merchant.planExpiresAt } });
+        res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, phone: merchant.phone, logoUrl: merchant.logoUrl, isAdmin: merchant.isAdmin, planStatus, planExpiresAt: merchant.planExpiresAt, accountType: merchant.accountType } });
     }
     catch (error) {
         console.error(error);

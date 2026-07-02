@@ -23,6 +23,7 @@ model Merchant {
   paymentMethods   String?   // JSON
   active           Boolean   @default(true)
   isAdmin          Boolean   @default(false)
+  accountType      String    @default("FULL") // "FULL" or "BROADCAST_ONLY"
   planStatus       String    @default("active") // "active", "inactive"
   planExpiresAt    DateTime? 
   createdAt        DateTime  @default(now())
