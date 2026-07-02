@@ -29,6 +29,8 @@ router.get('/merchants', authenticate, requireAdmin, async (req: any, res) => {
         whatsappConfig: true,
         accountType: true,
         subscriptionPrice: true,
+        trialBroadcastLimit: true,
+        paidBroadcastLimit: true,
         isTrial: true,
         _count: {
           select: { savedLists: true, products: true, orders: true }
@@ -45,7 +47,7 @@ router.get('/merchants', authenticate, requireAdmin, async (req: any, res) => {
 router.put('/merchants/:id/plan', authenticate, requireAdmin, async (req: any, res) => {
   try {
     const { id } = req.params;
-    const { planStatus, planExpiresAt, accountType, subscriptionPrice, isTrial } = req.body;
+    const { planStatus, planExpiresAt, accountType, subscriptionPrice, isTrial, trialBroadcastLimit, paidBroadcastLimit } = req.body;
 
     const data: any = {
       planStatus,
@@ -60,6 +62,12 @@ router.put('/merchants/:id/plan', authenticate, requireAdmin, async (req: any, r
     if (isTrial !== undefined) {
       data.isTrial = isTrial;
     }
+    if (trialBroadcastLimit !== undefined) {
+      data.trialBroadcastLimit = Number(trialBroadcastLimit);
+    }
+    if (paidBroadcastLimit !== undefined) {
+      data.paidBroadcastLimit = Number(paidBroadcastLimit);
+    }
 
     const updated = await prisma.merchant.update({
       where: { id },
@@ -70,6 +78,8 @@ router.put('/merchants/:id/plan', authenticate, requireAdmin, async (req: any, r
         planExpiresAt: true,
         accountType: true,
         subscriptionPrice: true,
+        trialBroadcastLimit: true,
+        paidBroadcastLimit: true,
         isTrial: true,
       }
     });

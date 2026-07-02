@@ -8,7 +8,7 @@ export default function AdminPanel() {
   const [merchants, setMerchants] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingMerchant, setEditingMerchant] = useState<any>(null);
-  const [planForm, setPlanForm] = useState({ planStatus: 'active', planExpiresAt: '', accountType: 'FULL', subscriptionPrice: 49.90, isTrial: true });
+  const [planForm, setPlanForm] = useState({ planStatus: 'active', planExpiresAt: '', accountType: 'FULL', subscriptionPrice: 49.90, isTrial: true, trialBroadcastLimit: 100, paidBroadcastLimit: 1000 });
   const [savingPlan, setSavingPlan] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL || '';
 
@@ -35,7 +35,9 @@ export default function AdminPanel() {
       planExpiresAt: merchant.planExpiresAt ? new Date(merchant.planExpiresAt).toISOString().split('T')[0] : '',
       accountType: merchant.accountType || 'FULL',
       subscriptionPrice: merchant.subscriptionPrice ?? 49.90,
-      isTrial: merchant.isTrial ?? true
+      isTrial: merchant.isTrial ?? true,
+      trialBroadcastLimit: merchant.trialBroadcastLimit ?? 100,
+      paidBroadcastLimit: merchant.paidBroadcastLimit ?? 1000
     });
   };
 
@@ -247,6 +249,30 @@ export default function AdminPanel() {
                   onChange={e => setPlanForm({ ...planForm, subscriptionPrice: parseFloat(e.target.value) })}
                   className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white font-inter focus:outline-none"
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Limite: Contas Teste</label>
+                  <input 
+                    type="number"
+                    min="1"
+                    value={planForm.trialBroadcastLimit}
+                    onChange={e => setPlanForm({ ...planForm, trialBroadcastLimit: parseInt(e.target.value) })}
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white font-inter focus:outline-none"
+                    title="Quantidade de clientes ÚNICOS por dia durante teste"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Limite: Pagantes</label>
+                  <input 
+                    type="number"
+                    min="1"
+                    value={planForm.paidBroadcastLimit}
+                    onChange={e => setPlanForm({ ...planForm, paidBroadcastLimit: parseInt(e.target.value) })}
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white font-inter focus:outline-none"
+                    title="Quantidade de clientes ÚNICOS por dia após pagar plano"
+                  />
+                </div>
               </div>
               <div>
                 <label className="flex items-center gap-3 cursor-pointer">

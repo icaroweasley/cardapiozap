@@ -185,6 +185,45 @@ router.post('/send', authenticate, async (req: any, res) => {
     }
 
     const cleanPhone = number.replace(/\D/g, '');
+    const dateStr = new Date().toISOString().split('T')[0];
+
+    // Track unique recipients and check limit
+    try {
+      const existingLog = await prisma.broadcastRecipientLog.findUnique({
+        where: {
+          merchantId_date_phone: {
+            merchantId: userId,
+            date: dateStr,
+            phone: cleanPhone
+          }
+        }
+      });
+
+      if (!existingLog) {
+        // It's a new unique recipient today, check limit
+        const currentUniqueCount = await prisma.broadcastRecipientLog.count({
+          where: { merchantId: userId, date: dateStr }
+        });
+        
+        const limit = merchant.isTrial ? merchant.trialBroadcastLimit : merchant.paidBroadcastLimit;
+        
+        if (currentUniqueCount >= limit) {
+          return res.status(403).json({ error: `Limite diário atingido (${limit} clientes diferentes/dia).` });
+        }
+
+        // Log this new recipient
+        await prisma.broadcastRecipientLog.create({
+          data: {
+            merchantId: userId,
+            date: dateStr,
+            phone: cleanPhone
+          }
+        });
+      }
+    } catch (dbError) {
+      console.error('Error tracking broadcast recipient:', dbError);
+      // Proceed even if DB tracking fails temporarily, or block? Best to just continue.
+    }
 
     if (provider === 'OFFICIAL') {
       const phoneNumberId = config.phoneNumberId;

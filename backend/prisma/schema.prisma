@@ -26,14 +26,29 @@ model Merchant {
   isTrial          Boolean   @default(true)
   accountType      String    @default("FULL") // "FULL" or "BROADCAST_ONLY"
   subscriptionPrice Float    @default(49.90)
+  trialBroadcastLimit Int    @default(100)
+  paidBroadcastLimit  Int    @default(1000)
   planStatus       String    @default("active") // "active", "inactive"
   planExpiresAt    DateTime? 
   createdAt        DateTime  @default(now())
   products         Product[]
   orders           Order[]
   savedLists       SavedList[]
+  broadcastLogs    BroadcastRecipientLog[]
 
   @@index([slug])
+}
+
+model BroadcastRecipientLog {
+  id         String   @id @default(uuid())
+  merchantId String
+  date       String
+  phone      String
+
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@unique([merchantId, date, phone])
+  @@index([merchantId, date])
 }
 
 model SavedList {
