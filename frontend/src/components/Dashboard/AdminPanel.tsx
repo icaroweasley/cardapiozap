@@ -68,7 +68,7 @@ export default function AdminPanel() {
 
   return (
     <div className="flex-1 flex flex-col h-full min-h-0 bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-[2rem] lg:m-2">
-      <div className="p-6 md:p-10 border-b border-black/10 dark:border-white/10 bg-white/30 dark:bg-black/20 flex items-center gap-4">
+      <div className="p-4 md:p-6 border-b border-black/10 dark:border-white/10 bg-white/30 dark:bg-black/20 flex items-center gap-4 shrink-0">
         <Server className="w-8 h-8 text-black dark:text-white" />
         <div>
           <h1 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white">
@@ -80,31 +80,31 @@ export default function AdminPanel() {
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-6 md:p-10 flex flex-col gap-6 min-h-0">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-6 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-4 shadow-sm">
-             <div className="bg-black/5 dark:bg-white/5 p-4 rounded-xl text-black dark:text-white"><Users /></div>
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-4 min-h-0">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 shrink-0">
+          <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-3 shadow-sm">
+             <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl text-black dark:text-white"><Users size={20} /></div>
              <div>
                <div className="text-[10px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Total Lojistas</div>
                <div className="text-2xl font-podium mt-1 text-black dark:text-white">{merchants.length}</div>
              </div>
           </div>
-          <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-6 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-4 shadow-sm">
-             <div className="bg-emerald-500/10 p-4 rounded-xl text-emerald-600 dark:text-emerald-400"><Activity /></div>
+          <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-3 shadow-sm">
+             <div className="bg-emerald-500/10 p-3 rounded-xl text-emerald-600 dark:text-emerald-400"><Activity size={20} /></div>
              <div>
                <div className="text-[10px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Ativos</div>
                <div className="text-2xl font-podium mt-1 text-black dark:text-white">{merchants.filter(m => m.active).length}</div>
              </div>
           </div>
-          <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-6 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-4 shadow-sm">
-             <div className="bg-blue-500/10 p-4 rounded-xl text-blue-600 dark:text-blue-400"><ShoppingCart /></div>
+          <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-3 shadow-sm">
+             <div className="bg-blue-500/10 p-3 rounded-xl text-blue-600 dark:text-blue-400"><ShoppingCart size={20} /></div>
              <div>
                <div className="text-[10px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Total Pedidos</div>
                <div className="text-2xl font-podium mt-1 text-black dark:text-white">{merchants.reduce((acc, m) => acc + m._count.orders, 0)}</div>
              </div>
           </div>
-          <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-6 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-4 shadow-sm">
-             <div className="bg-purple-500/10 p-4 rounded-xl text-purple-600 dark:text-purple-400"><ListOrdered /></div>
+          <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-black/10 dark:border-white/10 flex items-center gap-3 shadow-sm">
+             <div className="bg-purple-500/10 p-3 rounded-xl text-purple-600 dark:text-purple-400"><ListOrdered size={20} /></div>
              <div>
                <div className="text-[10px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Listas Salvas</div>
                <div className="text-2xl font-podium mt-1 text-black dark:text-white">{merchants.reduce((acc, m) => acc + m._count.savedLists, 0)}</div>
