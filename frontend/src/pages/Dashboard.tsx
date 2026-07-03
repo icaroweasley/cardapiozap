@@ -97,7 +97,29 @@ export default function Dashboard() {
   if (isTotalBlock) {
     return (
       <div className="h-screen flex items-center justify-center bg-neutral-100 dark:bg-black transition-colors duration-500 relative font-inter">
-        <img src="/bg-burger.png" alt="Background" className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none" />
+        {merchant.themeConfig?.backgroundType === 'custom' && merchant.themeConfig?.backgroundValue ? (
+          <img
+            src={merchant.themeConfig.backgroundValue}
+            alt="Custom Background"
+            className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+          />
+        ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue?.startsWith('img:') ? (
+          <img
+            src={merchant.themeConfig.backgroundValue.replace('img:', '')}
+            alt="Background"
+            className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+          />
+        ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue ? (
+          <div 
+            className={`fixed inset-0 w-full h-full opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 ${merchant.themeConfig.backgroundValue}`}
+          />
+        ) : (
+          <img
+            src="/bg-burger.png"
+            alt="Background"
+            className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+          />
+        )}
         <div className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 p-10 rounded-[2rem] shadow-2xl flex flex-col items-center text-center max-w-md z-10 animate-fade-up">
           <img src="/logo-transparent.png" alt="ZapGarçom Logo" className="h-28 w-auto mb-6 drop-shadow-[0_0_15px_rgba(74,222,128,0.3)] animate-pulse-slow" />
           <h1 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white mb-4">
@@ -126,11 +148,29 @@ export default function Dashboard() {
   return (
     <div className="h-screen overflow-hidden flex flex-col md:flex-row bg-neutral-100 dark:bg-black transition-colors duration-500 relative">
       {/* Background Image */}
-      <img
-        src="/bg-burger.png"
-        alt="Background"
-        className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
-      />
+      {merchant.themeConfig?.backgroundType === 'custom' && merchant.themeConfig?.backgroundValue ? (
+        <img
+          src={merchant.themeConfig.backgroundValue}
+          alt="Custom Background"
+          className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+        />
+      ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue?.startsWith('img:') ? (
+        <img
+          src={merchant.themeConfig.backgroundValue.replace('img:', '')}
+          alt="Background"
+          className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+        />
+      ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue ? (
+        <div 
+          className={`fixed inset-0 w-full h-full opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 ${merchant.themeConfig.backgroundValue}`}
+        />
+      ) : (
+        <img
+          src="/bg-burger.png"
+          alt="Background"
+          className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+        />
+      )}
 
       {/* Theme Toggle */}
       <button 

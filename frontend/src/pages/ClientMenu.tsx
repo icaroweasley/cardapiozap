@@ -76,6 +76,12 @@ export default function ClientMenu() {
           alt="Custom Background"
           className="fixed inset-0 w-full h-full object-cover opacity-15 dark:opacity-25 pointer-events-none animate-slow-pan transition-opacity duration-500"
         />
+      ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue?.startsWith('img:') ? (
+        <img
+          src={merchant.themeConfig.backgroundValue.replace('img:', '')}
+          alt="Background"
+          className="fixed inset-0 w-full h-full object-cover opacity-15 dark:opacity-20 pointer-events-none animate-slow-pan transition-opacity duration-500"
+        />
       ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue ? (
         <div 
           className={`fixed inset-0 w-full h-full opacity-20 dark:opacity-30 pointer-events-none transition-opacity duration-500 ${merchant.themeConfig.backgroundValue}`}

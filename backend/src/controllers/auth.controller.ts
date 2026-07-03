@@ -70,7 +70,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       expiresIn: '7d',
     });
 
-    res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, phone: merchant.phone, logoUrl: merchant.logoUrl, isAdmin: merchant.isAdmin, planStatus, planExpiresAt: merchant.planExpiresAt, accountType: merchant.accountType } });
+    res.json({ token, merchant: { id: merchant.id, name: merchant.name, slug: merchant.slug, phone: merchant.phone, logoUrl: merchant.logoUrl, isAdmin: merchant.isAdmin, planStatus, planExpiresAt: merchant.planExpiresAt, accountType: merchant.accountType, themeConfig: merchant.themeConfig ? JSON.parse(merchant.themeConfig) : null } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });

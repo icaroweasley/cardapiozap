@@ -21,7 +21,12 @@ export default function ProfilePanel() {
   const [backgroundValue, setBackgroundValue] = useState<string>('');
 
   const PRESET_BACKGROUNDS = [
-    { id: '', label: 'Padrão (Hambúrguer)' },
+    { id: '', label: 'Hambúrguer' },
+    { id: 'img:/bg_lanche.png', label: 'Lanches' },
+    { id: 'img:/bg_pizza.png', label: 'Pizzaria' },
+    { id: 'img:/bg_marmita.png', label: 'Marmita/Comida' },
+    { id: 'img:/bg_espetinho.png', label: 'Churrasco' },
+    { id: 'img:/bg_acai.png', label: 'Açaí/Doces' },
     { id: 'bg-gradient-to-br from-red-500 to-orange-500', label: 'Quente' },
     { id: 'bg-gradient-to-br from-emerald-500 to-teal-500', label: 'Natural' },
     { id: 'bg-gradient-to-br from-blue-500 to-indigo-500', label: 'Frio' },
@@ -200,7 +205,7 @@ export default function ProfilePanel() {
       });
       
       const merchantData = JSON.parse(localStorage.getItem('merchant') || '{}');
-      localStorage.setItem('merchant', JSON.stringify({ ...merchantData, name: res.data.name, slug: res.data.slug, logoUrl: res.data.logoUrl }));
+      localStorage.setItem('merchant', JSON.stringify({ ...merchantData, name: res.data.name, slug: res.data.slug, logoUrl: res.data.logoUrl, themeConfig: res.data.themeConfig }));
       
       setSuccess('Perfil atualizado com sucesso!');
       setPassword('');
@@ -424,7 +429,9 @@ export default function ProfilePanel() {
                       className={`cursor-pointer group flex flex-col items-center gap-2`}
                     >
                       <div className={`w-16 h-16 rounded-2xl border-2 transition-all ${backgroundType === 'preset' && backgroundValue === bg.id ? 'border-black dark:border-white scale-110 shadow-xl' : 'border-black/10 dark:border-white/10 opacity-70 group-hover:opacity-100'} overflow-hidden relative`}>
-                        {bg.id ? (
+                        {bg.id.startsWith('img:') ? (
+                           <img src={bg.id.replace('img:', '')} className="w-full h-full object-cover opacity-50" alt={bg.label} />
+                        ) : bg.id ? (
                            <div className={`w-full h-full ${bg.id}`}></div>
                         ) : (
                            <img src="/bg-burger.png" className="w-full h-full object-cover opacity-50" alt="Padrão" />
