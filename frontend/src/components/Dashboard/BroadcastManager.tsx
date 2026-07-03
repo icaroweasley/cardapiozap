@@ -2,40 +2,7 @@ import { useState, useRef, useEffect, useMemo, useDeferredValue, useCallback } f
 import axios from 'axios';
 import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, FolderOpen, Pencil } from 'lucide-react';
 
-const createSleepWorker = () => {
-  if (typeof window === 'undefined') return null;
-  const code = `
-    self.onmessage = function(e) {
-      setTimeout(() => self.postMessage(e.data.id), e.data.delay);
-    };
-  `;
-  const blob = new Blob([code], { type: 'application/javascript' });
-  return new Worker(URL.createObjectURL(blob));
-};
-
-let sleepWorker: Worker | null = null;
-let sleepIdCounter = 0;
-
-const unthrottledSleep = (ms: number): Promise<void> => {
-  if (typeof window === 'undefined') return new Promise(r => setTimeout(r, ms));
-  if (!sleepWorker) sleepWorker = createSleepWorker();
-  
-  return new Promise(resolve => {
-    if (!sleepWorker) {
-      setTimeout(resolve, ms);
-      return;
-    }
-    const id = ++sleepIdCounter;
-    const handler = (e: MessageEvent) => {
-      if (e.data === id) {
-        sleepWorker!.removeEventListener('message', handler);
-        resolve();
-      }
-    };
-    sleepWorker.addEventListener('message', handler);
-    sleepWorker.postMessage({ id, delay: ms });
-  });
-};
+// Sleep worker removed
 interface MediaAttachment {
   id: string;
   base64: string;
@@ -130,8 +97,6 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
     });
   };
 
-  const isPausedRef = useRef(false);
-  const isCancelledRef = useRef(false);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
   const apiUrl = import.meta.env.VITE_API_URL || '';
@@ -162,6 +127,53 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   }, [providerInfo]);
 
   useEffect(() => {
+    let interval: any;
+    const fetchSessionState = async () => {
+      try {
+        const res = await axios.get(`${apiUrl}/api/broadcast/session`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (res.data && (res.data.status === 'running' || res.data.status === 'paused')) {
+          const loadedContacts = JSON.parse(res.data.contacts || '[]');
+          
+          setIsSending(res.data.status === 'running');
+          setIsPausedUI(res.data.status === 'paused');
+          setSessionSentCount(res.data.currentIndex);
+          setTargetContacts(loadedContacts);
+          
+          // Re-populate logs from contacts
+          if (loadedContacts.length > 0 && logs.length === 0) {
+            const newLogs = loadedContacts.filter((c: any) => c.status === 'sent' || c.status === 'error').map((c: any) => ({
+              id: Math.random().toString(),
+              timestamp: new Date(),
+              text: c.status === 'sent' ? `Enviado para ${c.name || c.number}` : `Erro ao enviar para ${c.number}: ${c.error}`,
+              status: c.status
+            }));
+            setLogs(newLogs);
+          }
+          
+          if (currentScreen !== 3) {
+             setCurrentScreen(3); // auto forward to running screen if closed tab
+             setMessage(res.data.messageText);
+             try { setMediaAttachments(JSON.parse(res.data.mediaAttachments || '[]')); } catch(e){}
+          }
+        } else if (res.data && res.data.status === 'completed' && isSending) {
+           setIsSending(false);
+           addLog(`Disparo concluído! ${res.data.currentIndex} mensagens enviadas.`, 'success');
+           showAlert(`Disparo concluído com sucesso!`);
+           try {
+             await axios.post(`${apiUrl}/api/broadcast/session/action`, { action: 'cancel' }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+           } catch(e){}
+        }
+      } catch (e) {}
+    };
+    
+    fetchSessionState();
+    interval = setInterval(fetchSessionState, 3000);
+    return () => clearInterval(interval);
+  }, [apiUrl, currentScreen, isSending, logs.length]);
+
+  useEffect(() => {
     const checkStatus = async () => {
       try {
         const res = await axios.get(`${apiUrl}/api/auth/evolution/instance/me`, {
@@ -185,10 +197,11 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
       const res = await axios.get(`${apiUrl}/api/broadcast/lists`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      const parsedLists = res.data.map((l: any) => ({
-        ...l,
-        contacts: JSON.parse(l.contacts)
-      }));
+      const parsedLists = res.data.map((l: any) => {
+        let parsed = [];
+        try { parsed = typeof l.contacts === 'string' ? JSON.parse(l.contacts) : l.contacts; } catch(e) {}
+        return { ...l, contacts: Array.isArray(parsed) ? parsed : [] };
+      });
       setSavedLists(parsedLists);
     } catch (e) {
       console.error(e);
@@ -509,134 +522,28 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
       return;
     }
 
-    setIsSending(true);
-    setIsPausedUI(false);
-    isPausedRef.current = false;
-    isCancelledRef.current = false;
-    setSessionSentCount(0);
-    addLog(`Iniciando disparo para ${targetContacts.length} contatos...`, 'pending');
-
-    let sentCount = 0;
-    const currentContacts = [...targetContacts];
-
-    for (let i = 0; i < currentContacts.length; i++) {
-      while (isPausedRef.current && !isCancelledRef.current) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-      if (isCancelledRef.current) {
-        addLog('Disparo cancelado pelo usuário.', 'error');
-        break;
-      }
-
-      const contact = currentContacts[i];
-      currentContacts[i] = { ...contact, status: 'pending' };
-      setTargetContacts([...currentContacts]);
+    try {
+      await axios.post(`${apiUrl}/api/broadcast/session/start`, {
+        contacts: targetContacts,
+        messageText: message,
+        mediaAttachments,
+        textPosition,
+        minDelay,
+        maxDelay
+      }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
       
-      try {
-        const personalizedMessage = message.replace(/{nome}/gi, contact.name || contact.pushName || 'cliente');
-        
-        // Anti-ban: Simular digitação
-        const textLength = personalizedMessage ? personalizedMessage.length : 10;
-        const typingDelayMs = Math.min(Math.max(textLength * 40, 2000), 15000) + Math.floor(Math.random() * 2000);
-        addLog(`Simulando digitação para ${contact.name || contact.pushName || contact.number} (${(typingDelayMs/1000).toFixed(1)}s)...`, 'pending');
-        
-        try {
-          await axios.post(`${apiUrl}/api/broadcast/presence`, { number: contact.number, presence: 'composing', delay: typingDelayMs }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
-        } catch(e) {}
-        
-        let typingWaited = 0;
-        while(typingWaited < typingDelayMs) {
-           if (isCancelledRef.current) break;
-           await unthrottledSleep(100);
-           typingWaited += 100;
-        }
-        if (isCancelledRef.current) break;
-
-        const sendText = async (txt: string) => {
-           await axios.post(`${apiUrl}/api/broadcast/send`, { number: contact.number, text: txt }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
-        };
-
-        const sleepCheck = async (ms: number) => {
-           let w = 0;
-           while(w < ms) {
-              if (isCancelledRef.current) return false;
-              await unthrottledSleep(100);
-              w += 100;
-           }
-           return true;
-        }
-
-        if (mediaAttachments.length > 0) {
-           if (textPosition === 'before' && personalizedMessage) {
-               await sendText(personalizedMessage);
-               if (!(await sleepCheck(2000))) break;
-           }
-           for (let mIndex = 0; mIndex < mediaAttachments.length; mIndex++) {
-              const attachment = mediaAttachments[mIndex];
-              await axios.post(`${apiUrl}/api/broadcast/send`, {
-                number: contact.number,
-                mediaBase64: attachment.base64,
-                mediaType: attachment.type.startsWith('video') ? 'video' : 'image',
-                fileName: attachment.name,
-                text: (textPosition === 'caption' && mIndex === 0) ? personalizedMessage : ''
-              }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
-              if (mIndex < mediaAttachments.length - 1) {
-                  if (!(await sleepCheck(1500))) break;
-              }
-           }
-           if (textPosition === 'after' && personalizedMessage) {
-               if (!(await sleepCheck(2000))) break;
-               await sendText(personalizedMessage);
-           }
-        } else {
-           await sendText(personalizedMessage);
-        }
-
-        currentContacts[i] = { ...contact, status: 'sent' };
-        sentCount++;
-        setSessionSentCount(sentCount);
-        fetchUsage(); // update UI limit silently
-        addLog(`Enviado para ${contact.name || contact.pushName || contact.number}`, 'success');
-      } catch (error: any) {
-        currentContacts[i] = { ...contact, status: 'error' };
-        addLog(`Erro ao enviar para ${contact.number}: ${error?.response?.data?.error || error.message}`, 'error');
-      }
-      
-      setTargetContacts([...currentContacts]);
-
-      // Anti-ban delay
-      if (i < currentContacts.length - 1) {
-        if (isCancelledRef.current) {
-           await unthrottledSleep(1000); // 1s cooldown
-           addLog('Disparo cancelado pelo usuário.', 'error');
-           break;
-        }
-        const delayMs = Math.floor(Math.random() * (maxDelay - minDelay + 1) + minDelay) * 1000;
-        const delaySeconds = (delayMs / 1000).toFixed(1);
-        addLog(`Aguardando ${delaySeconds}s (Anti-Ban)...`, 'pending');
-        
-        let waited = 0;
-        while (waited < delayMs) {
-          if (isCancelledRef.current) break;
-          while (isPausedRef.current && !isCancelledRef.current) {
-            await unthrottledSleep(100);
-          }
-          if (isCancelledRef.current) break;
-          await unthrottledSleep(100);
-          waited += 100;
-        }
-        if (isCancelledRef.current) {
-           addLog('Disparo cancelado pelo usuário.', 'error');
-           break;
-        }
-      }
+      setIsSending(true);
+      setIsPausedUI(false);
+      setSessionSentCount(0);
+      setLogs([]);
+      addLog(`Disparo em segundo plano iniciado para ${targetContacts.length} contatos...`, 'pending');
+      showAlert('Disparo iniciado em segundo plano! Você pode até fechar a aba que o envio continuará.');
+    } catch (e: any) {
+      showAlert(e.response?.data?.error || 'Erro ao iniciar disparo.');
     }
-
-    addLog(`Disparo concluído! ${sentCount} mensagens enviadas.`, 'success');
-    setIsSending(false);
-    showAlert(`Disparo concluído! ${sentCount} mensagens enviadas com sucesso.`);
   };
-const nextScreen = (screen: 1 | 2 | 3) => {
+
+  const nextScreen = (screen: 1 | 2 | 3) => {
     if (screen === 2 && allContacts.length === 0) {
       fetchDatabaseContacts();
     }
@@ -1220,10 +1127,13 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                   {isSending && (
                     <div className="pt-3 border-t border-black/10 dark:border-white/10 mt-auto flex gap-2 shrink-0">
                       <button
-                        onClick={() => {
-                          isPausedRef.current = !isPausedRef.current;
-                          setIsPausedUI(isPausedRef.current);
-                          addLog(isPausedRef.current ? 'Disparo pausado.' : 'Disparo retomado.', 'pending');
+                        onClick={async () => {
+                          const action = isPausedUI ? 'resume' : 'pause';
+                          try {
+                            await axios.post(`${apiUrl}/api/broadcast/session/action`, { action }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+                            setIsPausedUI(!isPausedUI);
+                            addLog(isPausedUI ? 'Disparo retomado.' : 'Disparo pausado.', 'pending');
+                          } catch(e) {}
                         }}
                         className="flex-1 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-700 dark:text-yellow-400 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-yellow-500/20"
                       >
@@ -1234,8 +1144,11 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                         onClick={async () => {
                           const confirmed = await showConfirm('Tem certeza que deseja cancelar o disparo?');
                           if (confirmed) {
-                            isCancelledRef.current = true;
-                            addLog('Cancelando...', 'error');
+                            try {
+                              await axios.post(`${apiUrl}/api/broadcast/session/action`, { action: 'cancel' }, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }});
+                              setIsSending(false);
+                              addLog('Cancelando...', 'error');
+                            } catch(e) {}
                           }
                         }}
                         className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-700 dark:text-red-400 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-red-500/20"

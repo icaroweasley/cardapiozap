@@ -14,6 +14,8 @@ import paymentRoutes from './routes/payment.routes';
 
 dotenv.config();
 
+import { resumeAllRunningSessions } from './services/broadcastWorker';
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -55,4 +57,5 @@ app.use('/api/payment', paymentRoutes);
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  resumeAllRunningSessions();
 });

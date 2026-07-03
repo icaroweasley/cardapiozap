@@ -35,6 +35,7 @@ model Merchant {
   orders           Order[]
   savedLists       SavedList[]
   broadcastLogs    BroadcastRecipientLog[]
+  broadcastSession BroadcastSession?
 
   @@index([slug])
 }
@@ -49,6 +50,23 @@ model BroadcastRecipientLog {
 
   @@unique([merchantId, date, phone])
   @@index([merchantId, date])
+}
+
+model BroadcastSession {
+  id               String   @id @default(uuid())
+  merchantId       String   @unique
+  status           String   @default("idle") // "idle", "running", "paused", "completed", "cancelled"
+  contacts         String   // JSON array of contacts: [{ number, name, status: 'pending'|'sent'|'error', error?: string }]
+  messageText      String
+  mediaAttachments String   // JSON array of base64 medias
+  textPosition     String   @default("after")
+  minDelay         Int      @default(15)
+  maxDelay         Int      @default(90)
+  currentIndex     Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  merchant         Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
 }
 
 model SavedList {

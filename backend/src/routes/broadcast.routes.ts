@@ -5,6 +5,7 @@ import { authenticate } from '../middlewares/auth.middleware';
 
 const router = Router();
 const prisma = new PrismaClient();
+import { startBroadcastWorker } from '../services/broadcastWorker';
 
 // Broadcast Usage
 router.get('/usage', authenticate, async (req: any, res) => {
@@ -315,6 +316,78 @@ router.post('/send', authenticate, async (req: any, res) => {
   } catch (error: any) {
     console.error('Erro no envio de broadcast:', error?.response?.data || error.message);
     res.status(500).json({ error: 'Falha ao enviar mensagem', details: error?.response?.data || error.message });
+  }
+});
+
+// --- SESSION ENDPOINTS ---
+
+router.get('/session', authenticate, async (req: any, res) => {
+  try {
+    const session = await prisma.broadcastSession.findUnique({
+      where: { merchantId: req.merchantId }
+    });
+    res.json(session || null);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch session' });
+  }
+});
+
+router.post('/session/start', authenticate, async (req: any, res) => {
+  try {
+    const { contacts, messageText, mediaAttachments, textPosition, minDelay, maxDelay } = req.body;
+    
+    // Create or update session
+    const session = await prisma.broadcastSession.upsert({
+      where: { merchantId: req.merchantId },
+      create: {
+        merchantId: req.merchantId,
+        status: 'running',
+        contacts: JSON.stringify(contacts.map((c: any) => ({ ...c, status: 'pending' }))),
+        messageText,
+        mediaAttachments: JSON.stringify(mediaAttachments || []),
+        textPosition: textPosition || 'after',
+        minDelay: minDelay || 15,
+        maxDelay: maxDelay || 90,
+        currentIndex: 0
+      },
+      update: {
+        status: 'running',
+        contacts: JSON.stringify(contacts.map((c: any) => ({ ...c, status: 'pending' }))),
+        messageText,
+        mediaAttachments: JSON.stringify(mediaAttachments || []),
+        textPosition: textPosition || 'after',
+        minDelay: minDelay || 15,
+        maxDelay: maxDelay || 90,
+        currentIndex: 0
+      }
+    });
+
+    startBroadcastWorker(req.merchantId);
+    res.json(session);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to start session' });
+  }
+});
+
+router.post('/session/action', authenticate, async (req: any, res) => {
+  try {
+    const { action } = req.body; // 'pause', 'resume', 'cancel'
+    const statusMap: any = { pause: 'paused', resume: 'running', cancel: 'cancelled' };
+    
+    if (!statusMap[action]) return res.status(400).json({ error: 'Invalid action' });
+
+    const session = await prisma.broadcastSession.update({
+      where: { merchantId: req.merchantId },
+      data: { status: statusMap[action] }
+    });
+
+    if (action === 'resume') {
+      startBroadcastWorker(req.merchantId);
+    }
+
+    res.json(session);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update session action' });
   }
 });
 
