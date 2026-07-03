@@ -17,7 +17,9 @@ export default function Dashboard() {
     merchant.accountType === 'BROADCAST_ONLY' ? 'BROADCAST' : 'KANBAN'
   );
   const navigate = useNavigate();
-  const { isDark, toggleTheme } = useThemeStore();
+  const { isDark, toggleTheme, previewBackground } = useThemeStore();
+
+  const themeConfig = previewBackground || merchant.themeConfig;
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -97,21 +99,21 @@ export default function Dashboard() {
   if (isTotalBlock) {
     return (
       <div className="h-screen flex items-center justify-center bg-neutral-100 dark:bg-black transition-colors duration-500 relative font-inter">
-        {merchant.themeConfig?.backgroundType === 'custom' && merchant.themeConfig?.backgroundValue ? (
+        {themeConfig?.backgroundType === 'custom' && themeConfig?.backgroundValue ? (
           <img
-            src={merchant.themeConfig.backgroundValue}
+            src={themeConfig.backgroundValue}
             alt="Custom Background"
             className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
           />
-        ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue?.startsWith('img:') ? (
+        ) : themeConfig?.backgroundType === 'preset' && themeConfig?.backgroundValue?.startsWith('img:') ? (
           <img
-            src={merchant.themeConfig.backgroundValue.replace('img:', '')}
+            src={themeConfig.backgroundValue.replace('img:', '')}
             alt="Background"
             className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
           />
-        ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue ? (
+        ) : themeConfig?.backgroundType === 'preset' && themeConfig?.backgroundValue ? (
           <div 
-            className={`fixed inset-0 w-full h-full opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 ${merchant.themeConfig.backgroundValue}`}
+            className={`fixed inset-0 w-full h-full opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 ${themeConfig.backgroundValue}`}
           />
         ) : (
           <img
@@ -148,21 +150,21 @@ export default function Dashboard() {
   return (
     <div className="h-screen overflow-hidden flex flex-col md:flex-row bg-neutral-100 dark:bg-black transition-colors duration-500 relative">
       {/* Background Image */}
-      {merchant.themeConfig?.backgroundType === 'custom' && merchant.themeConfig?.backgroundValue ? (
+      {themeConfig?.backgroundType === 'custom' && themeConfig?.backgroundValue ? (
         <img
-          src={merchant.themeConfig.backgroundValue}
+          src={themeConfig.backgroundValue}
           alt="Custom Background"
           className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
         />
-      ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue?.startsWith('img:') ? (
+      ) : themeConfig?.backgroundType === 'preset' && themeConfig?.backgroundValue?.startsWith('img:') ? (
         <img
-          src={merchant.themeConfig.backgroundValue.replace('img:', '')}
+          src={themeConfig.backgroundValue.replace('img:', '')}
           alt="Background"
           className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
         />
-      ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue ? (
+      ) : themeConfig?.backgroundType === 'preset' && themeConfig?.backgroundValue ? (
         <div 
-          className={`fixed inset-0 w-full h-full opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 ${merchant.themeConfig.backgroundValue}`}
+          className={`fixed inset-0 w-full h-full opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 ${themeConfig.backgroundValue}`}
         />
       ) : (
         <img
