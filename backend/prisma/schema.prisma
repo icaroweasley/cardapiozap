@@ -21,6 +21,7 @@ model Merchant {
   businessHours    String?   // JSON
   address          String?
   paymentMethods   String?   // JSON
+  themeConfig      String?   // JSON { backgroundType, backgroundValue }
   active           Boolean   @default(true)
   isAdmin          Boolean   @default(false)
   isTrial          Boolean   @default(true)

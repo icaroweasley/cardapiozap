@@ -114,6 +114,7 @@ export const getSettings = async (req: AuthRequest, res: Response): Promise<void
       paymentMethods: merchant.paymentMethods,
       whatsappProvider: merchant.whatsappProvider,
       whatsappConfig: merchant.whatsappConfig ? JSON.parse(merchant.whatsappConfig) : null,
+      themeConfig: merchant.themeConfig ? JSON.parse(merchant.themeConfig) : null,
       isAdmin: merchant.isAdmin,
       planStatus,
       planExpiresAt: merchant.planExpiresAt
@@ -148,7 +149,7 @@ export const updateSettings = async (req: AuthRequest, res: Response): Promise<v
 
 export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { name, slug, phone, password, logoUrl, deliveryFee, minOrderValue, businessHours, address, paymentMethods } = req.body;
+    const { name, slug, phone, password, logoUrl, deliveryFee, minOrderValue, businessHours, address, paymentMethods, themeConfig } = req.body;
     
     if (slug) {
       const existing = await prisma.merchant.findUnique({ where: { slug } });
@@ -168,6 +169,7 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
     if (businessHours !== undefined) updateData.businessHours = businessHours;
     if (address !== undefined) updateData.address = address;
     if (paymentMethods !== undefined) updateData.paymentMethods = paymentMethods;
+    if (themeConfig !== undefined) updateData.themeConfig = typeof themeConfig === 'string' ? themeConfig : JSON.stringify(themeConfig);
     
     if (password) {
       updateData.password = await bcrypt.hash(password, 10);
@@ -189,6 +191,7 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
       businessHours: merchant.businessHours,
       address: merchant.address,
       paymentMethods: merchant.paymentMethods,
+      themeConfig: merchant.themeConfig ? JSON.parse(merchant.themeConfig) : null,
       isAdmin: merchant.isAdmin
     });
   } catch (error) {

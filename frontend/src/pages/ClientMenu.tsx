@@ -27,6 +27,7 @@ interface Merchant {
   minOrderValue?: number;
   address?: string;
   paymentMethods?: string;
+  themeConfig?: any;
   isOpen?: boolean;
   products: Product[];
 }
@@ -69,11 +70,23 @@ export default function ClientMenu() {
   return (
     <div className="relative min-h-screen bg-neutral-100 dark:bg-black transition-colors duration-500 pb-32 lg:pb-0 flex flex-col lg:flex-row">
       {/* Background Image (Animated) */}
-      <img
-        src="/bg-burger.png"
-        alt="Background"
-        className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none animate-slow-pan transition-opacity duration-500"
-      />
+      {merchant.themeConfig?.backgroundType === 'custom' && merchant.themeConfig?.backgroundValue ? (
+        <img
+          src={merchant.themeConfig.backgroundValue}
+          alt="Custom Background"
+          className="fixed inset-0 w-full h-full object-cover opacity-15 dark:opacity-25 pointer-events-none animate-slow-pan transition-opacity duration-500"
+        />
+      ) : merchant.themeConfig?.backgroundType === 'preset' && merchant.themeConfig?.backgroundValue ? (
+        <div 
+          className={`fixed inset-0 w-full h-full opacity-20 dark:opacity-30 pointer-events-none transition-opacity duration-500 ${merchant.themeConfig.backgroundValue}`}
+        />
+      ) : (
+        <img
+          src="/bg-burger.png"
+          alt="Background"
+          className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none animate-slow-pan transition-opacity duration-500"
+        />
+      )}
 
       {/* Theme Toggle */}
       <button 

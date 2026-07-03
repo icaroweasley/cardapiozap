@@ -16,6 +16,17 @@ export default function ProfilePanel() {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [openTime, setOpenTime] = useState('');
   const [closeTime, setCloseTime] = useState('');
+  
+  const [backgroundType, setBackgroundType] = useState<'preset' | 'custom'>('preset');
+  const [backgroundValue, setBackgroundValue] = useState<string>('');
+
+  const PRESET_BACKGROUNDS = [
+    { id: '', label: 'Padrão (Hambúrguer)' },
+    { id: 'bg-gradient-to-br from-red-500 to-orange-500', label: 'Quente' },
+    { id: 'bg-gradient-to-br from-emerald-500 to-teal-500', label: 'Natural' },
+    { id: 'bg-gradient-to-br from-blue-500 to-indigo-500', label: 'Frio' },
+    { id: 'bg-gradient-to-br from-purple-500 to-pink-500', label: 'Vibrante' }
+  ];
 
   const PAYMENT_OPTIONS = ['Pix', 'Dinheiro', 'Cartão de Crédito', 'Cartão de Débito'];
   const DAYS_OF_WEEK = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
@@ -90,6 +101,11 @@ export default function ProfilePanel() {
               setOpenTime(match[2]);
               setCloseTime(match[3]);
             }
+          }
+          if (res.data.themeConfig) {
+             const theme = typeof res.data.themeConfig === 'string' ? JSON.parse(res.data.themeConfig) : res.data.themeConfig;
+             setBackgroundType(theme.backgroundType || 'preset');
+             setBackgroundValue(theme.backgroundValue || '');
           }
         }
       } catch (err) {
@@ -174,7 +190,8 @@ export default function ProfilePanel() {
         minOrderValue: minOrderValue ? Math.round(parseFloat(minOrderValue.replace(',', '.')) * 100) : 0,
         address: [address, neighborhood].filter(Boolean).join(' - ') || null,
         paymentMethods: paymentMethods.length > 0 ? JSON.stringify(paymentMethods) : null,
-        businessHours: formattedHours || null
+        businessHours: formattedHours || null,
+        themeConfig: { backgroundType, backgroundValue }
       };
       if (password) updateData.password = password;
 
@@ -384,6 +401,83 @@ export default function ProfilePanel() {
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+
+          <hr className="border-black/10 dark:border-white/10" />
+
+          <div className="space-y-4">
+            <h3 className="font-podium text-lg uppercase tracking-widest text-black dark:text-white mb-4">Aparência do Cardápio</h3>
+            <div className="flex flex-col gap-4 border border-black/10 dark:border-white/10 rounded-[2rem] p-6 bg-white/30 dark:bg-black/30">
+              
+              <div className="flex flex-col gap-4">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50">Fundo da Página</label>
+                
+                <div className="flex flex-wrap gap-4">
+                  {PRESET_BACKGROUNDS.map(bg => (
+                    <div 
+                      key={bg.label}
+                      onClick={() => {
+                        setBackgroundType('preset');
+                        setBackgroundValue(bg.id);
+                      }}
+                      className={`cursor-pointer group flex flex-col items-center gap-2`}
+                    >
+                      <div className={`w-16 h-16 rounded-2xl border-2 transition-all ${backgroundType === 'preset' && backgroundValue === bg.id ? 'border-black dark:border-white scale-110 shadow-xl' : 'border-black/10 dark:border-white/10 opacity-70 group-hover:opacity-100'} overflow-hidden relative`}>
+                        {bg.id ? (
+                           <div className={`w-full h-full ${bg.id}`}></div>
+                        ) : (
+                           <img src="/bg-burger.png" className="w-full h-full object-cover opacity-50" alt="Padrão" />
+                        )}
+                      </div>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 text-center">{bg.label}</span>
+                    </div>
+                  ))}
+
+                  <div 
+                      onClick={() => setBackgroundType('custom')}
+                      className={`cursor-pointer group flex flex-col items-center gap-2 relative`}
+                    >
+                      <div className={`w-16 h-16 rounded-2xl border-2 flex items-center justify-center transition-all bg-black/5 dark:bg-white/5 ${backgroundType === 'custom' ? 'border-black dark:border-white scale-110 shadow-xl' : 'border-black/10 dark:border-white/10 opacity-70 group-hover:opacity-100'} overflow-hidden relative`}>
+                        {backgroundType === 'custom' && backgroundValue ? (
+                           <img src={backgroundValue} className="w-full h-full object-cover opacity-50" alt="Custom" />
+                        ) : (
+                           <ImageIcon className="text-black/30 dark:text-white/30 w-6 h-6" />
+                        )}
+                        <input 
+                          type="file" accept="image/*" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              const img = new Image();
+                              img.onload = () => {
+                                const canvas = document.createElement('canvas');
+                                const MAX_SIZE = 1200;
+                                let width = img.width; let height = img.height;
+                                if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                                else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                                canvas.width = width; canvas.height = height;
+                                const ctx = canvas.getContext('2d');
+                                if (ctx) ctx.drawImage(img, 0, 0, width, height);
+                                setBackgroundValue(canvas.toDataURL('image/jpeg', 0.8));
+                                setBackgroundType('custom');
+                              };
+                              img.src = event.target?.result as string;
+                            };
+                            reader.readAsDataURL(file);
+                          }}
+                          className="absolute inset-0 opacity-0 cursor-pointer" 
+                          title="Fazer Upload de Fundo Próprio"
+                        />
+                      </div>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 text-center">Próprio</span>
+                    </div>
+
+                </div>
+              </div>
+
             </div>
           </div>
 
