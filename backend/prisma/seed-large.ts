@@ -33,7 +33,7 @@ async function main() {
       description: 'Pão australiano, blend 180g, queijo cheddar cremoso, cebola caramelizada e fatias generosas de bacon crocante.',
       price: 3200,
       category: 'Burgers Artesanais',
-      imageUrl: 'https://images.unsplash.com/photo-1594212202875-54524db50508?w=500&q=80',
+      imageUrl: '/bacon_master.png',
       available: true,
       merchantId: merchant.id
     },
@@ -138,7 +138,7 @@ async function main() {
       description: 'Refrigerante em lata bem gelado, sem açúcar.',
       price: 600,
       category: 'Bebidas',
-      imageUrl: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=500&q=80',
+      imageUrl: '/coca_zero.png',
       available: true,
       merchantId: merchant.id
     },
@@ -147,7 +147,7 @@ async function main() {
       description: 'Refrigerante em lata bem gelado.',
       price: 600,
       category: 'Bebidas',
-      imageUrl: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=500&q=80',
+      imageUrl: '/guarana.png',
       available: true,
       merchantId: merchant.id
     },
@@ -165,7 +165,7 @@ async function main() {
       description: 'Garrafa.',
       price: 400,
       category: 'Bebidas',
-      imageUrl: 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=500&q=80',
+      imageUrl: '/agua.png',
       available: true,
       merchantId: merchant.id
     },
@@ -176,7 +176,7 @@ async function main() {
       description: 'Sorvete de baunilha batido com bastante Ovomaltine, coberto com chantilly e calda de chocolate. 400ml.',
       price: 1800,
       category: 'Sobremesas',
-      imageUrl: 'https://images.unsplash.com/photo-1572490122747-3968b75bb811?w=500&q=80',
+      imageUrl: '/milkshake.png',
       available: true,
       merchantId: merchant.id
     },
