@@ -430,11 +430,11 @@ export default function ProfilePanel() {
                     >
                       <div className={`w-16 h-16 rounded-2xl border-2 transition-all ${backgroundType === 'preset' && backgroundValue === bg.id ? 'border-black dark:border-white scale-110 shadow-xl' : 'border-black/10 dark:border-white/10 opacity-70 group-hover:opacity-100'} overflow-hidden relative`}>
                         {bg.id.startsWith('img:') ? (
-                           <img src={bg.id.replace('img:', '')} className="w-full h-full object-cover opacity-50" alt={bg.label} />
+                           <img src={bg.id.replace('img:', '')} className="w-full h-full object-cover" alt={bg.label} />
                         ) : bg.id ? (
                            <div className={`w-full h-full ${bg.id}`}></div>
                         ) : (
-                           <img src="/bg-burger.png" className="w-full h-full object-cover opacity-50" alt="Padrão" />
+                           <img src="/bg-burger.png" className="w-full h-full object-cover opacity-80" alt="Padrão" />
                         )}
                       </div>
                       <span className="text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 text-center">{bg.label}</span>
