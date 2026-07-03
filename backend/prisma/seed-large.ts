@@ -109,7 +109,7 @@ async function main() {
       description: '2 Smash Duplos + 1 Porção Grande de Batata Frita + 2 Refrigerantes em Lata.',
       price: 6500,
       category: 'Combos',
-      imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=80',
+      imageUrl: '/combo_casal.png',
       available: true,
       merchantId: merchant.id
     },
@@ -118,7 +118,7 @@ async function main() {
       description: '4 X-Burger Brutal + 2 Porções Grandes de Batata Frita + 1 Refrigerante 2 Litros.',
       price: 11000,
       category: 'Combos',
-      imageUrl: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&q=80',
+      imageUrl: '/combo_familia.png',
       available: true,
       merchantId: merchant.id
     },
