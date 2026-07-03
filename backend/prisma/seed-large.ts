@@ -138,7 +138,7 @@ async function main() {
       description: 'Refrigerante em lata bem gelado, sem açúcar.',
       price: 600,
       category: 'Bebidas',
-      imageUrl: '',
+      imageUrl: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=500&q=80',
       available: true,
       merchantId: merchant.id
     },
@@ -147,7 +147,7 @@ async function main() {
       description: 'Refrigerante em lata bem gelado.',
       price: 600,
       category: 'Bebidas',
-      imageUrl: '',
+      imageUrl: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=500&q=80',
       available: true,
       merchantId: merchant.id
     },
@@ -165,7 +165,7 @@ async function main() {
       description: 'Garrafa.',
       price: 400,
       category: 'Bebidas',
-      imageUrl: '',
+      imageUrl: 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=500&q=80',
       available: true,
       merchantId: merchant.id
     },
