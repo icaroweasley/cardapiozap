@@ -3,8 +3,8 @@ import { create } from 'zustand';
 interface ThemeStore {
   isDark: boolean;
   toggleTheme: () => void;
-  previewBackground: { type: 'preset' | 'custom', value: string } | null;
-  setPreviewBackground: (bg: { type: 'preset' | 'custom', value: string } | null) => void;
+  previewBackground: { backgroundType: 'preset' | 'custom', backgroundValue: string } | null;
+  setPreviewBackground: (bg: { backgroundType: 'preset' | 'custom', backgroundValue: string } | null) => void;
 }
 
 export const useThemeStore = create<ThemeStore>((set) => ({

@@ -442,7 +442,7 @@ export default function ProfilePanel() {
                           onClick={() => {
                             setBackgroundType('preset');
                             setBackgroundValue(bg.id);
-                            setPreviewBackground({ type: 'preset', value: bg.id });
+                            setPreviewBackground({ backgroundType: 'preset', backgroundValue: bg.id });
                           }}
                           className={`cursor-pointer group flex flex-col items-center gap-2`}
                         >
@@ -465,7 +465,7 @@ export default function ProfilePanel() {
                           onClick={() => {
                             setBackgroundType('custom');
                             if (backgroundValue) {
-                              setPreviewBackground({ type: 'custom', value: backgroundValue });
+                              setPreviewBackground({ backgroundType: 'custom', backgroundValue: backgroundValue });
                             }
                           }}
                           className={`cursor-pointer group flex flex-col items-center gap-2 relative`}
@@ -496,7 +496,7 @@ export default function ProfilePanel() {
                                     const base64 = canvas.toDataURL('image/jpeg', 0.8);
                                     setBackgroundValue(base64);
                                     setBackgroundType('custom');
-                                    setPreviewBackground({ type: 'custom', value: base64 });
+                                    setPreviewBackground({ backgroundType: 'custom', backgroundValue: base64 });
                                   };
                                   img.src = event.target?.result as string;
                                 };
