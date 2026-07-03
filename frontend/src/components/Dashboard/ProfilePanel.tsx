@@ -237,8 +237,8 @@ export default function ProfilePanel() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-y-auto hide-scrollbar animate-fade-in font-inter w-full relative z-10 pb-20">
-      <div className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl rounded-[2rem] p-8 max-w-3xl mx-auto w-full mt-10">
+    <div className="flex-1 flex flex-col h-full overflow-y-auto hide-scrollbar animate-fade-in font-inter w-full relative z-10">
+      <div className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl rounded-[2rem] p-8 max-w-3xl mx-auto w-full my-10 shrink-0">
         <h2 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white mb-2">Perfil da Loja</h2>
         <p className="text-sm text-black/60 dark:text-white/60 mb-8">Personalize a identidade e configurações do seu restaurante.</p>
 
