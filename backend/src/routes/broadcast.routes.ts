@@ -6,6 +6,32 @@ import { authenticate } from '../middlewares/auth.middleware';
 const router = Router();
 const prisma = new PrismaClient();
 
+// Broadcast Usage
+router.get('/usage', authenticate, async (req: any, res) => {
+  try {
+    const merchantId = req.merchantId;
+    const dateStr = new Date().toISOString().split('T')[0];
+
+    const merchant = await prisma.merchant.findUnique({
+      where: { id: merchantId },
+      select: { isTrial: true, trialBroadcastLimit: true, paidBroadcastLimit: true }
+    });
+
+    if (!merchant) return res.status(404).json({ error: 'Merchant not found' });
+
+    const count = await prisma.broadcastRecipientLog.count({
+      where: { merchantId, date: dateStr }
+    });
+
+    res.json({
+      used: count,
+      limit: merchant.isTrial ? merchant.trialBroadcastLimit : merchant.paidBroadcastLimit
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch broadcast usage' });
+  }
+});
+
 // Lists CRUD
 router.get('/lists', authenticate, async (req: any, res) => {
   try {

@@ -102,6 +102,8 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   const [isSending, setIsSending] = useState(false);
   const [isPausedUI, setIsPausedUI] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [usageStats, setUsageStats] = useState<{used: number, limit: number} | null>(null);
+  const [sessionSentCount, setSessionSentCount] = useState(0);
   
   const [minDelay] = useState(10);
   const [maxDelay] = useState(25);
@@ -198,6 +200,21 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   useEffect(() => {
     fetchLists();
   }, [fetchLists]);
+
+  const fetchUsage = useCallback(async () => {
+    try {
+      const res = await axios.get(`${apiUrl}/api/broadcast/usage`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setUsageStats(res.data);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [apiUrl]);
+
+  useEffect(() => {
+    fetchUsage();
+  }, [fetchUsage]);
 
   const saveCurrentList = async () => {
     if (!saveListName.trim()) { showAlert('Digite um nome para salvar a lista.'); return; }
@@ -498,6 +515,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
     setIsPausedUI(false);
     isPausedRef.current = false;
     isCancelledRef.current = false;
+    setSessionSentCount(0);
     addLog(`Iniciando disparo para ${targetContacts.length} contatos...`, 'pending');
 
     let sentCount = 0;
@@ -578,6 +596,8 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
         currentContacts[i] = { ...contact, status: 'sent' };
         sentCount++;
+        setSessionSentCount(sentCount);
+        fetchUsage(); // update UI limit silently
         addLog(`Enviado para ${contact.name || contact.pushName || contact.number}`, 'success');
       } catch (error: any) {
         currentContacts[i] = { ...contact, status: 'error' };
@@ -1146,14 +1166,38 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                 </div>
               </div>
 
-              {/* Start Button */}
-              {!isSending && (
-                <button
-                  onClick={startBroadcast}
-                  className="w-full bg-black dark:bg-white text-white dark:text-black font-bold text-sm py-5 rounded-[2rem] flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform shadow-xl uppercase tracking-widest"
-                >
-                  Iniciar Disparo <Play size={18} fill="currentColor" />
-                </button>
+              {/* Start Button & Counters */}
+              {!isSending ? (
+                <div className="flex flex-col gap-3">
+                  {usageStats && (
+                    <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 p-4 rounded-2xl border border-black/10 dark:border-white/10 font-mono text-sm">
+                      <span className="text-black/60 dark:text-white/60 font-inter font-bold text-xs uppercase tracking-widest">Uso Diário</span>
+                      <div className={`font-bold ${usageStats.used >= usageStats.limit ? 'text-red-500' : 'text-emerald-500'}`}>
+                        {usageStats.used} <span className="text-black/40 dark:text-white/40">/ {usageStats.limit}</span>
+                      </div>
+                    </div>
+                  )}
+                  <button
+                    onClick={startBroadcast}
+                    disabled={usageStats ? usageStats.used >= usageStats.limit : false}
+                    className="w-full bg-black dark:bg-white text-white dark:text-black font-bold text-sm py-5 rounded-[2rem] flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform shadow-xl uppercase tracking-widest disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
+                  >
+                    Iniciar Disparo <Play size={18} fill="currentColor" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/20 font-mono text-sm shadow-inner">
+                  <span className="text-emerald-600 dark:text-emerald-400 font-inter font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    Enviando Agora
+                  </span>
+                  <div className="font-bold text-emerald-600 dark:text-emerald-400 text-lg">
+                    {sessionSentCount} <span className="text-emerald-600/50 dark:text-emerald-400/50 text-sm">/ {targetContacts.length}</span>
+                  </div>
+                </div>
               )}
 
               {/* Logs */}
