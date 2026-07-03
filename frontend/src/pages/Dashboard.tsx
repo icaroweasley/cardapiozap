@@ -103,13 +103,13 @@ export default function Dashboard() {
           <img
             src={themeConfig.backgroundValue}
             alt="Custom Background"
-            className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+            className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 animate-slow-pan"
           />
         ) : themeConfig?.backgroundType === 'preset' && themeConfig?.backgroundValue?.startsWith('img:') ? (
           <img
             src={themeConfig.backgroundValue.replace('img:', '')}
             alt="Background"
-            className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+            className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 animate-slow-pan"
           />
         ) : themeConfig?.backgroundType === 'preset' && themeConfig?.backgroundValue ? (
           <div 
@@ -119,7 +119,7 @@ export default function Dashboard() {
           <img
             src="/bg-burger.png"
             alt="Background"
-            className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+            className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 animate-slow-pan"
           />
         )}
         <div className="bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 p-10 rounded-[2rem] shadow-2xl flex flex-col items-center text-center max-w-md z-10 animate-fade-up">
@@ -154,13 +154,13 @@ export default function Dashboard() {
         <img
           src={themeConfig.backgroundValue}
           alt="Custom Background"
-          className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+          className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 animate-slow-pan"
         />
       ) : themeConfig?.backgroundType === 'preset' && themeConfig?.backgroundValue?.startsWith('img:') ? (
         <img
           src={themeConfig.backgroundValue.replace('img:', '')}
           alt="Background"
-          className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+          className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 animate-slow-pan"
         />
       ) : themeConfig?.backgroundType === 'preset' && themeConfig?.backgroundValue ? (
         <div 
@@ -170,7 +170,7 @@ export default function Dashboard() {
         <img
           src="/bg-burger.png"
           alt="Background"
-          className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500"
+          className="fixed inset-0 w-full h-full object-cover opacity-10 dark:opacity-20 pointer-events-none transition-opacity duration-500 animate-slow-pan"
         />
       )}
 

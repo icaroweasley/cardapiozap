@@ -436,30 +436,7 @@ export default function ProfilePanel() {
                   <div key={idx} className="flex flex-col gap-3">
                     <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50">{category.title}</label>
                     <div className="flex flex-wrap gap-4">
-                      {category.items.map(bg => (
-                        <div 
-                          key={bg.label}
-                          onClick={() => {
-                            setBackgroundType('preset');
-                            setBackgroundValue(bg.id);
-                            setPreviewBackground({ backgroundType: 'preset', backgroundValue: bg.id });
-                          }}
-                          className={`cursor-pointer group flex flex-col items-center gap-2`}
-                        >
-                          <div className={`w-16 h-16 rounded-2xl border-2 transition-all ${backgroundType === 'preset' && backgroundValue === bg.id ? 'border-black dark:border-white scale-110 shadow-xl' : 'border-black/10 dark:border-white/10 opacity-70 group-hover:opacity-100'} overflow-hidden relative`}>
-                            {bg.id.startsWith('img:') ? (
-                               <img src={bg.id.replace('img:', '')} className="w-full h-full object-cover" alt={bg.label} />
-                            ) : bg.id ? (
-                               <div className={`w-full h-full ${bg.id}`}></div>
-                            ) : (
-                               <img src="/bg-burger.png" className="w-full h-full object-cover opacity-80" alt="Padrão" />
-                            )}
-                          </div>
-                          <span className="text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 text-center">{bg.label}</span>
-                        </div>
-                      ))}
-
-                      {/* Custom Upload only on the first category for convenience or separate */}
+                      {/* Custom Upload as FIRST item */}
                       {idx === 0 && (
                         <div 
                           onClick={() => {
@@ -509,6 +486,29 @@ export default function ProfilePanel() {
                           <span className="text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 text-center">Próprio</span>
                         </div>
                       )}
+
+                      {category.items.map(bg => (
+                        <div 
+                          key={bg.label}
+                          onClick={() => {
+                            setBackgroundType('preset');
+                            setBackgroundValue(bg.id);
+                            setPreviewBackground({ backgroundType: 'preset', backgroundValue: bg.id });
+                          }}
+                          className={`cursor-pointer group flex flex-col items-center gap-2`}
+                        >
+                          <div className={`w-16 h-16 rounded-2xl border-2 transition-all ${backgroundType === 'preset' && backgroundValue === bg.id ? 'border-black dark:border-white scale-110 shadow-xl' : 'border-black/10 dark:border-white/10 opacity-70 group-hover:opacity-100'} overflow-hidden relative`}>
+                            {bg.id.startsWith('img:') ? (
+                               <img src={bg.id.replace('img:', '')} className="w-full h-full object-cover" alt={bg.label} />
+                            ) : bg.id ? (
+                               <div className={`w-full h-full ${bg.id}`}></div>
+                            ) : (
+                               <img src="/bg-burger.png" className="w-full h-full object-cover opacity-80" alt="Padrão" />
+                            )}
+                          </div>
+                          <span className="text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 text-center">{bg.label}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
