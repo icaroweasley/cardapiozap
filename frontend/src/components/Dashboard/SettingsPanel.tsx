@@ -16,10 +16,9 @@ export default function SettingsPanel() {
     fetchSettings();
   }, []);
 
-  const fetchInstanceStatus = async (currentConfig = config) => {
-    if (!currentConfig.instanceName) return;
+  const fetchInstanceStatus = async () => {
     try {
-      const res = await fetch(`${apiUrl}/api/auth/evolution/instance/${currentConfig.instanceName}`, {
+      const res = await fetch(`${apiUrl}/api/auth/evolution/instance/me`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) {
@@ -44,18 +43,12 @@ export default function SettingsPanel() {
   };
 
   useEffect(() => {
-    if (config.instanceName) {
-      fetchInstanceStatus();
-      const interval = setInterval(() => fetchInstanceStatus(), 5000);
-      return () => clearInterval(interval);
-    }
-  }, [config.instanceName]);
+    fetchInstanceStatus();
+    const interval = setInterval(() => fetchInstanceStatus(), 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleConnectInstance = async () => {
-    if (!config.instanceName) {
-      useToastStore.getState().addToast('Digite um nome de instância primeiro.', 'error');
-      return;
-    }
     setIsChecking(true);
     setInstanceStatus('Gerando QR Code...');
     setQrCode(null);
@@ -79,7 +72,7 @@ export default function SettingsPanel() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ instanceName: config.instanceName })
+        body: JSON.stringify({})
       });
       if (!res.ok) {
         const err = await res.json();
@@ -104,7 +97,7 @@ export default function SettingsPanel() {
   const handleDisconnectInstance = async () => {
     if (!confirm('Deseja realmente desconectar e apagar esta instância?')) return;
     try {
-      await fetch(`${apiUrl}/api/auth/evolution/instance/${config.instanceName}`, {
+      await fetch(`${apiUrl}/api/auth/evolution/instance/me`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -195,20 +188,10 @@ export default function SettingsPanel() {
 
                  {/* Settings Section */}
                  <div className="flex flex-col gap-3 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 p-4 md:p-5 rounded-2xl shadow-sm">
-                    <div className="relative">
-                      <label className="block font-inter text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-1.5 ml-1">Nome da Instância</label>
-                      <input
-                        type="text"
-                        value={config.instanceName || ''}
-                        onChange={(e) => setConfig({ ...config, instanceName: e.target.value })}
-                        className="w-full bg-white/60 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-inner"
-                        placeholder="Ex: cardapio_loja1"
-                      />
-                    </div>
                     {instanceStatus !== 'Conectado' && (
                       <button 
                         onClick={handleConnectInstance}
-                        disabled={isChecking || !config.instanceName}
+                        disabled={isChecking}
                         className="w-full bg-black dark:bg-white text-white dark:text-black px-6 py-3 text-[10px] uppercase tracking-widest font-bold rounded-xl disabled:opacity-50 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 shadow-xl mt-1"
                       >
                         <Smartphone size={16} />

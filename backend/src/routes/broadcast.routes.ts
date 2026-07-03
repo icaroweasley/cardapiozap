@@ -108,7 +108,7 @@ router.get('/whatsapp-contacts', authenticate, async (req: any, res) => {
     try { config = JSON.parse(merchant.whatsappConfig || '{}'); } catch(e) {}
     
     const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
-    const instanceName = config.instanceName || 'cardapio_instance';
+    const instanceName = `zapgarcom_${req.merchantId}`;
     const apiKey = process.env.EVOLUTION_API_KEY || '';
 
     const endpointsToTry = [
@@ -172,7 +172,7 @@ router.post('/presence', authenticate, async (req: any, res) => {
     try { config = JSON.parse(merchant.whatsappConfig || '{}'); } catch(e) {}
     
     const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
-    const instanceName = config.instanceName || 'cardapio_instance';
+    const instanceName = `zapgarcom_${req.merchantId}`;
     const apiKey = process.env.EVOLUTION_API_KEY || '';
     
     const cleanPhone = number.replace(/\D/g, '');
@@ -274,7 +274,7 @@ router.post('/send', authenticate, async (req: any, res) => {
     } else {
       // Evolution API
       const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
-      const instanceName = config.instanceName || process.env.EVOLUTION_INSTANCE_NAME || 'cardapio_instance';
+      const instanceName = `zapgarcom_${req.merchantId}`;
       const apiKey = process.env.EVOLUTION_API_KEY || '';
 
       if (mediaBase64 || mediaUrl) {

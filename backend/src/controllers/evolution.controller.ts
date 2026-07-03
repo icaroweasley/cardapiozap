@@ -4,8 +4,7 @@ import axios from 'axios';
 
 export const getEvolutionState = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { instanceName } = req.params;
-    if (!instanceName) { res.status(400).json({ error: 'instanceName required' }); return; }
+    const instanceName = `zapgarcom_${req.merchantId}`;
 
     const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
     const apiKey = process.env.EVOLUTION_API_KEY || '';
@@ -46,9 +45,8 @@ export const getEvolutionState = async (req: AuthRequest, res: Response): Promis
 
 export const createEvolutionInstance = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { instanceName } = req.body;
+    const instanceName = `zapgarcom_${req.merchantId}`;
     console.log(`\n\n--- CREATING EVOLUTION INSTANCE: ${instanceName} ---`);
-    if (!instanceName) { res.status(400).json({ error: 'instanceName required' }); return; }
 
     const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
     const apiKey = process.env.EVOLUTION_API_KEY || '';
@@ -82,8 +80,7 @@ export const createEvolutionInstance = async (req: AuthRequest, res: Response): 
 
 export const deleteEvolutionInstance = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { instanceName } = req.params;
-    if (!instanceName) { res.status(400).json({ error: 'instanceName required' }); return; }
+    const instanceName = `zapgarcom_${req.merchantId}`;
 
     const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
     const apiKey = process.env.EVOLUTION_API_KEY || '';

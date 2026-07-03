@@ -162,24 +162,22 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   }, [providerInfo]);
 
   useEffect(() => {
-    if (configObj?.instanceName) {
-      const checkStatus = async () => {
-        try {
-          const res = await axios.get(`${apiUrl}/api/auth/evolution/instance/${configObj.instanceName}`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-          });
-          if (res.data?.instance?.state === 'open') {
-            setActualInstanceStatus('Conectado');
-          } else {
-            setActualInstanceStatus('Desconectado');
-          }
-        } catch (e) {
+    const checkStatus = async () => {
+      try {
+        const res = await axios.get(`${apiUrl}/api/auth/evolution/instance/me`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        if (res.data?.instance?.state === 'open') {
+          setActualInstanceStatus('Conectado');
+        } else {
           setActualInstanceStatus('Desconectado');
         }
-      };
-      checkStatus();
-    }
-  }, [configObj, apiUrl]);
+      } catch (e) {
+        setActualInstanceStatus('Desconectado');
+      }
+    };
+    checkStatus();
+  }, [apiUrl]);
 
   // Load Saved Lists
   const fetchLists = useCallback(async () => {
