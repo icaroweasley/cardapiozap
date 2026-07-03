@@ -105,8 +105,8 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   const [usageStats, setUsageStats] = useState<{used: number, limit: number} | null>(null);
   const [sessionSentCount, setSessionSentCount] = useState(0);
   
-  const [minDelay] = useState(10);
-  const [maxDelay] = useState(25);
+  const [minDelay] = useState(15);
+  const [maxDelay] = useState(90);
   
   const [editingContactId, setEditingContactId] = useState<string | null>(null);
   const [editingContactName, setEditingContactName] = useState("");
@@ -1201,9 +1201,9 @@ const nextScreen = (screen: 1 | 2 | 3) => {
               )}
 
               {/* Logs */}
-              {isSending && (
+              {(isSending || logs.length > 0) && (
                 <div className="flex-1 bg-white/60 dark:bg-black/60 backdrop-blur-xl p-5 rounded-[2rem] border border-black/10 dark:border-white/10 font-mono text-xs overflow-y-auto flex flex-col gap-2 shadow-inner relative min-h-[200px]">
-                  <div className="absolute top-4 right-5 text-[10px] text-black/40 dark:text-white/40 uppercase tracking-widest font-bold">Logs / Terminal</div>
+                  <div className="absolute top-4 right-5 text-[10px] text-black/40 dark:text-white/40 uppercase tracking-widest font-bold">Histórico / Logs</div>
                   <div className="mt-6 flex-1 overflow-y-auto hide-scrollbar pr-2">
                     {logs.length === 0 && <div className="text-black/30 dark:text-white/30 italic mt-2">Iniciando...</div>}
                     {logs.map(log => (
@@ -1219,32 +1219,34 @@ const nextScreen = (screen: 1 | 2 | 3) => {
                     <div ref={logsEndRef} />
                   </div>
                   
-                  <div className="pt-3 border-t border-black/10 dark:border-white/10 mt-auto flex gap-2 shrink-0">
-                    <button
-                      onClick={() => {
-                        isPausedRef.current = !isPausedRef.current;
-                        setIsPausedUI(isPausedRef.current);
-                        addLog(isPausedRef.current ? 'Disparo pausado.' : 'Disparo retomado.', 'pending');
-                      }}
-                      className="flex-1 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-700 dark:text-yellow-400 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-yellow-500/20"
-                    >
-                      {isPausedUI ? <Play size={14} fill="currentColor" /> : <Pause size={14} fill="currentColor" />}
-                      {isPausedUI ? 'Retomar' : 'Pausar'}
-                    </button>
-                    <button
-                      onClick={async () => {
-                        const confirmed = await showConfirm('Tem certeza que deseja cancelar o disparo?');
-                        if (confirmed) {
-                          isCancelledRef.current = true;
-                          addLog('Cancelando...', 'error');
-                        }
-                      }}
-                      className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-700 dark:text-red-400 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-red-500/20"
-                    >
-                      <Square size={14} fill="currentColor" />
-                      Cancelar
-                    </button>
-                  </div>
+                  {isSending && (
+                    <div className="pt-3 border-t border-black/10 dark:border-white/10 mt-auto flex gap-2 shrink-0">
+                      <button
+                        onClick={() => {
+                          isPausedRef.current = !isPausedRef.current;
+                          setIsPausedUI(isPausedRef.current);
+                          addLog(isPausedRef.current ? 'Disparo pausado.' : 'Disparo retomado.', 'pending');
+                        }}
+                        className="flex-1 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-700 dark:text-yellow-400 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-yellow-500/20"
+                      >
+                        {isPausedUI ? <Play size={14} fill="currentColor" /> : <Pause size={14} fill="currentColor" />}
+                        {isPausedUI ? 'Retomar' : 'Pausar'}
+                      </button>
+                      <button
+                        onClick={async () => {
+                          const confirmed = await showConfirm('Tem certeza que deseja cancelar o disparo?');
+                          if (confirmed) {
+                            isCancelledRef.current = true;
+                            addLog('Cancelando...', 'error');
+                          }
+                        }}
+                        className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-700 dark:text-red-400 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-red-500/20"
+                      >
+                        <Square size={14} fill="currentColor" />
+                        Cancelar
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
               
