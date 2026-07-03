@@ -14,8 +14,12 @@ import ProfilePanel from '../components/Dashboard/ProfilePanel';
 export default function Dashboard() {
   const merchant = JSON.parse(localStorage.getItem('merchant') || '{}');
   const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS' | 'BROADCAST' | 'ADMIN' | 'PROFILE'>(
-    merchant.accountType === 'BROADCAST_ONLY' ? 'BROADCAST' : 'KANBAN'
+    (localStorage.getItem('dashboard_tab') as any) || (merchant.accountType === 'BROADCAST_ONLY' ? 'BROADCAST' : 'KANBAN')
   );
+
+  useEffect(() => {
+    localStorage.setItem('dashboard_tab', activeTab);
+  }, [activeTab]);
   const navigate = useNavigate();
   const { isDark, toggleTheme, previewBackground } = useThemeStore();
 
@@ -29,6 +33,7 @@ export default function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('merchant');
+    localStorage.removeItem('dashboard_tab');
     navigate('/login');
   };
 
