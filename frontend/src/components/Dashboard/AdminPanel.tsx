@@ -131,6 +131,7 @@ export default function AdminPanel() {
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Tipo Conta</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Mensalidade</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Vencimento</th>
+                  <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Disparos (Hoje)</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Pedidos</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Produtos</th>
                   <th className="p-4 font-bold border-b border-black/10 dark:border-white/10 whitespace-nowrap">Ações</th>
@@ -177,6 +178,13 @@ export default function AdminPanel() {
                       </td>
                       <td className="p-4 text-xs font-bold font-mono whitespace-nowrap">
                         {merchant.planExpiresAt ? new Date(merchant.planExpiresAt).toLocaleDateString('pt-BR') : 'N/A'}
+                      </td>
+                      <td className="p-4 font-mono text-xs whitespace-nowrap">
+                        <div className="flex flex-col">
+                          <span className={`${merchant._count.broadcastLogs >= (merchant.isTrial ? merchant.trialBroadcastLimit : merchant.paidBroadcastLimit) ? 'text-red-500' : 'text-emerald-500'}`}>
+                            {merchant._count.broadcastLogs || 0} <span className="text-black/40 dark:text-white/40">/ {merchant.isTrial ? merchant.trialBroadcastLimit : merchant.paidBroadcastLimit}</span>
+                          </span>
+                        </div>
                       </td>
                       <td className="p-4 font-bold whitespace-nowrap">{merchant._count.orders}</td>
                       <td className="p-4 font-bold whitespace-nowrap">{merchant._count.products}</td>

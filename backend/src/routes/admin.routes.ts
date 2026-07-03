@@ -15,6 +15,7 @@ const requireAdmin = async (req: any, res: any, next: any) => {
 
 router.get('/merchants', authenticate, requireAdmin, async (req: any, res) => {
   try {
+    const today = new Date().toISOString().split('T')[0];
     const merchants = await prisma.merchant.findMany({
       select: {
         id: true,
@@ -33,7 +34,14 @@ router.get('/merchants', authenticate, requireAdmin, async (req: any, res) => {
         paidBroadcastLimit: true,
         isTrial: true,
         _count: {
-          select: { savedLists: true, products: true, orders: true }
+          select: { 
+            savedLists: true, 
+            products: true, 
+            orders: true,
+            broadcastLogs: {
+              where: { date: today }
+            }
+          }
         }
       },
       orderBy: { createdAt: 'desc' }
