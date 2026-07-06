@@ -58,6 +58,10 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   // Message State
   const [message, setMessage] = useState('');
   const [mediaAttachments, setMediaAttachments] = useState<MediaAttachment[]>([]);
+
+  const merchantData = JSON.parse(localStorage.getItem('merchant') || '{}');
+  const isBroadcastOnly = merchantData.accountType === 'BROADCAST_ONLY';
+
   const [textPosition, setTextPosition] = useState<'before' | 'after' | 'caption'>('after');
   
   useEffect(() => {
@@ -688,18 +692,20 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                     <div className="flex gap-2">
                         <button 
                           onClick={fetchWhatsAppContacts}
-                          title="Sincronizar com seu WhatsApp"
+                          title={isBroadcastOnly ? "Atualizar contatos do WhatsApp" : "Sincronizar com seu WhatsApp"}
                           className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white"
                         >
-                          <Users size={14} /> WhatsApp
+                          <Users size={14} /> {isBroadcastOnly ? "Atualizar" : "WhatsApp"}
                         </button>
-                        <button 
-                          onClick={fetchDatabaseContacts}
-                          title="Sincronizar Clientes do Cardápio"
-                          className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white"
-                        >
-                          <Users size={14} /> Clientes
-                        </button>
+                        {!isBroadcastOnly && (
+                          <button 
+                            onClick={fetchDatabaseContacts}
+                            title="Sincronizar Clientes do Cardápio"
+                            className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white"
+                          >
+                            <Users size={14} /> Clientes
+                          </button>
+                        )}
                     </div>
                   </div>
                   <div className="relative">
