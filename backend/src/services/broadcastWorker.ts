@@ -99,42 +99,53 @@ export const startBroadcastWorker = async (merchantId: string) => {
 
           // 2. Send Message
           if (media) {
-            let finalMedia = media.data;
+            let finalMedia = media.base64 || media.data || '';
             if (finalMedia && finalMedia.includes('base64,')) {
                finalMedia = finalMedia.split('base64,')[1];
             }
             const isVideo = media.type.startsWith('video');
+            const isAudio = media.type.startsWith('audio');
+            const mediaType = isVideo ? 'video' : isAudio ? 'audio' : 'image';
+
+            const sendMediaOnly = async (captionText: string) => {
+               await axios.post(`${apiUrl}/message/sendMedia/${instanceName}`, {
+                  number: cleanPhone,
+                  mediaMessage: {
+                    mediatype: mediaType,
+                    mimetype: media.type,
+                    fileName: media.name || 'media',
+                    caption: captionText,
+                    media: finalMedia
+                  }
+               }, { headers: { apikey: apiKey } });
+            };
+
+            const sendTextOnly = async () => {
+               if (textToSend) {
+                 await axios.post(`${apiUrl}/message/sendText/${instanceName}`, {
+                   number: cleanPhone,
+                   textMessage: { text: textToSend }
+                 }, { headers: { apikey: apiKey } });
+               }
+            };
 
             if (session.textPosition === 'before') {
-              if (textToSend) {
-                await axios.post(`${apiUrl}/message/sendText/${instanceName}`, {
-                  number: cleanPhone,
-                  textMessage: { text: textToSend }
-                }, { headers: { apikey: apiKey } });
-                await new Promise(r => setTimeout(r, 2000));
-              }
-              await axios.post(`${apiUrl}/message/sendMedia/${instanceName}`, {
-                number: cleanPhone,
-                mediaMessage: {
-                  mediatype: isVideo ? 'video' : 'image',
-                  mimetype: media.type,
-                  fileName: media.name || 'media',
-                  caption: '',
-                  media: finalMedia
-                }
-              }, { headers: { apikey: apiKey } });
+              await sendTextOnly();
+              await new Promise(r => setTimeout(r, 2000));
+              await sendMediaOnly('');
+            } else if (session.textPosition === 'after') {
+              await sendMediaOnly('');
+              await new Promise(r => setTimeout(r, 2000));
+              await sendTextOnly();
             } else {
-               // default or after (media with caption)
-               await axios.post(`${apiUrl}/message/sendMedia/${instanceName}`, {
-                number: cleanPhone,
-                mediaMessage: {
-                  mediatype: isVideo ? 'video' : 'image',
-                  mimetype: media.type,
-                  fileName: media.name || 'media',
-                  caption: textToSend || '',
-                  media: finalMedia
-                }
-              }, { headers: { apikey: apiKey } });
+               if (isAudio) {
+                  // Audio não suporta legenda embutida
+                  await sendMediaOnly('');
+                  await new Promise(r => setTimeout(r, 2000));
+                  await sendTextOnly();
+               } else {
+                  await sendMediaOnly(textToSend || '');
+               }
             }
           } else {
              await axios.post(`${apiUrl}/message/sendText/${instanceName}`, {
