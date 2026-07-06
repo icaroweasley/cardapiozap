@@ -387,7 +387,7 @@ export default function Dashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 relative z-10 overflow-hidden flex flex-col p-4 md:p-8">
+      <main className="flex-1 relative z-10 overflow-hidden flex flex-col p-2 md:p-8">
         {activeTab === 'KANBAN' && <KanbanBoard />}
         {activeTab === 'PRODUCTS' && <ProductManager />}
         {activeTab === 'SETTINGS' && <SettingsPanel />}
