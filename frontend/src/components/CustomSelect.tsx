@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 interface Option {
@@ -12,9 +12,11 @@ interface CustomSelectProps {
   options: Option[];
   placeholder?: string;
   className?: string;
+  variant?: 'default' | 'transparent';
+  icon?: ReactNode;
 }
 
-export default function CustomSelect({ value, onChange, options, placeholder = 'Selecione...', className = '' }: CustomSelectProps) {
+export default function CustomSelect({ value, onChange, options, placeholder = 'Selecione...', className = '', variant = 'default', icon }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -31,17 +33,24 @@ export default function CustomSelect({ value, onChange, options, placeholder = '
 
   const selectedOption = options.find(opt => opt.value === value);
 
+  const buttonClasses = variant === 'transparent' 
+    ? "w-full bg-transparent border-none text-black dark:text-white py-2 pr-3 text-xs font-inter focus:outline-none flex items-center justify-between group gap-2"
+    : "w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl flex items-center justify-between group gap-2";
+
   return (
     <div className={`relative ${className}`} ref={containerRef}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl flex items-center justify-between group gap-2"
+        className={buttonClasses}
       >
-        <span className={`truncate text-left flex-1 ${!selectedOption ? 'text-black/50 dark:text-white/50' : ''}`}>
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
-        <ChevronDown size={16} className={`shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <div className="flex items-center gap-2 overflow-hidden flex-1">
+          {icon && <span className="shrink-0 text-black/50 dark:text-white/50">{icon}</span>}
+          <span className={`truncate text-left flex-1 ${!selectedOption ? 'text-black/50 dark:text-white/50' : ''}`}>
+            {selectedOption ? selectedOption.label : placeholder}
+          </span>
+        </div>
+        <ChevronDown size={16} className={`shrink-0 text-black/50 dark:text-white/50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (

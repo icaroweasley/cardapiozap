@@ -784,7 +784,6 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                   {/* List Management UI */}
                   <div className="flex gap-2 w-full animate-fade-in bg-white/50 dark:bg-black/40 p-3 rounded-xl border border-black/5 dark:border-white/5 shadow-sm items-center">
                     <div className="relative flex-1">
-                      <FolderOpen size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/50 dark:text-white/50" />
                       <CustomSelect 
                         value={selectedListId}
                         onChange={loadList}
@@ -794,6 +793,8 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                         ]}
                         placeholder="Carregar lista salva..."
                         className="w-full bg-transparent border-none"
+                        variant="transparent"
+                        icon={<FolderOpen size={14} />}
                       />
                       {savedLists.length > 0 && selectedListId === '' && (
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] text-black/40 dark:text-white/40 font-bold uppercase">
