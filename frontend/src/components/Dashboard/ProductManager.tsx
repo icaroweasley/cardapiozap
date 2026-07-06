@@ -390,12 +390,18 @@ export default function ProductManager() {
                 <div>
                   <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Categoria</label>
                   <input 
+                    list="category-options"
                     className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
-                    placeholder="Ex: Bebidas" 
+                    placeholder="Ex: Bebidas (ou digite uma nova)" 
                     value={formData.category} 
                     onChange={e => setFormData({...formData, category: e.target.value})} 
                     required 
                   />
+                  <datalist id="category-options">
+                    {Array.from(new Set(products.map(p => p.category))).filter(Boolean).map(cat => (
+                      <option key={cat} value={cat} />
+                    ))}
+                  </datalist>
                 </div>
               </div>
               <div>
@@ -470,24 +476,28 @@ export default function ProductManager() {
                       />
                     </div>
                     
-                    <div className="flex items-center gap-6">
-                      <label className="flex items-center gap-2 cursor-pointer">
+                    <div className="flex flex-col gap-3 bg-black/5 dark:bg-white/5 p-4 rounded-xl border border-black/5 dark:border-white/5">
+                      <label className="flex items-center gap-3 cursor-pointer">
                         <input 
                           type="checkbox" 
                           checked={group.required}
-                          onChange={e => updateOptionGroup(gIdx, 'required', e.target.checked)}
-                          className="w-4 h-4 accent-black dark:accent-white"
+                          onChange={e => {
+                            updateOptionGroup(gIdx, 'required', e.target.checked);
+                            updateOptionGroup(gIdx, 'minChoices', e.target.checked ? 1 : 0);
+                          }}
+                          className="w-5 h-5 accent-black dark:accent-white"
                         />
-                        <span className="font-inter text-[10px] font-bold tracking-widest text-black/70 dark:text-white/70 uppercase">Obrigatório</span>
+                        <span className="font-inter text-xs font-bold text-black dark:text-white">Obrigatório (O cliente precisa escolher)</span>
                       </label>
                       
-                      <div className="flex items-center gap-2">
-                        <label className="font-inter text-[10px] font-bold tracking-widest text-black/70 dark:text-white/70 uppercase">Mín:</label>
-                        <input type="number" min="0" value={group.minChoices} onChange={e => updateOptionGroup(gIdx, 'minChoices', parseInt(e.target.value) || 0)} className="w-12 bg-transparent border-b border-black/20 dark:border-white/20 text-black dark:text-white text-center text-sm focus:outline-none" />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <label className="font-inter text-[10px] font-bold tracking-widest text-black/70 dark:text-white/70 uppercase">Máx:</label>
-                        <input type="number" min="1" value={group.maxChoices} onChange={e => updateOptionGroup(gIdx, 'maxChoices', parseInt(e.target.value) || 1)} className="w-12 bg-transparent border-b border-black/20 dark:border-white/20 text-black dark:text-white text-center text-sm focus:outline-none" />
+                      <div className="flex items-center gap-3 pt-2 border-t border-black/10 dark:border-white/10">
+                        <span className="font-inter text-xs font-medium text-black/70 dark:text-white/70">Máximo de opções permitidas:</span>
+                        <input 
+                          type="number" min="1" 
+                          value={group.maxChoices} 
+                          onChange={e => updateOptionGroup(gIdx, 'maxChoices', parseInt(e.target.value) || 1)} 
+                          className="w-16 bg-white dark:bg-[#111] border border-black/20 dark:border-white/20 text-black dark:text-white text-center text-sm p-1.5 rounded-lg focus:outline-none" 
+                        />
                       </div>
                     </div>
 
