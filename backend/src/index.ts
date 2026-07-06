@@ -29,7 +29,7 @@ io.use((socket, next) => {
   if (!token) return next(new Error('Authentication error'));
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret') as any;
-    socket.data.merchantId = decoded.merchantId;
+    socket.data.merchantId = decoded.id || decoded.merchantId;
     next();
   } catch (err) {
     next(new Error('Authentication error'));
