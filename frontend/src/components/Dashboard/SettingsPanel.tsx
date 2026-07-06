@@ -140,8 +140,8 @@ export default function SettingsPanel() {
 
   return (
     <div className="flex-1 overflow-y-auto hide-scrollbar h-full flex flex-col items-center">
-      <div className="w-full max-w-4xl p-6 bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 flex flex-col shadow-2xl relative h-fit min-h-full rounded-3xl lg:m-2">
-        <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-6 mb-6">
+      <div className="w-full max-w-4xl p-3 md:p-6 bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 flex flex-col shadow-2xl relative h-fit min-h-full rounded-3xl lg:m-2">
+        <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-4 mb-4 md:pb-6 md:mb-6">
           <div>
             <h2 className="font-podium text-2xl md:text-3xl uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
               <Settings2 className="w-8 h-8" />
@@ -155,7 +155,7 @@ export default function SettingsPanel() {
 
         {/* Tab Content */}
         <div className="w-full flex-1">
-          <div className="flex flex-col lg:flex-row gap-5 lg:gap-6 p-5 lg:p-6 border border-black/10 dark:border-white/10 bg-white/40 dark:bg-black/30 backdrop-blur-xl shadow-inner rounded-[2.5rem] relative overflow-hidden">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 p-4 md:p-6 border border-black/10 dark:border-white/10 bg-white/40 dark:bg-black/30 backdrop-blur-xl shadow-inner rounded-[2.5rem] relative overflow-hidden">
                <div className="w-full lg:w-60 lg:h-60 shrink-0 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-[2rem] p-4 flex items-center justify-center relative shadow-lg group aspect-square lg:aspect-auto">
                    {qrCode ? (
                      <img src={qrCode} alt="QR Code" className="w-full h-full object-contain rounded-xl" />
@@ -169,9 +169,9 @@ export default function SettingsPanel() {
                    )}
                </div>
                
-               <div className="flex-1 w-full flex flex-col gap-4">
+               <div className="flex-1 w-full flex flex-col gap-3 md:gap-4">
                  {/* Status Section */}
-                 <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 p-4 md:p-5 rounded-2xl shadow-sm">
+                 <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 p-3 md:p-5 rounded-2xl shadow-sm">
                     <div className="flex items-center gap-4">
                        <div className={`w-3 h-3 rounded-full shadow-lg ${instanceStatus === 'Conectado' ? 'bg-emerald-500 shadow-emerald-500/50' : 'bg-amber-500 animate-pulse shadow-amber-500/50'}`}></div>
                        <div>
@@ -187,7 +187,7 @@ export default function SettingsPanel() {
                  </div>
 
                  {/* Settings Section */}
-                 <div className="flex flex-col gap-3 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 p-4 md:p-5 rounded-2xl shadow-sm">
+                 <div className="flex flex-col gap-3 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 p-3 md:p-5 rounded-2xl shadow-sm">
                     {instanceStatus !== 'Conectado' && (
                       <button 
                         onClick={handleConnectInstance}
