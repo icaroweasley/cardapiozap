@@ -86,27 +86,28 @@ export default function QRCodeManager() {
           </div>
         </div>
 
-        <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 shrink-0 mb-4 md:mb-8">
-          <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-auto">
-            <label className="block text-[10px] md:text-sm font-bold uppercase tracking-widest text-black/70 dark:text-white/70 mb-2 md:mb-4">Gerenciar Total de Mesas</label>
-            <div className="flex items-center gap-3 md:gap-4">
-              <button onClick={() => updateTableCount(Math.max(1, tableCount - 1))} className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-lg md:text-xl shrink-0">-</button>
+        <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-5 rounded-2xl shadow-sm flex flex-row items-center justify-between gap-4 shrink-0 mb-4 md:mb-8">
+          <div className="flex items-center gap-2 md:gap-4">
+            <label className="text-[9px] md:text-sm font-bold uppercase tracking-widest text-black/70 dark:text-white/70 hidden sm:block">Mesas:</label>
+            <div className="flex items-center gap-1 md:gap-2">
+              <button onClick={() => updateTableCount(Math.max(1, tableCount - 1))} className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-lg shrink-0">-</button>
               <input 
                 type="number" 
                 value={tableCount} 
                 onChange={e => updateTableCount(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-20 md:w-24 text-center bg-white dark:bg-black border border-black/10 dark:border-white/10 p-2 md:p-3 rounded-xl md:rounded-2xl font-podium text-xl md:text-2xl text-black dark:text-white focus:outline-none"
+                className="w-12 md:w-16 text-center bg-white dark:bg-black border border-black/10 dark:border-white/10 p-1 md:p-2 rounded-lg md:rounded-xl font-podium text-sm md:text-lg text-black dark:text-white focus:outline-none"
               />
-              <button onClick={() => updateTableCount(tableCount + 1)} className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-lg md:text-xl shrink-0">+</button>
+              <button onClick={() => updateTableCount(tableCount + 1)} className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-lg shrink-0">+</button>
             </div>
           </div>
 
           <button 
             onClick={() => printQRCodes()}
-            className="w-full md:w-auto bg-black dark:bg-white text-white dark:text-black font-bold text-[10px] md:text-sm uppercase tracking-widest py-3 md:py-4 px-6 md:px-8 rounded-xl flex items-center justify-center gap-2 md:gap-3 hover:scale-105 transition-transform shadow-xl shrink-0"
+            className="bg-black dark:bg-white text-white dark:text-black font-bold text-[9px] md:text-xs uppercase tracking-widest py-2 md:py-3 px-4 md:px-6 rounded-lg md:rounded-xl flex items-center justify-center gap-2 hover:scale-105 transition-transform shadow-md shrink-0"
           >
-            <Printer size={18} />
-            Imprimir Todas ({tableCount})
+            <Printer size={14} className="md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Imprimir Todas</span>
+            <span className="sm:hidden">Imprimir ({tableCount})</span>
           </button>
         </div>
 
@@ -114,9 +115,9 @@ export default function QRCodeManager() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6 pb-10">
             {Array.from({ length: tableCount }).map((_, i) => (
               <div key={i} className="bg-white dark:bg-[#111] border border-black/10 dark:border-white/10 p-3 md:p-5 rounded-xl md:rounded-2xl flex flex-col items-center shadow-lg hover:border-black/30 dark:hover:border-white/30 transition-colors group">
-                <span className="font-podium text-sm md:text-lg uppercase tracking-widest text-black dark:text-white mb-2 md:mb-4">Mesa {i + 1}</span>
-                <div className="bg-white p-2 rounded-xl mb-3 md:mb-4 shadow-sm border border-black/5">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(baseUrl + '?mesa=' + (i+1))}`} alt={`QR Mesa ${i+1}`} className="w-20 h-20 sm:w-28 sm:h-28" />
+                <span className="font-podium text-sm md:text-lg uppercase tracking-widest text-black dark:text-white mb-2 md:mb-4 shrink-0">Mesa {i + 1}</span>
+                <div className="bg-white p-2 rounded-xl mb-3 md:mb-4 shadow-sm border border-black/5 aspect-square flex items-center justify-center w-full max-w-[120px] shrink-0">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(baseUrl + '?mesa=' + (i+1))}`} alt={`QR Mesa ${i+1}`} className="w-full h-full object-contain aspect-square" />
                 </div>
                 <button 
                   onClick={() => printQRCodes(i + 1)}
