@@ -68,7 +68,7 @@ export default function AdminPanel() {
 
   return (
     <div className="flex-1 flex flex-col h-full min-h-0 bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-[2rem] lg:m-2">
-      <div className="p-4 md:p-6 border-b border-black/10 dark:border-white/10 bg-white/30 dark:bg-black/20 flex flex-col xl:flex-row xl:items-center justify-between gap-4 shrink-0">
+      <div className="p-4 md:p-6 border-b border-black/10 dark:border-white/10 bg-white/30 dark:bg-black/20 flex flex-col xl:flex-row xl:items-start justify-between gap-6 shrink-0">
         <div className="flex items-center gap-4">
           <Server className="w-8 h-8 text-black dark:text-white shrink-0" />
           <div>
@@ -81,7 +81,7 @@ export default function AdminPanel() {
           </div>
         </div>
         
-        <div className="flex items-center gap-3 overflow-x-auto hide-scrollbar pb-2 xl:pb-0">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-3 bg-white/60 dark:bg-black/60 border border-black/10 dark:border-white/10 px-4 py-2 rounded-2xl shrink-0 shadow-sm">
              <div className="bg-black/5 dark:bg-white/5 p-2 rounded-lg text-black dark:text-white"><Users size={16} /></div>
              <div>
