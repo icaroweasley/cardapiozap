@@ -5,17 +5,25 @@ import { useToastStore } from '../../store/useToastStore';
 export default function QRCodeManager() {
   const merchant = JSON.parse(localStorage.getItem('merchant') || '{}');
   const baseUrl = `https://zapgarcom.com.br/${merchant.slug}`;
-  const [tableCount, setTableCount] = useState<number>(10);
+  const [tableCount, setTableCount] = useState<number>(() => {
+    return parseInt(localStorage.getItem(`tableCount_${merchant.id}`) || '10');
+  });
 
-  const printQRCodes = () => {
+  const updateTableCount = (newCount: number) => {
+    setTableCount(newCount);
+    localStorage.setItem(`tableCount_${merchant.id}`, newCount.toString());
+  };
+
+  const printQRCodes = (specificTable?: number) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
       useToastStore.getState().addToast("Por favor, permita pop-ups para imprimir.", 'error');
       return;
     }
 
-    const cardsHtml = Array.from({ length: tableCount }).map((_, i) => {
-      const tableNumber = i + 1;
+    const tablesToPrint = specificTable ? [specificTable] : Array.from({ length: tableCount }).map((_, i) => i + 1);
+
+    const cardsHtml = tablesToPrint.map(tableNumber => {
       const url = `${baseUrl}?mesa=${tableNumber}`;
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
       return `
@@ -44,8 +52,8 @@ export default function QRCodeManager() {
           </style>
         </head>
         <body>
-          <h2>QR Codes - ${merchant.name || 'Loja'}</h2>
-          <div class="grid">
+          ${!specificTable ? `<h2>QR Codes - ${merchant.name || 'Loja'}</h2>` : ''}
+          <div class="grid" style="${specificTable ? 'display:flex; justify-content:center;' : ''}">
             ${cardsHtml}
           </div>
           <script>
@@ -67,8 +75,8 @@ export default function QRCodeManager() {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-3xl lg:m-2 p-8 font-inter">
-      <div className="max-w-4xl mx-auto w-full">
-        <div className="flex items-center gap-4 mb-8">
+      <div className="max-w-6xl mx-auto w-full flex flex-col h-full">
+        <div className="flex items-center gap-4 mb-8 shrink-0">
           <div className="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-black">
             <QrCode size={32} />
           </div>
@@ -78,40 +86,47 @@ export default function QRCodeManager() {
           </div>
         </div>
 
-        <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-8 rounded-[2rem] shadow-xl flex flex-col items-center justify-center text-center">
-          <label className="block text-sm font-bold uppercase tracking-widest text-black/70 dark:text-white/70 mb-6">Quantas mesas você possui no salão?</label>
-          <div className="flex items-center gap-4 mb-8">
-            <button onClick={() => setTableCount(Math.max(1, tableCount - 1))} className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-xl">-</button>
-            <input 
-              type="number" 
-              value={tableCount} 
-              onChange={e => setTableCount(Math.max(1, parseInt(e.target.value) || 1))}
-              className="w-24 text-center bg-white dark:bg-black border border-black/10 dark:border-white/10 p-3 rounded-2xl font-podium text-2xl text-black dark:text-white focus:outline-none"
-            />
-            <button onClick={() => setTableCount(tableCount + 1)} className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-xl">+</button>
+        <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-8 rounded-[2rem] shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 shrink-0 mb-8">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <label className="block text-sm font-bold uppercase tracking-widest text-black/70 dark:text-white/70 mb-4">Gerenciar Total de Mesas</label>
+            <div className="flex items-center gap-4">
+              <button onClick={() => updateTableCount(Math.max(1, tableCount - 1))} className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-xl">-</button>
+              <input 
+                type="number" 
+                value={tableCount} 
+                onChange={e => updateTableCount(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-24 text-center bg-white dark:bg-black border border-black/10 dark:border-white/10 p-3 rounded-2xl font-podium text-2xl text-black dark:text-white focus:outline-none"
+              />
+              <button onClick={() => updateTableCount(tableCount + 1)} className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-xl">+</button>
+            </div>
           </div>
 
           <button 
-            onClick={printQRCodes}
-            className="bg-black dark:bg-white text-white dark:text-black font-bold text-sm uppercase tracking-widest py-4 px-12 rounded-xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-xl"
+            onClick={() => printQRCodes()}
+            className="bg-black dark:bg-white text-white dark:text-black font-bold text-sm uppercase tracking-widest py-4 px-8 rounded-xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-xl"
           >
             <Printer size={20} />
-            Gerar e Imprimir ({tableCount} Mesas)
+            Imprimir Todas ({tableCount})
           </button>
         </div>
 
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 opacity-50 pointer-events-none">
-          {Array.from({ length: Math.min(tableCount, 5) }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-black border border-black/10 dark:border-white/10 p-4 rounded-xl flex flex-col items-center shadow-md">
-              <span className="font-bold text-xs uppercase tracking-widest text-black dark:text-white mb-2">Mesa {i + 1}</span>
-              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(baseUrl + '?mesa=' + (i+1))}`} alt="QR" className="w-16 h-16 rounded" />
-            </div>
-          ))}
-          {tableCount > 5 && (
-             <div className="bg-white/30 dark:bg-black/30 border border-black/5 dark:border-white/5 p-4 rounded-xl flex flex-col items-center justify-center">
-               <span className="font-bold text-xs uppercase tracking-widest text-black/50 dark:text-white/50">+ {tableCount - 5}</span>
-             </div>
-          )}
+        <div className="flex-1 overflow-y-auto pr-2 hide-scrollbar">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 pb-10">
+            {Array.from({ length: tableCount }).map((_, i) => (
+              <div key={i} className="bg-white dark:bg-[#111] border border-black/10 dark:border-white/10 p-5 rounded-2xl flex flex-col items-center shadow-lg hover:border-black/30 dark:hover:border-white/30 transition-colors group">
+                <span className="font-podium text-lg uppercase tracking-widest text-black dark:text-white mb-4">Mesa {i + 1}</span>
+                <div className="bg-white p-2 rounded-xl mb-4 shadow-sm border border-black/5">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(baseUrl + '?mesa=' + (i+1))}`} alt={`QR Mesa ${i+1}`} className="w-24 h-24 sm:w-28 sm:h-28" />
+                </div>
+                <button 
+                  onClick={() => printQRCodes(i + 1)}
+                  className="w-full py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white rounded-lg font-inter text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Printer size={14} /> Imprimir
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
