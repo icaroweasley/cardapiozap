@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, ReactNode } from 'react';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 interface Option {
