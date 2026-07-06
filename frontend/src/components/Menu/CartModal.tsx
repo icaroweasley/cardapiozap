@@ -26,6 +26,25 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (isOpen) {
+      setStep(1);
+    }
+
+    const savedProfile = localStorage.getItem('@zapgarcom:profile');
+    if (savedProfile) {
+      try {
+        const parsed = JSON.parse(savedProfile);
+        setFormData(prev => ({
+          ...prev,
+          customerName: parsed.customerName || prev.customerName,
+          customerPhone: parsed.customerPhone || prev.customerPhone,
+          street: parsed.street || prev.street,
+          number: parsed.number || prev.number,
+          neighborhood: parsed.neighborhood || prev.neighborhood
+        }));
+      } catch (e) {}
+    }
+
     const params = new URLSearchParams(window.location.search);
     const mesa = params.get('mesa');
     if (mesa) {
@@ -35,7 +54,7 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
         observation: `MESA ${mesa}`
       }));
     }
-  }, []);
+  }, [isOpen]);
 
   const subtotal = getTotal();
   const taxaEntrega = formData.deliveryType === 'DELIVERY' ? 500 : 0; // R$ 5,00 mock
@@ -52,6 +71,14 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
   const handleOrder = async () => {
     setLoading(true);
     try {
+      localStorage.setItem('@zapgarcom:profile', JSON.stringify({
+        customerName: formData.customerName,
+        customerPhone: formData.customerPhone,
+        street: formData.street,
+        number: formData.number,
+        neighborhood: formData.neighborhood
+      }));
+
       await axios.post('/api/orders', {
         merchantId,
         customerName: formData.customerName,
