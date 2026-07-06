@@ -526,7 +526,7 @@ export default function ProfilePanel() {
                 ].map(sound => (
                   <div key={sound.id} className={`flex items-center gap-2 border px-4 py-2 rounded-xl cursor-pointer transition-all ${notificationSound === sound.id ? 'border-black dark:border-white bg-black/5 dark:bg-white/5 scale-105 shadow-md' : 'border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30'}`} onClick={() => { setNotificationSound(sound.id as NotificationSoundType); playNotificationSound(sound.id as NotificationSoundType); }}>
                     <Volume2 size={16} className={notificationSound === sound.id ? 'text-black dark:text-white' : 'text-black/40 dark:text-white/40'} />
-                    <span className="text-xs font-bold uppercase tracking-widest">{sound.label}</span>
+                    <span className={`text-xs font-bold uppercase tracking-widest ${notificationSound === sound.id ? 'text-black dark:text-white' : 'text-black/40 dark:text-white/40'}`}>{sound.label}</span>
                   </div>
                 ))}
               </div>
