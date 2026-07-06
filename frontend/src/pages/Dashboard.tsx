@@ -293,15 +293,15 @@ export default function Dashboard() {
                 <TrendingUp size={18} />
                 Relatórios
               </button>
+              <button 
+                onClick={() => setActiveTab('QRCODE')}
+                className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'QRCODE' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+              >
+                <QrCode size={18} />
+                Mesas (QR)
+              </button>
             </>
           )}
-          <button 
-            onClick={() => setActiveTab('QRCODE')}
-            className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'QRCODE' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
-          >
-            <QrCode size={18} />
-            Mesas (QR)
-          </button>
           <button 
             onClick={() => setActiveTab('SETTINGS')}
             className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'SETTINGS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
