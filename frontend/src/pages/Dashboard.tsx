@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Settings2, Megaphone, Server, AlertTriangle, X, QrCode, TrendingUp } from 'lucide-react';
+import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Settings2, Megaphone, Server, AlertTriangle, X, QrCode, TrendingUp, Menu } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 import { useToastStore } from '../store/useToastStore';
 import { io } from 'socket.io-client';
@@ -20,9 +20,11 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS' | 'BROADCAST' | 'ADMIN' | 'PROFILE' | 'QRCODE' | 'REPORTS'>(
     (localStorage.getItem('dashboard_tab') as any) || (merchant.accountType === 'BROADCAST_ONLY' ? 'BROADCAST' : 'KANBAN')
   );
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('dashboard_tab', activeTab);
+    setIsMobileMenuOpen(false); // Close mobile menu on tab change
   }, [activeTab]);
   const navigate = useNavigate();
   const { isDark, toggleTheme, previewBackground } = useThemeStore();
@@ -183,7 +185,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col md:flex-row bg-neutral-100 dark:bg-black transition-colors duration-500 relative">
+    <div className="h-[100dvh] overflow-hidden flex flex-col md:flex-row bg-neutral-100 dark:bg-black transition-colors duration-500 relative">
       {/* Background Image */}
       {themeConfig?.backgroundType === 'custom' && themeConfig?.backgroundValue ? (
         <img
@@ -209,10 +211,10 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Theme Toggle */}
+      {/* Theme Toggle (Desktop Only) */}
       <button 
         onClick={toggleTheme}
-        className="fixed top-4 right-4 z-50 p-2 bg-white/80 dark:bg-black/80 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full shadow-xl hover:scale-110 transition-all md:top-6 md:right-6"
+        className="hidden md:flex fixed top-6 right-6 z-50 p-3 bg-white/80 dark:bg-black/80 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full shadow-xl hover:scale-110 transition-all"
       >
         {isDark ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-black" />}
       </button>
@@ -255,9 +257,50 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* Mobile Top Bar */}
+      <div className="md:hidden w-full bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-black/10 dark:border-white/10 px-4 py-3 flex items-center justify-between relative z-40">
+        <div className="flex items-center gap-3 min-w-0">
+          {merchant.logoUrl ? (
+            <img src={merchant.logoUrl} alt="Logo" className="w-10 h-10 rounded-full object-cover shadow-sm" />
+          ) : (
+            <img src="/logo-transparent.png" alt="Logo" className="w-10 h-10 object-contain drop-shadow-md" />
+          )}
+          <span className="font-podium font-bold uppercase tracking-widest text-black dark:text-white truncate">
+            {merchant.name || 'LOJA'}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={toggleTheme}
+            className="p-3 text-black dark:text-white bg-black/5 dark:bg-white/5 rounded-xl min-w-[48px] min-h-[48px] flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+            aria-label="Toggle Theme"
+          >
+            {isDark ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="text-black dark:text-white bg-black/5 dark:bg-white/5 rounded-xl min-w-[48px] min-h-[48px] flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+            aria-label="Menu"
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-full md:w-[300px] shrink-0 border-b md:border-b-0 md:border-r border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur-md relative z-20 flex flex-col md:h-screen transition-colors duration-500">
-        <div className="p-8 border-b border-black/10 dark:border-white/10 flex flex-col items-start">
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-[280px] md:w-[300px] shrink-0 border-r border-black/10 dark:border-white/10 bg-white/95 dark:bg-black/95 md:bg-white/60 md:dark:bg-black/40 md:backdrop-blur-md flex flex-col h-[100dvh] transition-transform duration-300 ease-in-out md:relative md:translate-x-0
+        ${isMobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
+      `}>
+        <div className="p-6 md:p-8 border-b border-black/10 dark:border-white/10 flex flex-col items-start relative">
           {merchant.logoUrl ? (
             <img src={merchant.logoUrl} alt="Logo da Loja" className="h-16 w-16 object-cover rounded-full mb-4 shadow-lg ring-2 ring-black/10 dark:ring-white/10" />
           ) : (
@@ -269,33 +312,33 @@ export default function Dashboard() {
           </p>
         </div>
         
-        <nav className="flex-1 p-6 flex flex-row md:flex-col gap-4 overflow-x-auto hide-scrollbar">
+        <nav className="flex-1 p-4 md:p-6 flex flex-col gap-2 md:gap-4 overflow-y-auto custom-scrollbar">
           {merchant.accountType !== 'BROADCAST_ONLY' && (
             <>
               <button 
                 onClick={() => setActiveTab('KANBAN')}
-                className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'KANBAN' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'KANBAN' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <LayoutDashboard size={18} />
                 Pedidos
               </button>
               <button 
                 onClick={() => setActiveTab('PRODUCTS')}
-                className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'PRODUCTS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'PRODUCTS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <Package size={18} />
                 Cardápio
               </button>
               <button 
                 onClick={() => setActiveTab('REPORTS')}
-                className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'REPORTS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'REPORTS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <TrendingUp size={18} />
                 Relatórios
               </button>
               <button 
                 onClick={() => setActiveTab('QRCODE')}
-                className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'QRCODE' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'QRCODE' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <QrCode size={18} />
                 Mesas (QR)
@@ -304,21 +347,21 @@ export default function Dashboard() {
           )}
           <button 
             onClick={() => setActiveTab('SETTINGS')}
-            className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'SETTINGS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+            className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'SETTINGS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
           >
             <Settings2 size={18} />
             Conexões
           </button>
           <button 
             onClick={() => setActiveTab('BROADCAST')}
-            className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'BROADCAST' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+            className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'BROADCAST' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
           >
             <Megaphone size={18} />
             Disparos
           </button>
           <button 
             onClick={() => setActiveTab('PROFILE')}
-            className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'PROFILE' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+            className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'PROFILE' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
           >
             <Settings2 size={18} />
             Perfil da Loja
@@ -327,7 +370,7 @@ export default function Dashboard() {
           {merchant.isAdmin && (
             <button 
               onClick={() => setActiveTab('ADMIN')}
-              className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'ADMIN' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+              className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'ADMIN' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
             >
               <Server size={18} />
               Painel Admin
@@ -335,8 +378,8 @@ export default function Dashboard() {
           )}
         </nav>
 
-        <div className="p-6 mt-auto border-t border-black/10 dark:border-white/10">
-          <button onClick={handleLogout} className="flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase text-red-600 dark:text-red-400 border border-red-600/20 dark:border-red-400/20 hover:bg-red-600/10 dark:hover:bg-red-400/10 w-full transition-colors bg-white/10 dark:bg-black/10 backdrop-blur-sm font-bold rounded-xl">
+        <div className="p-4 md:p-6 mt-auto border-t border-black/10 dark:border-white/10">
+          <button onClick={handleLogout} className="flex items-center justify-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase text-red-600 dark:text-red-400 border border-red-600/20 dark:border-red-400/20 hover:bg-red-600/10 dark:hover:bg-red-400/10 w-full transition-colors bg-white/10 dark:bg-black/10 backdrop-blur-sm font-bold rounded-xl">
             <LogOut size={18} />
             Sair
           </button>
