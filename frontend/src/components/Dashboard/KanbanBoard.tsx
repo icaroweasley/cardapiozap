@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RefreshCw, MessageCircle, DollarSign, ShoppingBag, TrendingUp, Clock, Printer } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { useToastStore } from '../../store/useToastStore';
-import { playNotificationSound } from '../../utils/audioAlerts';
+
 interface OrderItem {
   id: string;
   quantity: number;
@@ -61,16 +61,6 @@ export default function KanbanBoard() {
     });
 
     socket.on('new-order', (order: Order) => {
-      // Tocar alerta sonoro personalizado
-      try {
-        const merchantData = JSON.parse(localStorage.getItem('merchant') || '{}');
-        const theme = typeof merchantData.themeConfig === 'string' ? JSON.parse(merchantData.themeConfig) : (merchantData.themeConfig || {});
-        const soundType = theme.notificationSound || 'cash_register';
-        playNotificationSound(soundType);
-      } catch (e) {
-        console.error('Erro ao tocar som', e);
-      }
-      
       setOrders(prev => {
         if (prev.find(o => o.id === order.id)) return prev;
         return [order, ...prev];

@@ -4,6 +4,8 @@ import axios from 'axios';
 import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Settings2, Megaphone, Server, AlertTriangle, X, QrCode } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 import { useToastStore } from '../store/useToastStore';
+import { io } from 'socket.io-client';
+import { playNotificationSound } from '../utils/audioAlerts';
 import KanbanBoard from '../components/Dashboard/KanbanBoard';
 import ProductManager from '../components/Dashboard/ProductManager';
 import SettingsPanel from '../components/Dashboard/SettingsPanel';
@@ -101,6 +103,32 @@ export default function Dashboard() {
       }
     }
   }, [merchant.planExpiresAt, merchant.planStatus, merchant.isAdmin, isTotalBlock, merchant.isTrial]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token || isTotalBlock) return;
+
+    const socket = io(import.meta.env.VITE_API_URL || '', {
+      auth: { token }
+    });
+
+    socket.on('new-order', (order) => {
+      try {
+        const merchantData = JSON.parse(localStorage.getItem('merchant') || '{}');
+        const theme = typeof merchantData.themeConfig === 'string' ? JSON.parse(merchantData.themeConfig) : (merchantData.themeConfig || {});
+        const soundType = theme.notificationSound || 'cash_register';
+        playNotificationSound(soundType);
+        
+        useToastStore.getState().addToast(`Novo pedido recebido: ${order.customerName}`, 'success');
+      } catch (e) {
+        console.error('Erro ao tocar som', e);
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [isTotalBlock]);
 
   if (isTotalBlock) {
     return (
