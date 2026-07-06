@@ -187,13 +187,13 @@ export default function KanbanBoard() {
               onChange={(e) => setSelectedDate(e.target.value)}
               min={minDate}
               max={maxDate}
-              className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white font-inter tracking-widest text-[10px] sm:text-xs font-bold uppercase px-4 py-3 focus:outline-none focus:border-black/30 dark:focus:border-white/30 cursor-pointer [color-scheme:light] dark:[color-scheme:dark] rounded-xl"
+              className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white font-inter tracking-widest text-[10px] sm:text-xs font-bold uppercase px-3 py-3 md:px-4 min-w-[130px] md:min-w-[150px] focus:outline-none focus:border-black/30 dark:focus:border-white/30 cursor-pointer [color-scheme:light] dark:[color-scheme:dark] rounded-xl"
             />
           </div>
 
           <button 
             onClick={fetchOrders} 
-            className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 text-black dark:text-white font-inter tracking-widest text-[10px] font-bold uppercase px-6 py-3 flex items-center gap-2 transition-all rounded-xl"
+            className="bg-white/10 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 text-black dark:text-white font-inter tracking-widest text-[10px] font-bold uppercase px-4 py-3 md:px-6 flex items-center gap-2 transition-all rounded-xl shrink-0"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
             <span className="hidden sm:inline">ATUALIZAR</span>
@@ -201,32 +201,32 @@ export default function KanbanBoard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 p-3 md:p-6 bg-white/30 dark:bg-black/30 border-b border-black/10 dark:border-white/10 shrink-0">
-        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-2 md:gap-4 min-w-0">
+      <div className="flex md:grid md:grid-cols-4 gap-3 md:gap-4 p-3 md:p-6 bg-white/30 dark:bg-black/30 border-b border-black/10 dark:border-white/10 shrink-0 overflow-x-auto hide-scrollbar snap-x snap-mandatory">
+        <div className="flex-none w-[200px] md:w-auto snap-center bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-3 md:gap-4 min-w-0">
           <div className="bg-green-500/20 text-green-600 dark:text-green-400 p-2 md:p-3 rounded-xl shrink-0"><DollarSign size={20} className="md:w-6 md:h-6" /></div>
           <div className="min-w-0">
-            <p className="text-[8px] md:text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Faturamento</p>
+            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Faturamento</p>
             <p className="font-podium text-base md:text-xl text-black dark:text-white truncate">{(totalRevenue / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
           </div>
         </div>
-        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-2 md:gap-4 min-w-0">
+        <div className="flex-none w-[200px] md:w-auto snap-center bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-3 md:gap-4 min-w-0">
           <div className="bg-blue-500/20 text-blue-600 dark:text-blue-400 p-2 md:p-3 rounded-xl shrink-0"><ShoppingBag size={20} className="md:w-6 md:h-6" /></div>
           <div className="min-w-0">
-            <p className="text-[8px] md:text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Pedidos</p>
+            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Pedidos</p>
             <p className="font-podium text-base md:text-xl text-black dark:text-white truncate">{totalOrders}</p>
           </div>
         </div>
-        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-2 md:gap-4 min-w-0">
+        <div className="flex-none w-[200px] md:w-auto snap-center bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-3 md:gap-4 min-w-0">
           <div className="bg-purple-500/20 text-purple-600 dark:text-purple-400 p-2 md:p-3 rounded-xl shrink-0"><TrendingUp size={20} className="md:w-6 md:h-6" /></div>
           <div className="min-w-0">
-            <p className="text-[8px] md:text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Ticket Médio</p>
+            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Ticket Médio</p>
             <p className="font-podium text-base md:text-xl text-black dark:text-white truncate">{(avgTicket / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
           </div>
         </div>
-        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-2 md:gap-4 min-w-0">
+        <div className="flex-none w-[200px] md:w-auto snap-center bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-3 md:gap-4 min-w-0">
           <div className="bg-orange-500/20 text-orange-600 dark:text-orange-400 p-2 md:p-3 rounded-xl shrink-0"><Clock size={20} className="md:w-6 md:h-6" /></div>
           <div className="min-w-0">
-            <p className="text-[8px] md:text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Pendentes</p>
+            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Pendentes</p>
             <p className="font-podium text-base md:text-xl text-black dark:text-white truncate">{pendingOrders}</p>
           </div>
         </div>
