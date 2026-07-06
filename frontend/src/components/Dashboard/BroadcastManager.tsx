@@ -141,15 +141,22 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
           setSessionSentCount(res.data.currentIndex);
           setTargetContacts(loadedContacts);
           
-          // Re-populate logs from contacts
-          if (loadedContacts.length > 0 && logs.length === 0) {
-            const newLogs = loadedContacts.filter((c: any) => c.status === 'sent' || c.status === 'error').map((c: any) => ({
-              id: Math.random().toString(),
-              timestamp: new Date(),
-              text: c.status === 'sent' ? `Enviado para ${c.name || c.number}` : `Erro ao enviar para ${c.number}: ${c.error}`,
-              status: c.status
-            }));
-            setLogs(newLogs);
+          // Atualizar logs progressivamente
+          if (loadedContacts.length > 0) {
+            setLogs(prev => {
+              const newLogs = [...prev];
+              loadedContacts.forEach((c: any) => {
+                if ((c.status === 'sent' || c.status === 'error') && !newLogs.some(log => log.id === c.id)) {
+                  newLogs.push({
+                    id: c.id,
+                    timestamp: new Date(),
+                    text: c.status === 'sent' ? `Enviado para ${c.name || c.number}` : `Erro ao enviar para ${c.number}: ${c.error}`,
+                    status: c.status
+                  });
+                }
+              });
+              return newLogs;
+            });
           }
           
           if (currentScreen !== 3) {
@@ -1091,16 +1098,24 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center justify-between bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/20 font-mono text-sm shadow-inner">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-inter font-bold text-xs uppercase tracking-widest flex items-center gap-2">
-                    <span className="relative flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                <div className="flex flex-col bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/20 font-mono text-sm shadow-inner relative overflow-hidden">
+                  <div className="flex items-center justify-between z-10 relative mb-3">
+                    <span className="text-emerald-600 dark:text-emerald-400 font-inter font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+                      <span className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                      </span>
+                      {isPausedUI ? 'Pausado' : 'Enviando Agora'}
                     </span>
-                    Enviando Agora
-                  </span>
-                  <div className="font-bold text-emerald-600 dark:text-emerald-400 text-lg">
-                    {sessionSentCount} <span className="text-emerald-600/50 dark:text-emerald-400/50 text-sm">/ {targetContacts.length}</span>
+                    <div className="font-bold text-emerald-600 dark:text-emerald-400 text-lg">
+                      {sessionSentCount} <span className="text-emerald-600/50 dark:text-emerald-400/50 text-sm">/ {targetContacts.length}</span>
+                    </div>
+                  </div>
+                  <div className="w-full h-2 bg-emerald-500/20 rounded-full overflow-hidden z-10 relative">
+                    <div 
+                      className="h-full bg-emerald-500 transition-all duration-500"
+                      style={{ width: `${Math.max(0, Math.min(100, (sessionSentCount / Math.max(1, targetContacts.length)) * 100))}%` }}
+                    />
                   </div>
                 </div>
               )}
