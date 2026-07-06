@@ -201,42 +201,42 @@ export default function KanbanBoard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 md:p-6 bg-white/30 dark:bg-black/30 border-b border-black/10 dark:border-white/10">
-        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 rounded-2xl flex items-center gap-4">
-          <div className="bg-green-500/20 text-green-600 dark:text-green-400 p-3 rounded-xl"><DollarSign size={24} /></div>
-          <div>
-            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase">Faturamento</p>
-            <p className="font-podium text-xl text-black dark:text-white">{(totalRevenue / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 p-3 md:p-6 bg-white/30 dark:bg-black/30 border-b border-black/10 dark:border-white/10 shrink-0">
+        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-2 md:gap-4 min-w-0">
+          <div className="bg-green-500/20 text-green-600 dark:text-green-400 p-2 md:p-3 rounded-xl shrink-0"><DollarSign size={20} className="md:w-6 md:h-6" /></div>
+          <div className="min-w-0">
+            <p className="text-[8px] md:text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Faturamento</p>
+            <p className="font-podium text-base md:text-xl text-black dark:text-white truncate">{(totalRevenue / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
           </div>
         </div>
-        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 rounded-2xl flex items-center gap-4">
-          <div className="bg-blue-500/20 text-blue-600 dark:text-blue-400 p-3 rounded-xl"><ShoppingBag size={24} /></div>
-          <div>
-            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase">Pedidos</p>
-            <p className="font-podium text-xl text-black dark:text-white">{totalOrders}</p>
+        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-2 md:gap-4 min-w-0">
+          <div className="bg-blue-500/20 text-blue-600 dark:text-blue-400 p-2 md:p-3 rounded-xl shrink-0"><ShoppingBag size={20} className="md:w-6 md:h-6" /></div>
+          <div className="min-w-0">
+            <p className="text-[8px] md:text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Pedidos</p>
+            <p className="font-podium text-base md:text-xl text-black dark:text-white truncate">{totalOrders}</p>
           </div>
         </div>
-        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 rounded-2xl flex items-center gap-4">
-          <div className="bg-purple-500/20 text-purple-600 dark:text-purple-400 p-3 rounded-xl"><TrendingUp size={24} /></div>
-          <div>
-            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase">Ticket Médio</p>
-            <p className="font-podium text-xl text-black dark:text-white">{(avgTicket / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-2 md:gap-4 min-w-0">
+          <div className="bg-purple-500/20 text-purple-600 dark:text-purple-400 p-2 md:p-3 rounded-xl shrink-0"><TrendingUp size={20} className="md:w-6 md:h-6" /></div>
+          <div className="min-w-0">
+            <p className="text-[8px] md:text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Ticket Médio</p>
+            <p className="font-podium text-base md:text-xl text-black dark:text-white truncate">{(avgTicket / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
           </div>
         </div>
-        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 rounded-2xl flex items-center gap-4">
-          <div className="bg-orange-500/20 text-orange-600 dark:text-orange-400 p-3 rounded-xl"><Clock size={24} /></div>
-          <div>
-            <p className="text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase">Pendentes</p>
-            <p className="font-podium text-xl text-black dark:text-white">{pendingOrders}</p>
+        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md border border-black/10 dark:border-white/10 p-3 md:p-4 rounded-2xl flex items-center gap-2 md:gap-4 min-w-0">
+          <div className="bg-orange-500/20 text-orange-600 dark:text-orange-400 p-2 md:p-3 rounded-xl shrink-0"><Clock size={20} className="md:w-6 md:h-6" /></div>
+          <div className="min-w-0">
+            <p className="text-[8px] md:text-[10px] font-bold tracking-widest text-black/50 dark:text-white/50 uppercase truncate">Pendentes</p>
+            <p className="font-podium text-base md:text-xl text-black dark:text-white truncate">{pendingOrders}</p>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-x-auto p-4 md:p-6 hide-scrollbar">
-        <div className="flex gap-3 md:gap-4 lg:gap-6 h-full min-w-[800px] lg:min-w-0">
+      <div className="flex-1 overflow-x-auto p-4 md:p-6 hide-scrollbar snap-x snap-mandatory">
+        <div className="flex gap-4 md:gap-6 h-full items-stretch">
           {COLUMNS.map(column => (
-            <div key={column.id} className="flex-1 min-w-[220px] max-w-[400px] flex flex-col bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 h-full backdrop-blur-md rounded-2xl overflow-hidden">
-              <div className="p-4 bg-white/10 dark:bg-black/40 border-b border-black/10 dark:border-white/10 font-inter font-bold tracking-widest text-xs uppercase flex justify-between items-center text-black dark:text-white">
+            <div key={column.id} className="flex-none w-[85vw] md:flex-1 md:w-auto md:min-w-[300px] max-w-[400px] flex flex-col bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 h-full backdrop-blur-md rounded-2xl overflow-hidden snap-center">
+              <div className="p-4 bg-white/10 dark:bg-black/40 border-b border-black/10 dark:border-white/10 font-inter font-bold tracking-widest text-xs uppercase flex justify-between items-center text-black dark:text-white shrink-0">
                 <span>{column.title}</span>
                 <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-0.5 text-[10px] rounded-lg">{filteredOrders.filter(o => o.status === column.id).length}</span>
               </div>
