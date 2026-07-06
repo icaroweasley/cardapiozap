@@ -13,6 +13,9 @@
 8. **Temas Premium para o Cardápio:** Adicionada uma aba robusta de personalização no painel! Lojistas agora podem escolher *Backgrounds* premium por categoria (Açaí, Espetinho, Marmita, Lanches, Pizza) para o cardápio público (`ClientMenu`), e há um sistema de **Live Preview** integrado no painel de perfil.
 9. **UX do Lojista:** A aba ativa do Dashboard agora persiste ao recarregar a página.
 10. **Conteúdo de Demonstração (Imagens IA):** Foi criado o `seed-large.ts`, e o cardápio de demonstração foi preenchido com imagens exclusivas de alta qualidade geradas por IA (Bacon Master, Milkshake, combos, etc), substituindo *placeholders* antigos para deixar a experiência de vendas impecável.
+11. **Notificações em Tempo Real Globais:** Transferida a escuta de novos pedidos do socket.io para o escopo global do Painel. O lojista agora ouve o alerta sonoro e recebe a notificação toast independentemente de qual aba ele estiver navegando, eliminando perda de chamadas.
+12. **Gestão de Cancelamentos (Modal Nativo):** O fluxo de cancelamento de pedidos foi estruturado e retirado do Kanban padrão. Adicionado um modal customizado elegante e seguro para confirmação de cancelamento, e um modal master acessível via botão superior para visualizar o histórico de pedidos cancelados.
+13. **Controle de Cache NGINX:** A VPS foi reconfigurada (`/etc/nginx/sites-available/zapgarcom`) para implementar cabeçalhos `Cache-Control: no-cache` estritos, forçando atualizações imediatas no lado do cliente.
 
 #### 🔧 Estado Atual e Configurações (Produção):
 - **Painel:** `https://zapgarcom.com.br/login`
@@ -24,4 +27,4 @@
 2. Confirmar o funcionamento do Checkout/Pedido do novo cardápio tematizado pelo lado do cliente.
 3. (O que você quiser atacar agora).
 
-*Status: Sistema com identidade visual de ponta, background workers operantes e sistema pronto para escala.*
+*Status: Sistema com notificações globais operantes, gestão avançada de fluxo de pedidos e imunidade a cache estático em produção.*

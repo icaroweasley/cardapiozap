@@ -160,8 +160,9 @@ export default function KanbanBoard() {
   minDateObj.setFullYear(today.getFullYear() - 20);
   const minDate = minDateObj.toISOString().split('T')[0];
 
-  const totalRevenue = filteredOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-  const totalOrders = filteredOrders.length;
+  const nonCanceledOrders = filteredOrders.filter(o => o.status !== 'CANCELED');
+  const totalRevenue = nonCanceledOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+  const totalOrders = nonCanceledOrders.length;
   const avgTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
   const pendingOrders = filteredOrders.filter(o => o.status === 'PENDING').length;
 
