@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Settings2, Megaphone, Server, AlertTriangle, X, QrCode } from 'lucide-react';
+import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Settings2, Megaphone, Server, AlertTriangle, X, QrCode, TrendingUp } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 import { useToastStore } from '../store/useToastStore';
 import { io } from 'socket.io-client';
