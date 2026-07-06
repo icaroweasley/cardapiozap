@@ -13,10 +13,11 @@ import BroadcastManager from '../components/Dashboard/BroadcastManager';
 import AdminPanel from '../components/Dashboard/AdminPanel';
 import ProfilePanel from '../components/Dashboard/ProfilePanel';
 import QRCodeManager from '../components/Dashboard/QRCodeManager';
+import ReportsPanel from '../components/Dashboard/ReportsPanel';
 
 export default function Dashboard() {
   const merchant = JSON.parse(localStorage.getItem('merchant') || '{}');
-  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS' | 'BROADCAST' | 'ADMIN' | 'PROFILE' | 'QRCODE'>(
+  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS' | 'BROADCAST' | 'ADMIN' | 'PROFILE' | 'QRCODE' | 'REPORTS'>(
     (localStorage.getItem('dashboard_tab') as any) || (merchant.accountType === 'BROADCAST_ONLY' ? 'BROADCAST' : 'KANBAN')
   );
 
@@ -285,6 +286,13 @@ export default function Dashboard() {
                 <Package size={18} />
                 Cardápio
               </button>
+              <button 
+                onClick={() => setActiveTab('REPORTS')}
+                className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'REPORTS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+              >
+                <TrendingUp size={18} />
+                Relatórios
+              </button>
             </>
           )}
           <button 
@@ -344,6 +352,7 @@ export default function Dashboard() {
         {activeTab === 'ADMIN' && <AdminPanel />}
         {activeTab === 'PROFILE' && <ProfilePanel />}
         {activeTab === 'QRCODE' && <QRCodeManager />}
+        {activeTab === 'REPORTS' && <ReportsPanel />}
       </main>
     </div>
   );
