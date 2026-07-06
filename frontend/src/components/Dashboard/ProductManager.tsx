@@ -288,9 +288,9 @@ export default function ProductManager() {
                   <h3 className="font-podium text-xl uppercase tracking-widest text-black dark:text-white mb-6 border-b border-black/10 dark:border-white/10 pb-3">
                     {category}
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-4 pb-4 -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:overflow-visible md:pb-0 md:gap-6 after:content-[''] after:w-4 after:shrink-0 md:after:hidden">
                     {categoryProducts.map(product => (
-                      <div key={product.id} className={`flex flex-col bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-xl transition-all ${!product.available ? 'opacity-50 grayscale' : ''} rounded-2xl overflow-hidden`}>
+                      <div key={product.id} className={`w-[85vw] max-w-[320px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink md:snap-align-none flex flex-col bg-white/60 dark:bg-[#0a0a0a]/60 backdrop-blur-2xl border border-black/10 dark:border-white/10 shadow-xl transition-all ${!product.available ? 'opacity-50 grayscale' : ''} rounded-2xl overflow-hidden`}>
                         {product.imageUrl && (product.imageUrl.startsWith('[') ? (JSON.parse(product.imageUrl)[0]) : product.imageUrl) ? (
                           <div className="relative w-full h-40 group/img">
                             {(() => {
