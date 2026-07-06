@@ -74,55 +74,55 @@ export default function QRCodeManager() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-3xl lg:m-2 p-8 font-inter">
+    <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-3xl lg:m-2 p-4 md:p-8 font-inter">
       <div className="max-w-6xl mx-auto w-full flex flex-col h-full">
-        <div className="flex items-center gap-4 mb-8 shrink-0">
-          <div className="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-black">
-            <QrCode size={32} />
+        <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-8 shrink-0">
+          <div className="w-12 h-12 md:w-16 md:h-16 bg-black dark:bg-white rounded-xl md:rounded-2xl flex items-center justify-center text-white dark:text-black shrink-0">
+            <QrCode className="w-6 h-6 md:w-8 md:h-8" />
           </div>
           <div>
-            <h2 className="font-podium text-3xl uppercase tracking-widest text-black dark:text-white">QR Codes de Mesa</h2>
-            <p className="text-sm text-black/60 dark:text-white/60">Gere e imprima QR Codes únicos para cada mesa do seu estabelecimento.</p>
+            <h2 className="font-podium text-xl md:text-3xl uppercase tracking-widest text-black dark:text-white">QR Codes de Mesa</h2>
+            <p className="text-[10px] md:text-sm text-black/60 dark:text-white/60 leading-tight">Gere e imprima QR Codes únicos para cada mesa.</p>
           </div>
         </div>
 
-        <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-8 rounded-[2rem] shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 shrink-0 mb-8">
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <label className="block text-sm font-bold uppercase tracking-widest text-black/70 dark:text-white/70 mb-4">Gerenciar Total de Mesas</label>
-            <div className="flex items-center gap-4">
-              <button onClick={() => updateTableCount(Math.max(1, tableCount - 1))} className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-xl">-</button>
+        <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-4 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 shrink-0 mb-4 md:mb-8">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-auto">
+            <label className="block text-[10px] md:text-sm font-bold uppercase tracking-widest text-black/70 dark:text-white/70 mb-2 md:mb-4">Gerenciar Total de Mesas</label>
+            <div className="flex items-center gap-3 md:gap-4">
+              <button onClick={() => updateTableCount(Math.max(1, tableCount - 1))} className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-lg md:text-xl shrink-0">-</button>
               <input 
                 type="number" 
                 value={tableCount} 
                 onChange={e => updateTableCount(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-24 text-center bg-white dark:bg-black border border-black/10 dark:border-white/10 p-3 rounded-2xl font-podium text-2xl text-black dark:text-white focus:outline-none"
+                className="w-20 md:w-24 text-center bg-white dark:bg-black border border-black/10 dark:border-white/10 p-2 md:p-3 rounded-xl md:rounded-2xl font-podium text-xl md:text-2xl text-black dark:text-white focus:outline-none"
               />
-              <button onClick={() => updateTableCount(tableCount + 1)} className="w-12 h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-xl">+</button>
+              <button onClick={() => updateTableCount(tableCount + 1)} className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-black dark:text-white font-bold text-lg md:text-xl shrink-0">+</button>
             </div>
           </div>
 
           <button 
             onClick={() => printQRCodes()}
-            className="bg-black dark:bg-white text-white dark:text-black font-bold text-sm uppercase tracking-widest py-4 px-8 rounded-xl flex items-center justify-center gap-3 hover:scale-105 transition-transform shadow-xl"
+            className="w-full md:w-auto bg-black dark:bg-white text-white dark:text-black font-bold text-[10px] md:text-sm uppercase tracking-widest py-3 md:py-4 px-6 md:px-8 rounded-xl flex items-center justify-center gap-2 md:gap-3 hover:scale-105 transition-transform shadow-xl shrink-0"
           >
-            <Printer size={20} />
+            <Printer size={18} />
             Imprimir Todas ({tableCount})
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 hide-scrollbar">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 pb-10">
+        <div className="flex-1 overflow-y-auto pr-1 md:pr-2 hide-scrollbar">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-6 pb-10">
             {Array.from({ length: tableCount }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-[#111] border border-black/10 dark:border-white/10 p-5 rounded-2xl flex flex-col items-center shadow-lg hover:border-black/30 dark:hover:border-white/30 transition-colors group">
-                <span className="font-podium text-lg uppercase tracking-widest text-black dark:text-white mb-4">Mesa {i + 1}</span>
-                <div className="bg-white p-2 rounded-xl mb-4 shadow-sm border border-black/5">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(baseUrl + '?mesa=' + (i+1))}`} alt={`QR Mesa ${i+1}`} className="w-24 h-24 sm:w-28 sm:h-28" />
+              <div key={i} className="bg-white dark:bg-[#111] border border-black/10 dark:border-white/10 p-3 md:p-5 rounded-xl md:rounded-2xl flex flex-col items-center shadow-lg hover:border-black/30 dark:hover:border-white/30 transition-colors group">
+                <span className="font-podium text-sm md:text-lg uppercase tracking-widest text-black dark:text-white mb-2 md:mb-4">Mesa {i + 1}</span>
+                <div className="bg-white p-2 rounded-xl mb-3 md:mb-4 shadow-sm border border-black/5">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(baseUrl + '?mesa=' + (i+1))}`} alt={`QR Mesa ${i+1}`} className="w-20 h-20 sm:w-28 sm:h-28" />
                 </div>
                 <button 
                   onClick={() => printQRCodes(i + 1)}
-                  className="w-full py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white rounded-lg font-inter text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"
+                  className="w-full py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white rounded-lg font-inter text-[9px] md:text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1 md:gap-2 transition-colors"
                 >
-                  <Printer size={14} /> Imprimir
+                  <Printer size={12} className="md:w-[14px] md:h-[14px]" /> <span>Imprimir</span>
                 </button>
               </div>
             ))}
