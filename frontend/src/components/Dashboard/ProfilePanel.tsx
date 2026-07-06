@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Save, User, Phone, Lock, Image as ImageIcon } from 'lucide-react';
 import { useThemeStore } from '../../store/useThemeStore';
-import { playNotificationSound, NotificationSoundType } from '../../utils/audioAlerts';
+import { playNotificationSound, type NotificationSoundType } from '../../utils/audioAlerts';
 import { Volume2 } from 'lucide-react';
 export default function ProfilePanel() {
   const [name, setName] = useState('');
