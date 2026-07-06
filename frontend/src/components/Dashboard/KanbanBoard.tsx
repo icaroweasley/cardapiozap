@@ -29,13 +29,13 @@ const COLUMNS = [
   { id: 'PREPARING', title: 'PREPARANDO' },
   { id: 'SHIPPED', title: 'SAIU PRA ENTREGA' },
   { id: 'FINISHED', title: 'FINALIZADO' },
-  { id: 'CANCELED', title: 'CANCELADOS' },
 ] as const;
 
 export default function KanbanBoard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [showCanceledModal, setShowCanceledModal] = useState(false);
 
   const fetchOrders = async () => {
     try {
@@ -168,9 +168,17 @@ export default function KanbanBoard() {
     <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-3xl lg:m-2">
       <div className="p-6 border-b border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white">Gestão de Pedidos</h2>
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          
-          <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4 w-full md:w-auto overflow-x-auto hide-scrollbar pb-2 md:pb-0">
+          <button 
+            onClick={() => setShowCanceledModal(true)}
+            className="shrink-0 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 font-inter tracking-widest text-[10px] font-bold uppercase px-4 py-3 flex items-center gap-2 transition-all rounded-xl"
+          >
+            <XCircle size={14} />
+            <span className="hidden sm:inline">CANCELADOS ({filteredOrders.filter(o => o.status === 'CANCELED').length})</span>
+            <span className="sm:hidden">{filteredOrders.filter(o => o.status === 'CANCELED').length}</span>
+          </button>
+
+          <div className="flex items-center gap-3 shrink-0">
             <input
               type="date"
               value={selectedDate}
@@ -319,6 +327,91 @@ export default function KanbanBoard() {
           ))}
         </div>
       </div>
+
+      {showCanceledModal && (
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-[#f0f0f0] dark:bg-[#0a0a0a] border border-black/10 dark:border-white/10 w-full max-w-5xl h-[85vh] flex flex-col rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div className="p-6 border-b border-black/10 dark:border-white/10 flex justify-between items-center bg-white/50 dark:bg-white/5">
+              <h2 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
+                <XCircle className="text-red-500" size={28} /> 
+                Pedidos Cancelados
+              </h2>
+              <button 
+                onClick={() => setShowCanceledModal(false)}
+                className="text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white transition-colors px-4 py-2 bg-black/5 dark:bg-white/5 font-inter font-bold uppercase text-[10px] tracking-widest rounded-xl hover:bg-black/10 dark:hover:bg-white/10"
+              >
+                FECHAR
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6 bg-transparent">
+              {filteredOrders.filter(o => o.status === 'CANCELED').length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-black/40 dark:text-white/40">
+                  <XCircle size={64} className="mb-4 opacity-30" />
+                  <p className="font-inter font-bold tracking-widest text-sm uppercase">Nenhum pedido cancelado nesta data</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredOrders.filter(o => o.status === 'CANCELED').map(order => (
+                    <div key={order.id} className="bg-white/60 dark:bg-[#151515] backdrop-blur-md border border-red-500/20 p-5 shadow-lg group rounded-2xl relative overflow-hidden">
+                      <div className="absolute -right-4 -top-4 bg-red-500/10 w-24 h-24 rounded-full blur-xl pointer-events-none"></div>
+                      
+                      <div className="flex justify-between items-start mb-3 relative z-10">
+                        <span className="font-inter font-bold uppercase tracking-wider text-sm truncate max-w-[150px] text-black/70 dark:text-white/70 line-through decoration-red-500/50">{order.customerName}</span>
+                        <span className="font-inter font-bold text-xs bg-red-500/10 border border-red-500/20 px-2 py-1 text-red-600 dark:text-red-400 tracking-widest rounded-lg">
+                          {(order.totalAmount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center mb-4 relative z-10">
+                        <span className="flex items-center gap-2 text-xs font-inter font-semibold tracking-wider text-black/50 dark:text-white/50">
+                          <MessageCircle size={14} className="text-black/30 dark:text-white/30" /> {order.customerPhone}
+                        </span>
+                        <button onClick={() => printReceipt(order)} className="text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors p-1" title="Imprimir Comanda">
+                          <Printer size={16} />
+                        </button>
+                      </div>
+
+                      <ul className="text-xs space-y-2 border-l border-black/10 dark:border-white/10 pl-3 font-inter text-black/60 dark:text-white/60 relative z-10">
+                        {order.items.map(item => {
+                          let parsedOptions: any[] = [];
+                          if (item.options) {
+                            try { parsedOptions = JSON.parse(item.options); } catch(e) {}
+                          }
+                          return (
+                            <li key={item.id} className="tracking-wider">
+                              <span className="font-bold uppercase">{item.quantity}X</span> <span className="uppercase">{item.product.name}</span>
+                              {parsedOptions.length > 0 && (
+                                <div className="pl-4 mt-1 space-y-1">
+                                  {parsedOptions.map((opt: any, idx: number) => (
+                                    <div key={idx} className="text-[10px] text-black/40 dark:text-white/40 tracking-widest uppercase">
+                                      + {opt.name}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                      
+                      {order.observation && (
+                        <div className="mt-4 bg-black/5 dark:bg-white/5 p-3 text-xs font-inter text-black/50 dark:text-white/50 rounded-xl relative z-10">
+                          <strong className="block uppercase tracking-widest mb-1 text-[10px]">Observação:</strong>
+                          {order.observation}
+                        </div>
+                      )}
+                      
+                      <div className="mt-4 pt-4 border-t border-black/10 dark:border-white/10 text-center relative z-10">
+                        <span className="font-inter font-bold text-[9px] uppercase tracking-widest text-red-500/70">Cancelado às {new Date(order.createdAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
