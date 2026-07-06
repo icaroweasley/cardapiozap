@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
 import { useToastStore } from '../../store/useToastStore';
+import CustomSelect from '../CustomSelect';
 
 interface ProductOption {
   id?: string;
@@ -399,25 +400,22 @@ export default function ProductManager() {
                   </div>
                   
                   {!isCreatingCategory ? (
-                    <select 
-                      className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl appearance-none" 
+                    <CustomSelect 
+                      options={[
+                        ...Array.from(new Set(products.map(p => p.category))).filter(Boolean).map(cat => ({ value: cat, label: cat })),
+                        { value: '___NEW___', label: '+ Criar Nova Categoria' }
+                      ]}
                       value={formData.category} 
-                      onChange={e => {
-                        if (e.target.value === '___NEW___') {
+                      onChange={value => {
+                        if (value === '___NEW___') {
                           setIsCreatingCategory(true);
                           setFormData({...formData, category: ''});
                         } else {
-                          setFormData({...formData, category: e.target.value});
+                          setFormData({...formData, category: value});
                         }
                       }} 
-                      required 
-                    >
-                      <option value="" disabled>Selecione uma categoria...</option>
-                      {Array.from(new Set(products.map(p => p.category))).filter(Boolean).map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                      <option value="___NEW___">+ Criar Nova Categoria</option>
-                    </select>
+                      placeholder="Selecione uma categoria..."
+                    />
                   ) : (
                     <input 
                       className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 

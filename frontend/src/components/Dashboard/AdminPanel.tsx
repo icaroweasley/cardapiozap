@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { Users, Server, ShoppingCart, Activity, ListOrdered, Edit3, X, Save } from 'lucide-react';
 import { useToastStore } from '../../store/useToastStore';
+import CustomSelect from '../CustomSelect';
 
 export default function AdminPanel() {
   const [merchants, setMerchants] = useState<any[]>([]);
@@ -221,14 +222,15 @@ export default function AdminPanel() {
             <div className="space-y-4 mb-8">
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Status do Plano</label>
-                <select 
+                <CustomSelect 
+                  options={[
+                    { value: 'active', label: 'Ativo (Pode usar e receber pedidos)' },
+                    { value: 'inactive', label: 'Inativo (Bloqueado)' }
+                  ]}
                   value={planForm.planStatus}
-                  onChange={e => setPlanForm({ ...planForm, planStatus: e.target.value })}
-                  className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white font-inter focus:outline-none"
-                >
-                  <option className="bg-white dark:bg-[#121215] text-black dark:text-white" value="active">Ativo (Pode usar e receber pedidos)</option>
-                  <option className="bg-white dark:bg-[#121215] text-black dark:text-white" value="inactive">Inativo (Bloqueado)</option>
-                </select>
+                  onChange={value => setPlanForm({ ...planForm, planStatus: value })}
+                  className="w-full bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10"
+                />
               </div>
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Data de Vencimento</label>
@@ -241,14 +243,15 @@ export default function AdminPanel() {
               </div>
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Tipo de Conta</label>
-                <select 
+                <CustomSelect 
+                  options={[
+                    { value: 'FULL', label: 'CRM + Disparos (Completa)' },
+                    { value: 'BROADCAST_ONLY', label: 'Apenas Disparos' }
+                  ]}
                   value={planForm.accountType}
-                  onChange={e => setPlanForm({ ...planForm, accountType: e.target.value })}
-                  className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white font-inter focus:outline-none"
-                >
-                  <option className="bg-white dark:bg-[#121215] text-black dark:text-white" value="FULL">CRM + Disparos (Completa)</option>
-                  <option className="bg-white dark:bg-[#121215] text-black dark:text-white" value="BROADCAST_ONLY">Apenas Disparos</option>
-                </select>
+                  onChange={value => setPlanForm({ ...planForm, accountType: value })}
+                  className="w-full bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10"
+                />
               </div>
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Preço da Mensalidade (R$)</label>

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import axios from 'axios';
 import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, FolderOpen, Pencil } from 'lucide-react';
+import CustomSelect from '../CustomSelect';
 
 // Sleep worker removed
 interface MediaAttachment {
@@ -784,19 +785,16 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                   <div className="flex gap-2 w-full animate-fade-in bg-white/50 dark:bg-black/40 p-3 rounded-xl border border-black/5 dark:border-white/5 shadow-sm items-center">
                     <div className="relative flex-1">
                       <FolderOpen size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/50 dark:text-white/50" />
-                      <select 
+                      <CustomSelect 
                         value={selectedListId}
-                        onChange={(e) => loadList(e.target.value)}
-                        className="w-full bg-transparent border-none focus:outline-none focus:ring-0 pl-9 pr-3 py-2 text-xs font-inter text-black dark:text-white appearance-none cursor-pointer"
-                      >
-                        <option value="" disabled className="text-black dark:text-white bg-white dark:bg-black">Carregar lista salva...</option>
-                        <option value="NEW" className="text-black dark:text-white bg-white dark:bg-black font-bold">+ Nova Lista Vazia</option>
-                        {savedLists.map(list => (
-                          <option key={list.id} value={list.id} className="text-black dark:text-white bg-white dark:bg-black">
-                            {list.name} ({list.contacts.length} contatos)
-                          </option>
-                        ))}
-                      </select>
+                        onChange={loadList}
+                        options={[
+                          { value: 'NEW', label: '+ Nova Lista Vazia' },
+                          ...savedLists.map(list => ({ value: list.id, label: `${list.name} (${list.contacts.length} contatos)` }))
+                        ]}
+                        placeholder="Carregar lista salva..."
+                        className="w-full bg-transparent border-none"
+                      />
                       {savedLists.length > 0 && selectedListId === '' && (
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] text-black/40 dark:text-white/40 font-bold uppercase">
                           ▼

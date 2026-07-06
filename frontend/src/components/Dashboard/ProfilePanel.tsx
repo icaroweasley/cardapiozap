@@ -4,6 +4,7 @@ import { Save, User, Phone, Lock, Image as ImageIcon } from 'lucide-react';
 import { useThemeStore } from '../../store/useThemeStore';
 import { playNotificationSound, type NotificationSoundType } from '../../utils/audioAlerts';
 import { Volume2 } from 'lucide-react';
+import CustomSelect from '../CustomSelect';
 export default function ProfilePanel() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
@@ -340,33 +341,23 @@ export default function ProfilePanel() {
               <div className="flex flex-col md:flex-row gap-4 mt-2">
                 <div className="flex-1">
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Abertura</label>
-                  <div className="relative">
-                    <select 
-                      className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter appearance-none cursor-pointer" 
-                      value={openTime} onChange={e => setOpenTime(e.target.value)}
-                    >
-                      <option value="">Selecione...</option>
-                      {TIME_OPTIONS.map(time => <option key={time} value={time}>{time}</option>)}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-black/50 dark:text-white/50">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                  </div>
+                  <CustomSelect 
+                    options={TIME_OPTIONS.map(time => ({ value: time, label: time }))}
+                    value={openTime}
+                    onChange={setOpenTime}
+                    placeholder="Selecione..."
+                    className="w-full bg-white/50 dark:bg-black/50 border-black/10 dark:border-white/10"
+                  />
                 </div>
                 <div className="flex-1">
                   <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Fechamento</label>
-                  <div className="relative">
-                    <select 
-                      className="w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-black/30 dark:focus:border-white/30 text-black dark:text-white transition-colors font-inter appearance-none cursor-pointer" 
-                      value={closeTime} onChange={e => setCloseTime(e.target.value)}
-                    >
-                      <option value="">Selecione...</option>
-                      {TIME_OPTIONS.map(time => <option key={time} value={time}>{time}</option>)}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-black/50 dark:text-white/50">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                  </div>
+                  <CustomSelect 
+                    options={TIME_OPTIONS.map(time => ({ value: time, label: time }))}
+                    value={closeTime}
+                    onChange={setCloseTime}
+                    placeholder="Selecione..."
+                    className="w-full bg-white/50 dark:bg-black/50 border-black/10 dark:border-white/10"
+                  />
                 </div>
               </div>
             </div>
