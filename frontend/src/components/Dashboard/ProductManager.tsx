@@ -35,6 +35,7 @@ export default function ProductManager() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   
   const [formData, setFormData] = useState<{
     name: string;
@@ -162,6 +163,7 @@ export default function ProductManager() {
       optionGroups: p.optionGroups || []
     });
     setEditingId(p.id);
+    setIsCreatingCategory(false);
     setIsModalOpen(true);
   };
 
@@ -184,6 +186,7 @@ export default function ProductManager() {
     setFormData({ name: '', description: '', price: '', category: '', imageUrl: '', available: true, optionGroups: [] });
     setProductImages([]);
     setEditingId(null);
+    setIsCreatingCategory(false);
     setIsModalOpen(true);
   };
 
@@ -388,20 +391,43 @@ export default function ProductManager() {
                   />
                 </div>
                 <div>
-                  <label className="block font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase mb-2">Categoria</label>
-                  <input 
-                    list="category-options"
-                    className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
-                    placeholder="Ex: Bebidas (ou digite uma nova)" 
-                    value={formData.category} 
-                    onChange={e => setFormData({...formData, category: e.target.value})} 
-                    required 
-                  />
-                  <datalist id="category-options">
-                    {Array.from(new Set(products.map(p => p.category))).filter(Boolean).map(cat => (
-                      <option key={cat} value={cat} />
-                    ))}
-                  </datalist>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="font-inter text-[10px] tracking-widest text-black/50 dark:text-white/50 uppercase">Categoria</label>
+                    {isCreatingCategory && (
+                      <button type="button" onClick={() => setIsCreatingCategory(false)} className="text-[10px] font-bold text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white underline uppercase">Voltar para Lista</button>
+                    )}
+                  </div>
+                  
+                  {!isCreatingCategory ? (
+                    <select 
+                      className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl appearance-none" 
+                      value={formData.category} 
+                      onChange={e => {
+                        if (e.target.value === '___NEW___') {
+                          setIsCreatingCategory(true);
+                          setFormData({...formData, category: ''});
+                        } else {
+                          setFormData({...formData, category: e.target.value});
+                        }
+                      }} 
+                      required 
+                    >
+                      <option value="" disabled>Selecione uma categoria...</option>
+                      {Array.from(new Set(products.map(p => p.category))).filter(Boolean).map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                      <option value="___NEW___">+ Criar Nova Categoria</option>
+                    </select>
+                  ) : (
+                    <input 
+                      className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl" 
+                      placeholder="Ex: Bebidas, Sobremesas..." 
+                      value={formData.category} 
+                      onChange={e => setFormData({...formData, category: e.target.value})} 
+                      required 
+                      autoFocus
+                    />
+                  )}
                 </div>
               </div>
               <div>
