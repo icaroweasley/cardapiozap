@@ -106,7 +106,7 @@ export function ProductCarousel({ products, isOpen = true }: ProductCarouselProp
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
         onScroll={updateScrollButtons}
-        className={`flex overflow-x-auto gap-6 hide-scrollbar pb-6 pr-6 lg:pr-16 pl-[4.5rem] lg:pl-[calc(350px+9rem)] xl:pl-[calc(400px+9rem)] scroll-pl-[4.5rem] lg:scroll-pl-[calc(350px+9rem)] xl:scroll-pl-[calc(400px+9rem)] ${className}`}
+        className={`flex overflow-x-auto gap-6 hide-scrollbar pb-6 pr-6 lg:pr-16 pl-6 lg:pl-[calc(350px+9rem)] xl:pl-[calc(400px+9rem)] scroll-pl-6 lg:scroll-pl-[calc(350px+9rem)] xl:scroll-pl-[calc(400px+9rem)] ${className}`}
       >
         {products.map((product) => {
           const isJustAdded = justAdded.includes(product.id);
