@@ -93,7 +93,7 @@ export function ProductCarousel({ products, isOpen = true }: ProductCarouselProp
       {canScrollLeft && (
         <button 
           onClick={scrollLeft}
-          className="absolute left-6 lg:left-[calc(350px+2rem)] xl:left-[calc(400px+2rem)] top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-black backdrop-blur-md border border-black/20 dark:border-white/20 shadow-2xl flex items-center justify-center rounded-full transition-all hover:scale-110 opacity-70 hover:opacity-100"
+          className="absolute left-6 lg:left-[calc(350px+2rem)] xl:left-[calc(400px+2rem)] top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-black backdrop-blur-md border border-black/20 dark:border-white/20 shadow-2xl items-center justify-center rounded-full transition-all hover:scale-110 opacity-70 hover:opacity-100 hidden md:flex"
         >
           <ChevronLeft className="w-6 h-6 text-black dark:text-white" />
         </button>
@@ -206,7 +206,7 @@ export function ProductCarousel({ products, isOpen = true }: ProductCarouselProp
       {canScrollRight && (
         <button 
           onClick={scrollRight}
-          className="absolute right-6 lg:right-16 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-black backdrop-blur-md border border-black/20 dark:border-white/20 shadow-2xl flex items-center justify-center rounded-full transition-all hover:scale-110 opacity-70 hover:opacity-100"
+          className="absolute right-6 lg:right-16 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white dark:bg-black backdrop-blur-md border border-black/20 dark:border-white/20 shadow-2xl items-center justify-center rounded-full transition-all hover:scale-110 opacity-70 hover:opacity-100 hidden md:flex"
         >
           <ChevronRight className="w-6 h-6 text-black dark:text-white" />
         </button>
