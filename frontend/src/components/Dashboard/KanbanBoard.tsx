@@ -21,6 +21,7 @@ interface Order {
   observation?: string;
   deliveryType?: string;
   address?: string;
+  dailyNumber?: number;
   items: OrderItem[];
 }
 
@@ -251,7 +252,9 @@ export default function KanbanBoard() {
                 {filteredOrders.filter(o => o.status === column.id).map(order => (
                   <div key={order.id} className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 p-5 shadow-lg group rounded-2xl">
                     <div className="flex justify-between items-start mb-3">
-                      <span className="font-inter font-bold uppercase tracking-wider text-sm truncate max-w-[150px] text-black dark:text-white">{order.customerName}</span>
+                      <span className="font-inter font-bold uppercase tracking-wider text-sm truncate max-w-[150px] text-black dark:text-white">
+                        {order.dailyNumber ? `#${order.dailyNumber} ` : ''}{order.customerName}
+                      </span>
                       <span className="font-inter font-bold text-xs bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 px-2 py-1 text-black dark:text-white tracking-widest rounded-lg">
                         {(order.totalAmount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </span>
@@ -363,7 +366,9 @@ export default function KanbanBoard() {
                       <div className="absolute -right-4 -top-4 bg-red-500/10 w-24 h-24 rounded-full blur-xl pointer-events-none"></div>
                       
                       <div className="flex justify-between items-start mb-3 relative z-10">
-                        <span className="font-inter font-bold uppercase tracking-wider text-sm truncate max-w-[150px] text-black/70 dark:text-white/70 line-through decoration-red-500/50">{order.customerName}</span>
+                        <span className="font-inter font-bold uppercase tracking-wider text-sm truncate max-w-[150px] text-black/70 dark:text-white/70 line-through decoration-red-500/50">
+                          {order.dailyNumber ? `#${order.dailyNumber} ` : ''}{order.customerName}
+                        </span>
                         <span className="font-inter font-bold text-xs bg-red-500/10 border border-red-500/20 px-2 py-1 text-red-600 dark:text-red-400 tracking-widest rounded-lg">
                           {(order.totalAmount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                         </span>

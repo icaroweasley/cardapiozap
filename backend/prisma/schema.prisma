@@ -124,6 +124,7 @@ model ProductOption {
 model Order {
   id             String      @id @default(uuid())
   merchantId     String
+  dailyNumber    Int?
   customerName   String
   customerPhone  String
   deliveryType   String      // "DELIVERY" or "PICKUP"

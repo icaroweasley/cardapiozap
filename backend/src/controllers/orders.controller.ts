@@ -41,9 +41,18 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       totalAmount += 500; // Taxa de entrega (R$ 5,00 mock)
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const lastOrderToday = await prisma.order.findFirst({
+      where: { merchantId, createdAt: { gte: today } },
+      orderBy: { createdAt: 'desc' }
+    });
+    const dailyNumber = lastOrderToday?.dailyNumber ? lastOrderToday.dailyNumber + 1 : 1;
+
     const order = await prisma.order.create({
       data: {
         merchantId,
+        dailyNumber,
         customerName,
         customerPhone,
         deliveryType,
