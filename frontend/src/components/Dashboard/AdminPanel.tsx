@@ -229,7 +229,6 @@ export default function AdminPanel() {
                   ]}
                   value={planForm.planStatus}
                   onChange={value => setPlanForm({ ...planForm, planStatus: value })}
-                  className="w-full bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10"
                 />
               </div>
               <div>
@@ -250,7 +249,6 @@ export default function AdminPanel() {
                   ]}
                   value={planForm.accountType}
                   onChange={value => setPlanForm({ ...planForm, accountType: value })}
-                  className="w-full bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10"
                 />
               </div>
               <div>

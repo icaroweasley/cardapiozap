@@ -346,7 +346,6 @@ export default function ProfilePanel() {
                     value={openTime}
                     onChange={setOpenTime}
                     placeholder="Selecione..."
-                    className="w-full bg-white/50 dark:bg-black/50 border-black/10 dark:border-white/10"
                   />
                 </div>
                 <div className="flex-1">
@@ -356,7 +355,6 @@ export default function ProfilePanel() {
                     value={closeTime}
                     onChange={setCloseTime}
                     placeholder="Selecione..."
-                    className="w-full bg-white/50 dark:bg-black/50 border-black/10 dark:border-white/10"
                   />
                 </div>
               </div>
