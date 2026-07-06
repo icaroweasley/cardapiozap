@@ -244,28 +244,13 @@ export default function KanbanBoard() {
                       <a href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs font-inter font-semibold tracking-wider hover:underline text-black/70 dark:text-white/70">
                         <MessageCircle size={14} className="text-green-500" /> {order.customerPhone}
                       </a>
-                      <div className="flex items-center gap-2">
-                        {order.status !== 'CANCELED' && (
-                          <button 
-                            onClick={() => {
-                              if (window.confirm('Tem certeza que deseja cancelar este pedido?')) {
-                                updateStatus(order.id, 'CANCELED');
-                              }
-                            }}
-                            className="text-red-500/70 hover:text-red-500 transition-colors p-1"
-                            title="Cancelar Pedido"
-                          >
-                            <XCircle size={16} />
-                          </button>
-                        )}
-                        <button 
-                          onClick={() => printReceipt(order)}
-                          className="text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors p-1"
-                          title="Imprimir Comanda"
-                        >
-                          <Printer size={16} />
-                        </button>
-                      </div>
+                      <button 
+                        onClick={() => printReceipt(order)}
+                        className="text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors p-1"
+                        title="Imprimir Comanda"
+                      >
+                        <Printer size={16} />
+                      </button>
                     </div>
 
                     <ul className="text-xs space-y-2 mb-4 border-l border-black/20 dark:border-white/20 pl-3 font-inter text-black/80 dark:text-white/80">
@@ -312,6 +297,18 @@ export default function KanbanBoard() {
                       {column.id === 'SHIPPED' && (
                         <button onClick={() => updateStatus(order.id, 'FINISHED')} className="bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-[10px] uppercase font-bold py-3 col-span-2 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors rounded-xl">
                           FINALIZAR PEDIDO
+                        </button>
+                      )}
+                      {order.status !== 'CANCELED' && order.status !== 'FINISHED' && (
+                        <button 
+                          onClick={() => {
+                            if (window.confirm('Tem certeza que deseja cancelar este pedido?')) {
+                              updateStatus(order.id, 'CANCELED');
+                            }
+                          }} 
+                          className="col-span-2 text-red-500/70 hover:text-red-500 hover:bg-red-500/10 font-inter tracking-widest text-[9px] uppercase font-bold py-2 transition-colors rounded-xl mt-1"
+                        >
+                          Cancelar Pedido
                         </button>
                       )}
                     </div>
