@@ -330,6 +330,8 @@ export default function KanbanBoard() {
               </div>
             </div>
           ))}
+          {/* Spacer for mobile flex overflow padding bug */}
+          <div className="w-4 md:hidden shrink-0"></div>
         </div>
       </div>
 
