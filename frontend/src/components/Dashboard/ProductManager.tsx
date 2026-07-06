@@ -235,16 +235,34 @@ export default function ProductManager() {
 
   return (
     <div className="flex-1 flex flex-col h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-3xl lg:m-2">
-      <div className="p-6 border-b border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/50 flex justify-between items-center">
+      <div className="p-6 border-b border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/50 flex justify-between items-center shrink-0">
         <h2 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white">Cardápio</h2>
         <button 
           onClick={openNewModal} 
-          className="bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-[10px] font-bold uppercase px-6 py-3 flex items-center gap-2 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors rounded-xl"
+          className="bg-black dark:bg-white text-white dark:text-black font-inter tracking-widest text-[10px] font-bold uppercase px-6 py-3 flex items-center gap-2 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors rounded-xl shrink-0"
         >
           <Plus size={14} />
           <span className="hidden sm:inline">NOVO PRODUTO</span>
         </button>
       </div>
+
+      {/* Category Navigation */}
+      {products.length > 0 && (
+        <div className="flex gap-3 p-4 md:px-6 border-b border-black/10 dark:border-white/10 bg-white/30 dark:bg-black/30 overflow-x-auto hide-scrollbar shrink-0">
+          {Array.from(new Set(products.map(p => p.category))).filter(Boolean).map(cat => (
+            <button
+              key={cat}
+              onClick={() => {
+                const el = document.getElementById(`admin-cat-${cat}`);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="font-inter font-bold uppercase tracking-widest text-[10px] px-4 py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black/70 dark:text-white/70 rounded-xl whitespace-nowrap transition-colors"
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto p-6 hide-scrollbar">
         {loading ? (
@@ -266,7 +284,7 @@ export default function ProductManager() {
                   return acc;
                 }, {} as Record<string, Product[]>)
               ).map(([category, categoryProducts]) => (
-                <div key={category}>
+                <div key={category} id={`admin-cat-${category}`} className="scroll-mt-6">
                   <h3 className="font-podium text-xl uppercase tracking-widest text-black dark:text-white mb-6 border-b border-black/10 dark:border-white/10 pb-3">
                     {category}
                   </h3>
