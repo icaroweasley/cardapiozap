@@ -106,7 +106,7 @@ export const updateOrderStatus = async (req: AuthRequest, res: Response): Promis
       return;
     }
 
-    const validStatuses: string[] = ['PENDING', 'PREPARING', 'SHIPPED', 'FINISHED'];
+    const validStatuses: string[] = ['PENDING', 'PREPARING', 'SHIPPED', 'FINISHED', 'CANCELED'];
     if (!validStatuses.includes(status)) {
       res.status(400).json({ error: 'Invalid status' });
       return;

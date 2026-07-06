@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { RefreshCw, MessageCircle, DollarSign, ShoppingBag, TrendingUp, Clock, Printer } from 'lucide-react';
+import { RefreshCw, MessageCircle, DollarSign, ShoppingBag, TrendingUp, Clock, Printer, XCircle } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { useToastStore } from '../../store/useToastStore';
 
@@ -16,7 +16,7 @@ interface Order {
   customerName: string;
   customerPhone: string;
   totalAmount: number;
-  status: 'PENDING' | 'PREPARING' | 'SHIPPED' | 'FINISHED';
+  status: 'PENDING' | 'PREPARING' | 'SHIPPED' | 'FINISHED' | 'CANCELED';
   createdAt: string;
   observation?: string;
   deliveryType?: string;
@@ -29,6 +29,7 @@ const COLUMNS = [
   { id: 'PREPARING', title: 'PREPARANDO' },
   { id: 'SHIPPED', title: 'SAIU PRA ENTREGA' },
   { id: 'FINISHED', title: 'FINALIZADO' },
+  { id: 'CANCELED', title: 'CANCELADOS' },
 ] as const;
 
 export default function KanbanBoard() {
@@ -243,13 +244,28 @@ export default function KanbanBoard() {
                       <a href={`https://wa.me/${order.customerPhone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs font-inter font-semibold tracking-wider hover:underline text-black/70 dark:text-white/70">
                         <MessageCircle size={14} className="text-green-500" /> {order.customerPhone}
                       </a>
-                      <button 
-                        onClick={() => printReceipt(order)}
-                        className="text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors p-1"
-                        title="Imprimir Comanda"
-                      >
-                        <Printer size={16} />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        {order.status !== 'CANCELED' && (
+                          <button 
+                            onClick={() => {
+                              if (window.confirm('Tem certeza que deseja cancelar este pedido?')) {
+                                updateStatus(order.id, 'CANCELED');
+                              }
+                            }}
+                            className="text-red-500/70 hover:text-red-500 transition-colors p-1"
+                            title="Cancelar Pedido"
+                          >
+                            <XCircle size={16} />
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => printReceipt(order)}
+                          className="text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white transition-colors p-1"
+                          title="Imprimir Comanda"
+                        >
+                          <Printer size={16} />
+                        </button>
+                      </div>
                     </div>
 
                     <ul className="text-xs space-y-2 mb-4 border-l border-black/20 dark:border-white/20 pl-3 font-inter text-black/80 dark:text-white/80">
