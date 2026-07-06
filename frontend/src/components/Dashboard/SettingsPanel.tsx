@@ -139,8 +139,8 @@ export default function SettingsPanel() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto hide-scrollbar h-full flex flex-col items-center">
-      <div className="w-full max-w-4xl p-3 md:p-6 bg-white/60 dark:bg-black/60 backdrop-blur-md border border-black/10 dark:border-white/10 flex flex-col shadow-2xl relative h-fit min-h-full rounded-3xl lg:m-2">
+    <div className="flex-1 overflow-y-auto hide-scrollbar h-full px-2">
+      <div className="w-full max-w-3xl p-5 md:p-8 bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 flex flex-col shadow-2xl rounded-[2rem] mx-auto my-4 md:my-10 shrink-0">
         <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-4 mb-4 md:pb-6 md:mb-6">
           <div>
             <h2 className="font-podium text-2xl md:text-3xl uppercase tracking-widest text-black dark:text-white flex items-center gap-3">
@@ -153,12 +153,12 @@ export default function SettingsPanel() {
           </div>
         </div>
 
-        {/* Tab Content */}
-        <div className="w-full flex-1">
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 p-4 md:p-6 border border-black/10 dark:border-white/10 bg-white/40 dark:bg-black/30 backdrop-blur-xl shadow-inner rounded-[2.5rem] relative overflow-hidden">
-               <div className="w-full lg:w-60 lg:h-60 shrink-0 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-[2rem] p-4 flex items-center justify-center relative shadow-lg group aspect-square lg:aspect-auto">
+        {/* Content */}
+        <div className="w-full">
+          <div className="flex flex-col lg:flex-row gap-6">
+               <div className="w-full lg:w-64 lg:h-64 shrink-0 bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-3xl p-4 flex items-center justify-center relative shadow-inner group aspect-square lg:aspect-auto">
                    {qrCode ? (
-                     <img src={qrCode} alt="QR Code" className="w-full h-full object-contain rounded-xl" />
+                     <img src={qrCode} alt="QR Code" className="w-full h-full object-contain rounded-2xl" />
                    ) : (
                      <div className="w-full h-full border border-dashed border-black/20 dark:border-white/20 flex flex-col gap-3 items-center justify-center text-center p-4 rounded-2xl bg-black/5 dark:bg-black/40">
                        <Smartphone className="w-8 h-8 text-black/20 dark:text-white/20" />
@@ -169,9 +169,9 @@ export default function SettingsPanel() {
                    )}
                </div>
                
-               <div className="flex-1 w-full flex flex-col gap-3 md:gap-4">
+               <div className="flex-1 w-full flex flex-col gap-4">
                  {/* Status Section */}
-                 <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 p-3 md:p-5 rounded-2xl shadow-sm">
+                 <div className="flex items-center justify-between bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-5 rounded-3xl shadow-sm">
                     <div className="flex items-center gap-4">
                        <div className={`w-3 h-3 rounded-full shadow-lg ${instanceStatus === 'Conectado' ? 'bg-emerald-500 shadow-emerald-500/50' : 'bg-amber-500 animate-pulse shadow-amber-500/50'}`}></div>
                        <div>
@@ -180,14 +180,14 @@ export default function SettingsPanel() {
                        </div>
                     </div>
                     {instanceStatus === 'Conectado' && (
-                       <button onClick={handleDisconnectInstance} className="text-[10px] uppercase tracking-widest font-bold text-red-600 dark:text-red-400 bg-red-500/10 px-4 py-2 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all flex items-center gap-2">
+                       <button onClick={handleDisconnectInstance} className="text-[10px] uppercase tracking-widest font-bold text-red-600 dark:text-red-400 bg-red-500/10 px-4 py-2 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all flex items-center gap-2 shadow-sm">
                          Desconectar
                        </button>
                     )}
                  </div>
 
                  {/* Settings Section */}
-                 <div className="flex flex-col gap-3 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 p-3 md:p-5 rounded-2xl shadow-sm">
+                 <div className="flex flex-col gap-3 bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-5 rounded-3xl shadow-sm">
                     {instanceStatus !== 'Conectado' && (
                       <button 
                         onClick={handleConnectInstance}
@@ -201,8 +201,8 @@ export default function SettingsPanel() {
                  </div>
 
                  {/* Instructions */}
-                 <div className="bg-white/50 dark:bg-black/50 border border-black/5 dark:border-white/5 p-4 md:p-5 rounded-2xl text-xs font-inter mt-auto shadow-sm">
-                    <strong className="flex items-center gap-2 uppercase tracking-widest text-[10px] mb-3 text-black dark:text-white">
+                 <div className="bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-5 rounded-3xl text-xs font-inter mt-auto shadow-sm">
+                    <strong className="flex items-center gap-2 uppercase tracking-widest text-[10px] mb-4 text-black dark:text-white">
                       <div className="w-1.5 h-1.5 rounded-full bg-black/40 dark:bg-white/40"></div>
                       Como conectar o dispositivo:
                     </strong>
