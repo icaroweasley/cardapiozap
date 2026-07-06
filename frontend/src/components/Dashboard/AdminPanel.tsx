@@ -68,46 +68,46 @@ export default function AdminPanel() {
 
   return (
     <div className="flex-1 flex flex-col h-full min-h-0 bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-[2rem] lg:m-2">
-      <div className="p-4 md:p-6 border-b border-black/10 dark:border-white/10 bg-white/30 dark:bg-black/20 flex flex-col xl:flex-row xl:items-start justify-between gap-6 shrink-0">
-        <div className="flex items-center gap-4">
-          <Server className="w-8 h-8 text-black dark:text-white shrink-0" />
-          <div>
-            <h1 className="font-podium text-2xl uppercase tracking-widest text-black dark:text-white">
+      <div className="p-4 md:p-6 border-b border-black/10 dark:border-white/10 bg-white/30 dark:bg-black/20 flex flex-col xl:flex-row xl:items-center justify-between gap-4 shrink-0">
+        <div className="flex items-center gap-3 md:gap-4 min-w-0">
+          <Server className="w-6 h-6 md:w-8 md:h-8 text-black dark:text-white shrink-0" />
+          <div className="min-w-0">
+            <h1 className="font-podium text-xl md:text-2xl uppercase tracking-widest text-black dark:text-white truncate">
               Painel de Administração
             </h1>
-            <p className="font-inter text-black/60 dark:text-white/60 text-xs tracking-widest mt-1">
+            <p className="font-inter text-black/60 dark:text-white/60 text-[10px] md:text-xs tracking-widest mt-1 truncate">
               Monitoramento de todos os Lojistas / Clientes
             </p>
           </div>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-3 bg-white/60 dark:bg-black/60 border border-black/10 dark:border-white/10 px-4 py-2 rounded-2xl shrink-0 shadow-sm">
-             <div className="bg-black/5 dark:bg-white/5 p-2 rounded-lg text-black dark:text-white"><Users size={16} /></div>
+        <div className="flex items-center justify-start xl:justify-end gap-2 overflow-x-auto hide-scrollbar w-full xl:w-auto pb-1 xl:pb-0">
+          <div className="flex items-center gap-2 bg-white/60 dark:bg-black/60 border border-black/10 dark:border-white/10 px-3 py-2 rounded-xl shrink-0 shadow-sm">
+             <div className="bg-black/5 dark:bg-white/5 p-1.5 rounded-lg text-black dark:text-white"><Users size={14} /></div>
              <div>
-               <div className="text-[9px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Total Lojistas</div>
-               <div className="text-lg font-podium mt-0.5 leading-none text-black dark:text-white">{merchants.length}</div>
+               <div className="text-[8px] md:text-[9px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Total Lojistas</div>
+               <div className="text-sm md:text-base font-podium mt-0.5 leading-none text-black dark:text-white">{merchants.length}</div>
              </div>
           </div>
-          <div className="flex items-center gap-3 bg-white/60 dark:bg-black/60 border border-black/10 dark:border-white/10 px-4 py-2 rounded-2xl shrink-0 shadow-sm">
-             <div className="bg-emerald-500/10 p-2 rounded-lg text-emerald-600 dark:text-emerald-400"><Activity size={16} /></div>
+          <div className="flex items-center gap-2 bg-white/60 dark:bg-black/60 border border-black/10 dark:border-white/10 px-3 py-2 rounded-xl shrink-0 shadow-sm">
+             <div className="bg-emerald-500/10 p-1.5 rounded-lg text-emerald-600 dark:text-emerald-400"><Activity size={14} /></div>
              <div>
-               <div className="text-[9px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Ativos</div>
-               <div className="text-lg font-podium mt-0.5 leading-none text-black dark:text-white">{merchants.filter(m => m.active).length}</div>
+               <div className="text-[8px] md:text-[9px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Ativos</div>
+               <div className="text-sm md:text-base font-podium mt-0.5 leading-none text-black dark:text-white">{merchants.filter(m => m.active).length}</div>
              </div>
           </div>
-          <div className="flex items-center gap-3 bg-white/60 dark:bg-black/60 border border-black/10 dark:border-white/10 px-4 py-2 rounded-2xl shrink-0 shadow-sm">
-             <div className="bg-blue-500/10 p-2 rounded-lg text-blue-600 dark:text-blue-400"><ShoppingCart size={16} /></div>
+          <div className="flex items-center gap-2 bg-white/60 dark:bg-black/60 border border-black/10 dark:border-white/10 px-3 py-2 rounded-xl shrink-0 shadow-sm">
+             <div className="bg-blue-500/10 p-1.5 rounded-lg text-blue-600 dark:text-blue-400"><ShoppingCart size={14} /></div>
              <div>
-               <div className="text-[9px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Total Pedidos</div>
-               <div className="text-lg font-podium mt-0.5 leading-none text-black dark:text-white">{merchants.reduce((acc, m) => acc + m._count.orders, 0)}</div>
+               <div className="text-[8px] md:text-[9px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Total Pedidos</div>
+               <div className="text-sm md:text-base font-podium mt-0.5 leading-none text-black dark:text-white">{merchants.reduce((acc, m) => acc + m._count.orders, 0)}</div>
              </div>
           </div>
-          <div className="flex items-center gap-3 bg-white/60 dark:bg-black/60 border border-black/10 dark:border-white/10 px-4 py-2 rounded-2xl shrink-0 shadow-sm">
-             <div className="bg-purple-500/10 p-2 rounded-lg text-purple-600 dark:text-purple-400"><ListOrdered size={16} /></div>
+          <div className="flex items-center gap-2 bg-white/60 dark:bg-black/60 border border-black/10 dark:border-white/10 px-3 py-2 rounded-xl shrink-0 shadow-sm">
+             <div className="bg-purple-500/10 p-1.5 rounded-lg text-purple-600 dark:text-purple-400"><ListOrdered size={14} /></div>
              <div>
-               <div className="text-[9px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Listas Salvas</div>
-               <div className="text-lg font-podium mt-0.5 leading-none text-black dark:text-white">{merchants.reduce((acc, m) => acc + m._count.savedLists, 0)}</div>
+               <div className="text-[8px] md:text-[9px] uppercase font-bold tracking-widest text-black/50 dark:text-white/50">Listas Salvas</div>
+               <div className="text-sm md:text-base font-podium mt-0.5 leading-none text-black dark:text-white">{merchants.reduce((acc, m) => acc + m._count.savedLists, 0)}</div>
              </div>
           </div>
         </div>
