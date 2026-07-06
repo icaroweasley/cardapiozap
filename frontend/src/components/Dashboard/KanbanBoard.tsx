@@ -36,6 +36,7 @@ export default function KanbanBoard() {
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [showCanceledModal, setShowCanceledModal] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState<string | null>(null);
 
   const fetchOrders = async () => {
     try {
@@ -309,11 +310,7 @@ export default function KanbanBoard() {
                       )}
                       {order.status !== 'CANCELED' && order.status !== 'FINISHED' && (
                         <button 
-                          onClick={() => {
-                            if (window.confirm('Tem certeza que deseja cancelar este pedido?')) {
-                              updateStatus(order.id, 'CANCELED');
-                            }
-                          }} 
+                          onClick={() => setOrderToCancel(order.id)}
                           className="col-span-2 text-red-500/70 hover:text-red-500 hover:bg-red-500/10 font-inter tracking-widest text-[9px] uppercase font-bold py-2 transition-colors rounded-xl mt-1"
                         >
                           Cancelar Pedido
@@ -408,6 +405,36 @@ export default function KanbanBoard() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {orderToCancel && (
+        <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 w-full max-w-sm rounded-3xl p-6 shadow-2xl flex flex-col items-center text-center">
+            <div className="bg-red-500/10 text-red-500 p-4 rounded-full mb-4">
+              <XCircle size={48} />
+            </div>
+            <h3 className="font-podium text-xl uppercase tracking-widest text-black dark:text-white mb-2">Cancelar Pedido?</h3>
+            <p className="font-inter text-xs text-black/60 dark:text-white/60 mb-8">Esta ação não pode ser desfeita e o pedido será removido da produção.</p>
+            
+            <div className="flex w-full gap-3">
+              <button 
+                onClick={() => setOrderToCancel(null)}
+                className="flex-1 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white font-inter tracking-widest text-[10px] font-bold uppercase py-3 rounded-xl transition-colors"
+              >
+                Voltar
+              </button>
+              <button 
+                onClick={() => {
+                  updateStatus(orderToCancel, 'CANCELED');
+                  setOrderToCancel(null);
+                }}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-inter tracking-widest text-[10px] font-bold uppercase py-3 rounded-xl transition-colors"
+              >
+                Sim, Cancelar
+              </button>
             </div>
           </div>
         </div>
