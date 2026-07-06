@@ -36,12 +36,12 @@ export default function CustomSelect({ value, onChange, options, placeholder = '
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl flex items-center justify-between group"
+        className="w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl flex items-center justify-between group gap-2"
       >
-        <span className={!selectedOption ? 'text-black/50 dark:text-white/50' : ''}>
+        <span className={`truncate text-left flex-1 ${!selectedOption ? 'text-black/50 dark:text-white/50' : ''}`}>
           {selectedOption ? selectedOption.label : placeholder}
         </span>
-        <ChevronDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={16} className={`shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
