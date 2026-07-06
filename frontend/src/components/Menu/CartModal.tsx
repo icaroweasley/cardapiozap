@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useCartStore } from '../../store/useCartStore';
 import { useToastStore } from '../../store/useToastStore';
@@ -24,6 +24,18 @@ export default function CartModal({ isOpen, onClose, merchantId }: CartModalProp
     observation: ''
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const mesa = params.get('mesa');
+    if (mesa) {
+      setFormData(prev => ({
+        ...prev,
+        deliveryType: 'PICKUP',
+        observation: `MESA ${mesa}`
+      }));
+    }
+  }, []);
 
   const subtotal = getTotal();
   const taxaEntrega = formData.deliveryType === 'DELIVERY' ? 500 : 0; // R$ 5,00 mock

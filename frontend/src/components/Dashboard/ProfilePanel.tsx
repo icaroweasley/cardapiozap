@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Save, User, Phone, Lock, Image as ImageIcon } from 'lucide-react';
 import { useThemeStore } from '../../store/useThemeStore';
-
+import { playNotificationSound, NotificationSoundType } from '../../utils/audioAlerts';
+import { Volume2 } from 'lucide-react';
 export default function ProfilePanel() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
@@ -20,6 +21,7 @@ export default function ProfilePanel() {
   
   const [backgroundType, setBackgroundType] = useState<'preset' | 'custom'>('preset');
   const [backgroundValue, setBackgroundValue] = useState<string>('');
+  const [notificationSound, setNotificationSound] = useState<NotificationSoundType>('cash_register');
 
   const PRESET_CATEGORIES = [
     {
@@ -123,6 +125,7 @@ export default function ProfilePanel() {
              const theme = typeof res.data.themeConfig === 'string' ? JSON.parse(res.data.themeConfig) : res.data.themeConfig;
              setBackgroundType(theme.backgroundType || 'preset');
              setBackgroundValue(theme.backgroundValue || '');
+             setNotificationSound(theme.notificationSound || 'cash_register');
           }
         }
       } catch (err) {
@@ -212,7 +215,7 @@ export default function ProfilePanel() {
         address: [address, neighborhood].filter(Boolean).join(' - ') || null,
         paymentMethods: paymentMethods.length > 0 ? JSON.stringify(paymentMethods) : null,
         businessHours: formattedHours || null,
-        themeConfig: { backgroundType, backgroundValue }
+        themeConfig: { backgroundType, backgroundValue, notificationSound }
       };
       if (password) updateData.password = password;
 
@@ -514,6 +517,30 @@ export default function ProfilePanel() {
                 ))}
               </div>
 
+            </div>
+          </div>
+
+          <hr className="border-black/10 dark:border-white/10" />
+
+          <div className="space-y-4">
+            <h3 className="font-podium text-lg uppercase tracking-widest text-black dark:text-white mb-4">Notificações e Alertas</h3>
+            <div className="flex flex-col gap-4 border border-black/10 dark:border-white/10 rounded-[2rem] p-6 bg-white/30 dark:bg-black/30">
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-2">Som de Novo Pedido (Painel Kanban)</label>
+              <div className="flex flex-wrap gap-3">
+                {[
+                  { id: 'cash_register', label: 'Caixa (Plim)' },
+                  { id: 'bell', label: 'Campainha' },
+                  { id: 'magic', label: 'Magia' },
+                  { id: 'chime', label: 'Notificação Dupla' },
+                  { id: 'retro', label: '8-Bit Retro' },
+                  { id: 'none', label: 'Mudo' }
+                ].map(sound => (
+                  <div key={sound.id} className={`flex items-center gap-2 border px-4 py-2 rounded-xl cursor-pointer transition-all ${notificationSound === sound.id ? 'border-black dark:border-white bg-black/5 dark:bg-white/5 scale-105 shadow-md' : 'border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30'}`} onClick={() => { setNotificationSound(sound.id as NotificationSoundType); playNotificationSound(sound.id as NotificationSoundType); }}>
+                    <Volume2 size={16} className={notificationSound === sound.id ? 'text-black dark:text-white' : 'text-black/40 dark:text-white/40'} />
+                    <span className="text-xs font-bold uppercase tracking-widest">{sound.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

@@ -1,26 +1,27 @@
 ### 📋 Resumo do Projeto: ZapGarçom (SaaS de Atendimento Digital)
 
-#### 🎯 O que foi concluído nesta sessão:
-1. **Logo e Identidade:** A nova logo limpa e em alta resolução foi aplicada na tela de login e no menu lateral do painel, agora com muito mais destaque e impacto (glassmorphism premium).
-2. **Correção Crítica no Servidor VPS:** 
-   - A requisição HTTPS da interface para a API estava caindo em um bloqueio de Mixed Content (bater num IP HTTP a partir de um site HTTPS).
-   - O Frontend foi refatorado para consumir o subdomínio seguro `https://api.zapgarcom.com.br`.
-3. **Resgate do Banco de Dados e Script de Deploy:**
-   - Detectamos que o script antigo (`vps-deploy.sh`) apagava o repositório inteiro, levando embora as variáveis de ambiente e o banco de dados.
-   - O script foi reescrito de forma não-destrutiva (faz apenas `git pull`).
-4. **Painel de Métricas (Dashboard):**
-   - Foram implementados os 4 "cards" principais no topo da aba de Pedidos (Kanban).
-   - Agora os lojistas têm visão imediata de **Faturamento, Pedidos, Ticket Médio e Pendentes**, calculados em tempo real de forma otimizada no lado do cliente.
-5. **Superusuário (Admin):** Foi criado com sucesso e semeado (`seeded`) o perfil de administração mestre no banco de produção.
+#### 🎯 O que foi concluído nas sessões anteriores:
+1. **Logo e Identidade:** A nova logo limpa e em alta resolução foi aplicada na tela de login e no menu lateral do painel (glassmorphism premium).
+2. **Correção Crítica no Servidor VPS (Mixed Content):** O Frontend foi refatorado para consumir o subdomínio seguro `https://api.zapgarcom.com.br` e corrigir bloqueios no navegador.
+3. **Resgate do Banco de Dados e Deploy:** O script `/home/ubuntu/vps-deploy.sh` foi reescrito de forma não-destrutiva (agora apenas atualiza o código sem apagar o BD e as envs).
+4. **Painel de Métricas (Dashboard):** Foram implementados os 4 cards analíticos principais (Faturamento, Pedidos, Ticket Médio e Pendentes) no topo da aba de Pedidos.
+5. **Superusuário e Migração:** Superadmin criado, e usuários do antigo "zapbulk" foram migrados pro Prisma.
+
+#### 🔥 ÚLTIMAS MODIFICAÇÕES (Novas Implementações):
+6. **Disparos em Massa (Background Workers):** A lógica de disparo via WhatsApp foi totalmente migrada para *workers* assíncronos no backend (`broadcastWorker.ts`). As sessões agora são persistentes, o lojista não precisa mais ficar com o painel aberto, e foram adicionados limites de delay seguros e logs mais robustos visíveis.
+7. **Isolamento de Instâncias de WhatsApp:** Foi imposta a criação de instâncias únicas para cada lojista na Evolution API, evitando problemas de *cross-account broadcasts* (mensagens saindo do número de outro cliente).
+8. **Temas Premium para o Cardápio:** Adicionada uma aba robusta de personalização no painel! Lojistas agora podem escolher *Backgrounds* premium por categoria (Açaí, Espetinho, Marmita, Lanches, Pizza) para o cardápio público (`ClientMenu`), e há um sistema de **Live Preview** integrado no painel de perfil.
+9. **UX do Lojista:** A aba ativa do Dashboard agora persiste ao recarregar a página.
+10. **Conteúdo de Demonstração (Imagens IA):** Foi criado o `seed-large.ts`, e o cardápio de demonstração foi preenchido com imagens exclusivas de alta qualidade geradas por IA (Bacon Master, Milkshake, combos, etc), substituindo *placeholders* antigos para deixar a experiência de vendas impecável.
 
 #### 🔧 Estado Atual e Configurações (Produção):
 - **Painel:** `https://zapgarcom.com.br/login`
 - **Login Cliente Demo:** Slug: `demo` | Senha: `123456`
 - **Login Admin Mestre:** Slug: `admin` | Senha: `123456`
-- **Deploy:** O script `/home/ubuntu/vps-deploy.sh` está seguro, corrigido e não apaga mais os dados persistentes.
 
-#### 🚀 PRÓXIMO PASSO (Prioridade Máxima para a Próxima Sessão):
-1. ✅ **Migração de Usuários (ZAPBULK):** Concluído. Usuários do "zapbulk" foram migrados para o banco Prisma de produção com sucesso.
-2. Homologar disparos pesados no ambiente VPS recém estabilizado.
+#### 🚀 PRÓXIMOS PASSOS SUGERIDOS:
+1. Validar a estabilidade dos *Background Workers* em disparos com grandes volumes no servidor de produção.
+2. Confirmar o funcionamento do Checkout/Pedido do novo cardápio tematizado pelo lado do cliente.
+3. (O que você quiser atacar agora).
 
-*Status: Servidor de pé, seguro, protegido e lindo. Bom descanso!*
+*Status: Sistema com identidade visual de ponta, background workers operantes e sistema pronto para escala.*

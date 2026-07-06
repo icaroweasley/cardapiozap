@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Settings2, Megaphone, Server, AlertTriangle, X } from 'lucide-react';
+import { LogOut, LayoutDashboard, Package, Activity, Moon, Sun, Settings2, Megaphone, Server, AlertTriangle, X, QrCode } from 'lucide-react';
 import { useThemeStore } from '../store/useThemeStore';
 import { useToastStore } from '../store/useToastStore';
 import KanbanBoard from '../components/Dashboard/KanbanBoard';
@@ -10,10 +10,11 @@ import SettingsPanel from '../components/Dashboard/SettingsPanel';
 import BroadcastManager from '../components/Dashboard/BroadcastManager';
 import AdminPanel from '../components/Dashboard/AdminPanel';
 import ProfilePanel from '../components/Dashboard/ProfilePanel';
+import QRCodeManager from '../components/Dashboard/QRCodeManager';
 
 export default function Dashboard() {
   const merchant = JSON.parse(localStorage.getItem('merchant') || '{}');
-  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS' | 'BROADCAST' | 'ADMIN' | 'PROFILE'>(
+  const [activeTab, setActiveTab] = useState<'KANBAN' | 'PRODUCTS' | 'SETTINGS' | 'BROADCAST' | 'ADMIN' | 'PROFILE' | 'QRCODE'>(
     (localStorage.getItem('dashboard_tab') as any) || (merchant.accountType === 'BROADCAST_ONLY' ? 'BROADCAST' : 'KANBAN')
   );
 
@@ -259,6 +260,13 @@ export default function Dashboard() {
             </>
           )}
           <button 
+            onClick={() => setActiveTab('QRCODE')}
+            className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'QRCODE' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
+          >
+            <QrCode size={18} />
+            Mesas (QR)
+          </button>
+          <button 
             onClick={() => setActiveTab('SETTINGS')}
             className={`flex items-center gap-4 px-6 py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'SETTINGS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
           >
@@ -307,6 +315,7 @@ export default function Dashboard() {
         {activeTab === 'BROADCAST' && <BroadcastManager setActiveTab={setActiveTab} />}
         {activeTab === 'ADMIN' && <AdminPanel />}
         {activeTab === 'PROFILE' && <ProfilePanel />}
+        {activeTab === 'QRCODE' && <QRCodeManager />}
       </main>
     </div>
   );
