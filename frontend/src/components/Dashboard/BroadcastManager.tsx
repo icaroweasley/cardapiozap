@@ -796,11 +796,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                         variant="transparent"
                         icon={<FolderOpen size={14} />}
                       />
-                      {savedLists.length > 0 && selectedListId === '' && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] text-black/40 dark:text-white/40 font-bold uppercase">
-                          ▼
-                        </div>
-                      )}
+
                     </div>
                     <div className="h-6 w-px bg-black/10 dark:bg-white/10 mx-1"></div>
                     <div className="flex flex-1 gap-2 items-center relative">
