@@ -8,16 +8,15 @@
 5. **Superusuário e Migração:** Superadmin criado, e usuários do antigo "zapbulk" foram migrados pro Prisma.
 
 #### 🔥 ÚLTIMAS MODIFICAÇÕES (Novas Implementações):
-6. **Disparos em Massa (Background Workers):** A lógica de disparo via WhatsApp foi totalmente migrada para *workers* assíncronos no backend (`broadcastWorker.ts`). As sessões agora são persistentes, o lojista não precisa mais ficar com o painel aberto, e foram adicionados limites de delay seguros e logs mais robustos visíveis.
-7. **Isolamento de Instâncias de WhatsApp:** Foi imposta a criação de instâncias únicas para cada lojista na Evolution API, evitando problemas de *cross-account broadcasts* (mensagens saindo do número de outro cliente).
-8. **Relatórios:** Criada a aba de relatórios com faturamento e Top Produtos. `(Dashboard)`
-9. **Filtro de Contatos & Ajuste de Interface:** Ocultado botão Mesas QR para usuários de apenas Disparo, priorizado o nome da agenda na lista de clientes, e filtrado grupos de WhatsApp. `(Dashboard, BroadcastManager)`
-10. **Temas Premium para o Cardápio:** Adicionada uma aba robusta de personalização no painel! Lojistas agora podem escolher *Backgrounds* premium por categoria (Açaí, Espetinho, Marmita, Lanches, Pizza) para o cardápio público (`ClientMenu`), e há um sistema de **Live Preview** integrado no painel de perfil.
-11. **UX do Lojista:** A aba ativa do Dashboard agora persiste ao recarregar a página.
-12. **Conteúdo de Demonstração (Imagens IA):** Foi criado o `seed-large.ts`, e o cardápio de demonstração foi preenchido com imagens exclusivas de alta qualidade geradas por IA (Bacon Master, Milkshake, combos, etc), substituindo *placeholders* antigos para deixar a experiência de vendas impecável.
-13. **Notificações em Tempo Real Globais:** Transferida a escuta de novos pedidos do socket.io para o escopo global do Painel. O lojista agora ouve o alerta sonoro e recebe a notificação toast independentemente de qual aba ele estiver navegando, eliminando perda de chamadas.
-14. **Gestão de Cancelamentos (Modal Nativo):** O fluxo de cancelamento de pedidos foi estruturado e retirado do Kanban padrão. Adicionado um modal customizado elegante e seguro para confirmação de cancelamento, e um modal master acessível via botão superior para visualizar o histórico de pedidos cancelados.
-15. **Controle de Cache NGINX:** A VPS foi reconfigurada (`/etc/nginx/sites-available/zapgarcom`) para implementar cabeçalhos `Cache-Control: no-cache` estritos, forçando atualizações imediatas no lado do cliente.
+6. **Disparos em Massa (Background Workers):** A lógica de disparo via WhatsApp foi totalmente migrada para *workers* assíncronos no backend (`broadcastWorker.ts`). As sessões agora são persistentes, e foram adicionados limites de delay seguros e logs.
+7. **Isolamento de Instâncias de WhatsApp:** Criação de instâncias únicas para cada lojista na Evolution API, evitando problemas de *cross-account broadcasts*.
+8. **Relatórios e Interface Condicional:** Criada aba de relatórios (Faturamento, Top Produtos). Ocultado botão Mesas QR, e agora a exibição de botões ("Clientes" oculto e "WhatsApp" renomeado para "Atualizar") é condicionada a planos estritos de Disparo (`BROADCAST_ONLY`).
+9. **Temas Premium para o Cardápio:** Adicionada uma aba robusta de personalização no painel! Lojistas podem escolher *Backgrounds* premium por categoria com **Live Preview**.
+10. **Conteúdo de Demonstração (Imagens IA):** Cardápio de demonstração preenchido com imagens exclusivas de alta qualidade geradas por IA (`seed-large.ts`).
+11. **Notificações em Tempo Real Globais:** Transferida a escuta de novos pedidos do socket.io para o escopo global. Notificações visuais e sonoras agora ajustam cores dinamicamente em modo claro/escuro para legibilidade perfeita.
+12. **Gestão de Cancelamentos:** Fluxo estruturado em um modal customizado, retirado do Kanban padrão. Histórico disponível via botão.
+13. **Padronização Visual e Responsividade Glassmorphism:** Seletores suspensos (`CustomSelect`) refinados e padronizados para `rounded-xl` em todos os contextos, removendo os fundos rígidos pontiagudos. Painel de Conexões (`SettingsPanel`) limpo de espaçamentos encavalados, garantindo ajuste fluido em telas mobile estreitas.
+14. **Controle de Cache NGINX:** A VPS foi reconfigurada (`/etc/nginx/sites-available/zapgarcom`) para implementar cabeçalhos `Cache-Control: no-cache` estritos, forçando atualizações imediatas no lado do cliente.
 
 #### 🔧 Estado Atual e Configurações (Produção):
 - **Painel:** `https://zapgarcom.com.br/login`
@@ -25,8 +24,7 @@
 - **Login Admin Mestre:** Slug: `admin` | Senha: `123456`
 
 #### 🚀 PRÓXIMOS PASSOS SUGERIDOS:
-1. Validar a estabilidade dos *Background Workers* em disparos com grandes volumes no servidor de produção.
-2. Confirmar o funcionamento do Checkout/Pedido do novo cardápio tematizado pelo lado do cliente.
-3. (O que você quiser atacar agora).
+1. Avaliar a performance e usabilidade dos relatórios no longo prazo com grandes volumes de dados.
+2. (O que você quiser atacar agora).
 
-*Status: Sistema com notificações globais operantes, gestão avançada de fluxo de pedidos e imunidade a cache estático em produção.*
+*Status: Padronização UI aplicada. Responsividade móvel calibrada. Gestão inteligente de planos consolidada.*

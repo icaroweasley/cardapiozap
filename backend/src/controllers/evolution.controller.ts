@@ -61,6 +61,16 @@ export const createEvolutionInstance = async (req: AuthRequest, res: Response): 
       }, {
         headers: { apikey: apiKey }
       });
+
+      // Update settings to sync full history
+      await axios.post(`${apiUrl}/settings/set/${instanceName}`, {
+        syncFullHistory: true,
+        readContacts: true,
+        readChats: true
+      }, {
+        headers: { apikey: apiKey }
+      }).catch(err => console.log('Failed to set settings:', err?.response?.data || err.message));
+
       connectRes = createRes;
     } catch (e: any) {
       console.log(`Failed to create instance ${instanceName}, error:`, e.response?.data || e.message);
