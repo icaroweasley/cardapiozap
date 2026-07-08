@@ -557,7 +557,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
       <aside className="w-full lg:w-24 shrink-0 flex flex-row lg:flex-col items-center justify-around lg:justify-start gap-2 lg:gap-8 px-4 lg:px-6 py-3 lg:py-10 border-b lg:border-b-0 lg:border-r border-black/10 dark:border-white/10 bg-white/20 dark:bg-black/20 z-20">
         <button 
           onClick={() => setCurrentScreen(1)} 
-          className={`relative w-12 h-12 lg:w-14 lg:h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 1 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
+          className={`relative px-3 py-2 lg:px-0 lg:py-0 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 1 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
           title="1. Conexão"
         >
           <div className="flex flex-col items-center gap-1">
@@ -568,7 +568,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
         <button 
           onClick={() => nextScreen(2)} 
-          className={`relative w-12 h-12 lg:w-14 lg:h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 2 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
+          className={`relative px-3 py-2 lg:px-0 lg:py-0 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 2 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
           title="2. Alvos"
         >
           <div className="flex flex-col items-center gap-1">
@@ -579,7 +579,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
         <button 
           onClick={() => nextScreen(3)} 
-          className={`relative w-12 h-12 lg:w-14 lg:h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 3 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
+          className={`relative px-3 py-2 lg:px-0 lg:py-0 lg:w-16 lg:h-16 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 3 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
           title="3. Disparo"
         >
           <div className="flex flex-col items-center gap-1">
