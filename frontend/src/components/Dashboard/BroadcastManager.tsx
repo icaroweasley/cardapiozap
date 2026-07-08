@@ -689,9 +689,9 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
             <div className="flex-1 relative lg:overflow-hidden flex flex-col lg:flex-row lg:gap-6">
               
               {/* TAB 1: ORIGIN */}
-              <div className={`flex-1 flex-col h-[500px] lg:h-auto bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden group w-full lg:relative lg:inset-auto ${activeTargetTab === 'ORIGIN' ? 'flex' : 'hidden'} lg:flex`}>
+              <div className={`flex-1 flex-col bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[1.5rem] overflow-hidden group w-full lg:relative lg:inset-auto ${activeTargetTab === 'ORIGIN' ? 'flex' : 'hidden'} lg:flex`}>
                   <div className="relative z-10 flex flex-col h-full w-full">
-                    <div className="p-4 lg:p-6 pb-4 flex flex-col gap-4 border-b border-black/5 dark:border-white/5 shrink-0 bg-white/30 dark:bg-black/20">
+                    <div className="p-3 lg:p-4 pb-3 flex flex-col gap-3 border-b border-black/5 dark:border-white/5 shrink-0 bg-white/30 dark:bg-black/20">
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                           <h2 className="font-podium text-sm lg:text-base tracking-widest text-black dark:text-white uppercase mb-1">Meus Contatos</h2>
@@ -714,13 +714,13 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                           type="text" 
                           value={searchAll}
                           onChange={(e) => setSearchAll(e.target.value)}
-                          placeholder="Pesquisar contatos importados..."
-                          className="w-full bg-white/50 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-sm"
+                          placeholder="Pesquisar contatos..."
+                          className="w-full bg-white/50 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-sm"
                         />
                       </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-4 hide-scrollbar flex flex-col gap-3 min-h-0 relative">
+                    <div className="flex-1 overflow-y-auto p-3 hide-scrollbar flex flex-col gap-2 min-h-0 relative">
                       {allContacts.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-black/40 dark:text-white/40 text-center p-6">
                           <Users size={48} className="mb-4 opacity-30" />
@@ -729,28 +729,28 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                         </div>
                       ) : (
                         <>
-                          <div className="flex items-center px-4 py-3 text-xs font-bold text-black/50 dark:text-white/50 sticky top-0 bg-white/90 dark:bg-[#121215]/90 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-xl z-10 shadow-sm">
+                          <div className="flex items-center px-3 py-2 text-[10px] font-bold text-black/50 dark:text-white/50 sticky top-0 bg-white/90 dark:bg-[#121215]/90 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-lg z-10 shadow-sm mb-2">
                             <input 
                               type="checkbox" 
                               checked={allContacts.length > 0 && selectedAllContacts.size === filteredAllContacts.length}
                               onChange={toggleAllAllSelection}
-                              className="mr-3 w-4 h-4 accent-black dark:accent-white cursor-pointer rounded-sm"
+                              className="mr-2 w-3.5 h-3.5 accent-black dark:accent-white cursor-pointer rounded-sm"
                             />
-                            <div className="flex-1 uppercase tracking-widest text-[10px]">Selecionar Todos ({filteredAllContacts.length})</div>
+                            <div className="flex-1 uppercase tracking-widest">Selecionar Todos ({filteredAllContacts.length})</div>
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
                             {filteredAllContacts.map(contact => (
-                              <div key={contact.id} onClick={() => toggleAllSelection(contact.id)} className={`rounded-xl p-4 flex items-center transition-colors cursor-pointer border ${selectedAllContacts.has(contact.id) ? 'bg-black/5 dark:bg-white/10 border-black/20 dark:border-white/20 shadow-md' : 'bg-white/50 dark:bg-black/20 border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-white/80 dark:hover:bg-black/40'}`}>
+                              <div key={contact.id} onClick={() => toggleAllSelection(contact.id)} className={`rounded-lg p-2.5 flex items-center transition-colors cursor-pointer border ${selectedAllContacts.has(contact.id) ? 'bg-black/5 dark:bg-white/10 border-black/20 dark:border-white/20 shadow-sm' : 'bg-white/50 dark:bg-black/20 border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-white/80 dark:hover:bg-black/40'}`}>
                                 <input 
                                   type="checkbox" 
                                   checked={selectedAllContacts.has(contact.id)}
                                   readOnly
-                                  className="mr-3 w-4 h-4 accent-black dark:accent-white cursor-pointer rounded-sm shrink-0"
+                                  className="mr-2 w-3.5 h-3.5 accent-black dark:accent-white cursor-pointer rounded-sm shrink-0"
                                 />
                                 <div className="flex-1 flex flex-col min-w-0">
-                                  <span className="text-sm font-bold text-black dark:text-white truncate font-inter">{contact.name || contact.pushName || 'Desconhecido'}</span>
-                                  <span className="text-[10px] text-black/50 dark:text-white/50 mt-1 tracking-widest">{contact.number}</span>
+                                  <span className="text-xs font-bold text-black dark:text-white truncate font-inter">{contact.name || contact.pushName || 'Desconhecido'}</span>
+                                  <span className="text-[9px] text-black/50 dark:text-white/50 mt-0.5 tracking-widest">{contact.number}</span>
                                 </div>
                               </div>
                             ))}
@@ -759,22 +759,22 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                       )}
                     </div>
                     
-                    <div className="p-4 lg:p-5 border-t border-black/10 dark:border-white/10 shrink-0 bg-white/50 dark:bg-black/50 backdrop-blur-md flex justify-end">
+                    <div className="p-3 lg:p-4 border-t border-black/10 dark:border-white/10 shrink-0 bg-white/50 dark:bg-black/50 backdrop-blur-md flex justify-end">
                       <button 
                         onClick={moveSelectedToTarget}
                         disabled={selectedAllContacts.size === 0}
-                        className="w-full md:w-auto bg-black dark:bg-white hover:scale-105 text-white dark:text-black rounded-xl px-8 py-4 flex items-center justify-center gap-3 transition-transform disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest shadow-xl"
+                        className="w-full md:w-auto bg-black dark:bg-white hover:scale-105 text-white dark:text-black rounded-xl px-6 py-3 flex items-center justify-center gap-2 transition-transform disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed text-[10px] md:text-xs font-bold uppercase tracking-widest shadow-md"
                       >
-                        Mover Selecionados ({selectedAllContacts.size}) <ArrowRight size={16} />
+                        Mover Selecionados ({selectedAllContacts.size}) <ArrowRight size={14} />
                       </button>
                     </div>
                   </div>
                 </div>
 
               {/* TAB 2: TARGET */}
-              <div className={`flex-1 flex-col h-[600px] lg:h-auto bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden group w-full lg:relative lg:inset-auto ${activeTargetTab === 'TARGET' ? 'flex' : 'hidden'} lg:flex`}>
+              <div className={`flex-1 flex-col bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[1.5rem] overflow-hidden group w-full lg:relative lg:inset-auto ${activeTargetTab === 'TARGET' ? 'flex' : 'hidden'} lg:flex`}>
                   <div className="relative z-10 flex flex-col h-full w-full">
-                    <div className="p-4 lg:p-6 pb-4 flex flex-col gap-4 border-b border-black/5 dark:border-white/5 shrink-0 bg-white/30 dark:bg-black/20">
+                    <div className="p-3 lg:p-4 pb-3 flex flex-col gap-3 border-b border-black/5 dark:border-white/5 shrink-0 bg-white/30 dark:bg-black/20">
                       <div className="flex justify-between items-center px-1">
                         <div>
                           <h2 className="font-podium text-sm lg:text-base tracking-widest text-black dark:text-white uppercase mb-1">Lista Alvo</h2>
@@ -871,12 +871,12 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                           value={searchTarget}
                           onChange={(e) => setSearchTarget(e.target.value)}
                           placeholder="Filtrar na lista alvo..."
-                          className="w-full bg-white/50 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-sm"
+                          className="w-full bg-white/50 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-sm"
                         />
                       </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-4 hide-scrollbar flex flex-col gap-2 min-h-0 relative">
+                    <div className="flex-1 overflow-y-auto p-3 hide-scrollbar flex flex-col gap-2 min-h-0 relative">
                       {targetContacts.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-black/40 dark:text-white/40 text-center p-6">
                           <Users size={48} className="mb-4 opacity-30" />
@@ -885,27 +885,27 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                         </div>
                       ) : (
                         <>
-                          <div className="flex items-center px-4 py-3 text-xs font-bold text-black/50 dark:text-white/50 sticky top-0 bg-white/90 dark:bg-[#121215]/90 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-xl mb-3 z-10 shadow-sm">
+                          <div className="flex items-center px-3 py-2 text-[10px] font-bold text-black/50 dark:text-white/50 sticky top-0 bg-white/90 dark:bg-[#121215]/90 backdrop-blur-md border border-black/5 dark:border-white/5 rounded-lg mb-2 z-10 shadow-sm">
                             <input 
                               type="checkbox" 
                               checked={targetContacts.length > 0 && selectedTargetContacts.size === filteredTargetContacts.length}
                               onChange={toggleAllTargetSelection}
-                              className="mr-3 w-4 h-4 accent-black dark:accent-white cursor-pointer rounded-sm"
+                              className="mr-2 w-3.5 h-3.5 accent-black dark:accent-white cursor-pointer rounded-sm"
                             />
-                            <div className="flex-1 uppercase tracking-widest text-[10px]">Selecionar Todos ({filteredTargetContacts.length})</div>
+                            <div className="flex-1 uppercase tracking-widest">Selecionar Todos ({filteredTargetContacts.length})</div>
                             {selectedTargetContacts.size > 0 && (
-                              <button onClick={removeSelectedFromTarget} className="text-red-500 font-bold hover:text-red-600 ml-2 flex items-center gap-1 bg-red-500/10 px-3 py-1.5 rounded-lg border border-red-500/20 text-[10px] tracking-widest uppercase transition-colors shadow-sm"><Trash2 size={12}/> Remover</button>
+                              <button onClick={removeSelectedFromTarget} className="text-red-500 font-bold hover:text-red-600 ml-2 flex items-center gap-1 bg-red-500/10 px-2 py-1 rounded border border-red-500/20 text-[9px] tracking-widest uppercase transition-colors shadow-sm"><Trash2 size={10}/> Remover</button>
                             )}
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
                             {filteredTargetContacts.map(contact => (
-                              <div key={contact.id} onClick={() => toggleTargetSelection(contact.id)} className={`rounded-xl p-4 flex items-center transition-colors cursor-pointer border ${selectedTargetContacts.has(contact.id) ? 'bg-black/5 dark:bg-white/10 border-black/20 dark:border-white/20 shadow-md' : 'bg-white/50 dark:bg-black/20 border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-white/80 dark:hover:bg-black/40'}`}>
+                              <div key={contact.id} onClick={() => toggleTargetSelection(contact.id)} className={`rounded-lg p-2.5 flex items-center transition-colors cursor-pointer border ${selectedTargetContacts.has(contact.id) ? 'bg-black/5 dark:bg-white/10 border-black/20 dark:border-white/20 shadow-sm' : 'bg-white/50 dark:bg-black/20 border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-white/80 dark:hover:bg-black/40'}`}>
                                 <input 
                                   type="checkbox" 
                                   checked={selectedTargetContacts.has(contact.id)}
                                   readOnly
-                                  className="mr-3 w-4 h-4 accent-black dark:accent-white cursor-pointer rounded-sm shrink-0"
+                                  className="mr-2 w-3.5 h-3.5 accent-black dark:accent-white cursor-pointer rounded-sm shrink-0"
                                 />
                                 <div className="flex-1 flex flex-col min-w-0 ml-1">
                                   {editingContactId === contact.id ? (
@@ -919,25 +919,25 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                                         if (e.key === 'Enter') saveContactName(e);
                                         if (e.key === 'Escape') setEditingContactId(null);
                                       }}
-                                      className="text-sm font-bold text-black dark:text-white bg-transparent border-b border-black/20 dark:border-white/20 focus:outline-none focus:border-black/50 dark:focus:border-white/50 w-full mb-1"
+                                      className="text-xs font-bold text-black dark:text-white bg-transparent border-b border-black/20 dark:border-white/20 focus:outline-none focus:border-black/50 dark:focus:border-white/50 w-full mb-0.5"
                                     />
                                   ) : (
-                                    <div className="flex items-center gap-2 group/edit">
-                                      <span className="text-sm font-bold text-black dark:text-white truncate font-inter">
+                                    <div className="flex items-center gap-1 group/edit">
+                                      <span className="text-xs font-bold text-black dark:text-white truncate font-inter">
                                         {contact.name || contact.pushName || 'Desconhecido'}
                                       </span>
                                       <button 
                                         onClick={(e) => startEditingContact(e, contact)}
                                         className="text-black/30 dark:text-white/30 hover:text-black dark:hover:text-white opacity-0 group-hover/edit:opacity-100 transition-opacity"
                                       >
-                                        <Pencil size={12} />
+                                        <Pencil size={10} />
                                       </button>
                                     </div>
                                   )}
-                                  <span className="text-[10px] text-black/50 dark:text-white/50 mt-1 tracking-widest">{contact.number}</span>
+                                  <span className="text-[9px] text-black/50 dark:text-white/50 mt-0.5 tracking-widest">{contact.number}</span>
                                 </div>
-                                {contact.status === 'sent' && <CheckCircle2 size={16} className="text-emerald-500 ml-2 shrink-0" />}
-                                {contact.status === 'error' && <AlertCircle size={16} className="text-red-500 ml-2 shrink-0" />}
+                                {contact.status === 'sent' && <CheckCircle2 size={14} className="text-emerald-500 ml-2 shrink-0" />}
+                                {contact.status === 'error' && <AlertCircle size={14} className="text-red-500 ml-2 shrink-0" />}
                               </div>
                             ))}
                           </div>
@@ -945,13 +945,13 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                       )}
                     </div>
                     
-                    <div className="p-4 lg:p-5 border-t border-black/10 dark:border-white/10 shrink-0 bg-white/50 dark:bg-black/50 backdrop-blur-md flex justify-end z-10">
+                    <div className="p-3 lg:p-4 border-t border-black/10 dark:border-white/10 shrink-0 bg-white/50 dark:bg-black/50 backdrop-blur-md flex justify-end z-10">
                       <button 
                         onClick={() => nextScreen(3)}
                         disabled={targetContacts.length === 0}
-                        className="w-full md:w-auto bg-black dark:bg-white hover:scale-105 text-white dark:text-black rounded-xl px-8 py-4 flex items-center justify-center gap-3 transition-transform disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed text-xs uppercase font-bold tracking-widest shadow-xl"
+                        className="w-full md:w-auto bg-black dark:bg-white hover:scale-105 text-white dark:text-black rounded-xl px-6 py-3 flex items-center justify-center gap-2 transition-transform disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed text-[10px] md:text-xs uppercase font-bold tracking-widest shadow-md"
                       >
-                        Avançar para Mensagem <ArrowRight size={18} />
+                        Avançar para Mensagem <ArrowRight size={14} />
                       </button>
                     </div>
                   </div>
