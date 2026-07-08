@@ -420,9 +420,39 @@ router.post('/session/action', authenticate, async (req: any, res) => {
     
     if (!statusMap[action]) return res.status(400).json({ error: 'Invalid action' });
 
+    let dataToUpdate: any = { status: statusMap[action] };
+
+    if (action === 'resume') {
+       const currentSession = await prisma.broadcastSession.findUnique({
+          where: { merchantId: req.merchantId }
+       });
+       if (currentSession) {
+          let contacts: any[] = [];
+          try { contacts = JSON.parse(currentSession.contacts); } catch(e) {}
+          let modified = false;
+          let firstPending = -1;
+          for (let i = 0; i < contacts.length; i++) {
+             if (contacts[i].status === 'error') {
+                 contacts[i].status = 'pending';
+                 delete contacts[i].error;
+                 modified = true;
+             }
+             if (firstPending === -1 && contacts[i].status === 'pending') {
+                 firstPending = i;
+             }
+          }
+          if (modified) {
+             dataToUpdate.contacts = JSON.stringify(contacts);
+             if (firstPending !== -1 && firstPending < currentSession.currentIndex) {
+                 dataToUpdate.currentIndex = firstPending;
+             }
+          }
+       }
+    }
+
     const session = await prisma.broadcastSession.update({
       where: { merchantId: req.merchantId },
-      data: { status: statusMap[action] }
+      data: dataToUpdate
     });
 
     if (action === 'resume') {

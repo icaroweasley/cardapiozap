@@ -158,13 +158,23 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
             setLogs(prev => {
               const newLogs = [...prev];
               loadedContacts.forEach((c: any) => {
-                if ((c.status === 'sent' || c.status === 'error') && !newLogs.some(log => log.id === c.id)) {
-                  newLogs.push({
-                    id: c.id,
-                    timestamp: new Date(),
-                    text: c.status === 'sent' ? `Enviado para ${c.name || c.number}` : `Erro ao enviar para ${c.number}: ${c.error}`,
-                    status: c.status
-                  });
+                if (c.status === 'sent' || c.status === 'error') {
+                  const existingIndex = newLogs.findIndex(log => log.id === c.id);
+                  if (existingIndex === -1) {
+                    newLogs.push({
+                      id: c.id,
+                      timestamp: new Date(),
+                      text: c.status === 'sent' ? `Enviado para ${c.name || c.number}` : `Erro ao enviar para ${c.number}: ${c.error}`,
+                      status: c.status
+                    });
+                  } else if (newLogs[existingIndex].status !== c.status) {
+                    newLogs[existingIndex] = {
+                      ...newLogs[existingIndex],
+                      text: c.status === 'sent' ? `Enviado para ${c.name || c.number}` : `Erro ao enviar para ${c.number}: ${c.error}`,
+                      status: c.status,
+                      timestamp: new Date()
+                    };
+                  }
                 }
               });
               return newLogs;

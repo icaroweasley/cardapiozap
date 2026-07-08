@@ -110,6 +110,7 @@ export const startBroadcastWorker = async (merchantId: string) => {
             const sendMediaOnly = async (captionText: string) => {
                await axios.post(`${apiUrl}/message/sendMedia/${instanceName}`, {
                   number: cleanPhone,
+                  options: { delay: 1200, presence: 'composing' },
                   mediaMessage: {
                     mediatype: mediaType,
                     mimetype: media.type,
@@ -124,6 +125,7 @@ export const startBroadcastWorker = async (merchantId: string) => {
                if (textToSend) {
                  await axios.post(`${apiUrl}/message/sendText/${instanceName}`, {
                    number: cleanPhone,
+                   options: { delay: 1200, presence: 'composing' },
                    textMessage: { text: textToSend }
                  }, { headers: { apikey: apiKey } });
                }
@@ -150,6 +152,7 @@ export const startBroadcastWorker = async (merchantId: string) => {
           } else {
              await axios.post(`${apiUrl}/message/sendText/${instanceName}`, {
                 number: cleanPhone,
+                options: { delay: 1200, presence: 'composing' },
                 textMessage: { text: textToSend }
               }, { headers: { apikey: apiKey } });
           }
