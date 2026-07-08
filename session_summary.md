@@ -18,6 +18,8 @@
 13. **Padronização Visual e Responsividade Glassmorphism:** Seletores suspensos (`CustomSelect`) refinados e padronizados para `rounded-xl` em todos os contextos, removendo os fundos rígidos pontiagudos. Painel de Conexões (`SettingsPanel`) limpo de espaçamentos encavalados, garantindo ajuste fluido em telas mobile estreitas.
 14. **Controle de Cache NGINX:** A VPS foi reconfigurada (`/etc/nginx/sites-available/zapgarcom`) para implementar cabeçalhos `Cache-Control: no-cache` estritos, forçando atualizações imediatas no lado do cliente.
 15. **Sincronização de Contatos & UX:** Investigação arquitetural concluída sobre limites de sincronização da Evolution API (Multi-Device não recebe agenda completa via Baileys por segurança do WhatsApp). Implementado estado de `Loading ("Buscando...")` nas buscas de contato do Frontend (`BroadcastManager.tsx`) para maior responsividade, além de forçar as *flags* mais rigorosas na API (`syncFullHistory: true`, `readContacts: true`).
+16. **Otimização Extrema de UX em Disparos:** Interface do módulo de Disparos totalmente redesenhada para maximizar densidade de leitura. Cabeçalhos simplificados de forma alinhada (*inline*), botões e *dropdowns* (`CustomSelect` no formato miniatura) padronizados no tema Glassmorphism para evitar caixas de seleção opacas do sistema operacional. Layouts de contatos convertidos de grades (grids) para listas verticais estritas. No Mobile, a navegação em abas laterais agora usa `padding` responsivo, corrigindo problemas de sobreposição do indicador de seleção (bolinha) e o vazamento de texto.
+
 
 #### 🔧 Estado Atual e Configurações (Produção):
 - **Painel:** `https://zapgarcom.com.br/login`
@@ -29,4 +31,4 @@
 2. Avaliar a performance e usabilidade dos relatórios no longo prazo com grandes volumes de dados.
 3. Continuar o refinamento das funcionalidades do cardápio digital conforme o feedback dos clientes.
 
-*Status: Recurso de Importação CSV para disparos implementado. Pronto para testes e próximos refinamentos.*
+*Status: Módulo de disparos completamente otimizado em termos de densidade de UI/UX, interface responsiva adaptada. Projeto estável e atualizado na produção.*
