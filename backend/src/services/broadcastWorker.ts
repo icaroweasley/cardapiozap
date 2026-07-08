@@ -177,7 +177,13 @@ export const startBroadcastWorker = async (merchantId: string) => {
 
       // Wait random delay before next
       if (session.currentIndex + 1 < contacts.length) {
-         await randomDelay(session.minDelay, session.maxDelay);
+         // Pause for 5 minutes every 50 contacts
+         if ((session.currentIndex + 1) % 50 === 0) {
+            console.log(`Pausando por 5 minutos após 50 envios...`);
+            await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+         } else {
+            await randomDelay(session.minDelay, session.maxDelay);
+         }
       }
     }
   } catch (error) {
