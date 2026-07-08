@@ -37,11 +37,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   const [providerInfo, setProviderInfo] = useState<any>(null);
   const [actualInstanceStatus, setActualInstanceStatus] = useState<string>('Verificando...');
   
-  // Source contacts state (Removed dual-pane)
-  
   const [targetContacts, setTargetContacts] = useState<Contact[]>([]);
-  const [searchTarget, setSearchTarget] = useState('');
-  const [selectedTargetContacts, setSelectedTargetContacts] = useState<Set<string>>(new Set());
   const [searchTarget, setSearchTarget] = useState('');
 
   const [isLoadingWhatsApp, setIsLoadingWhatsApp] = useState(false);
@@ -273,7 +269,6 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
            }
        }
        setTargetContacts([]);
-       setSelectedTargetContacts(new Set());
        setSaveListName('');
        setTimeout(() => setSelectedListId(''), 100);
        return;
@@ -805,12 +800,24 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                       onClick={saveCurrentList}
                       title="Salvar Lista Atual"
                       disabled={targetContacts.length === 0}
-                      className="bg-black dark:bg-white hover:scale-105 transition-transform border border-black/10 dark:border-white/10 px-4 py-3 rounded-lg text-white dark:text-black disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center shrink-0 shadow-md font-bold text-[10px] uppercase tracking-widest"
+                      className="bg-black dark:bg-white hover:scale-105 transition-transform border border-black/10 dark:border-white/10 px-4 py-3 rounded-lg text-white dark:text-black disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center shrink-0 shadow-md font-bold text-[10px] uppercase tracking-widest gap-2"
                     >
-                      Salvar
+                      <Save size={14} className="hidden md:block" /> Salvar
                     </button>
                   </div>
                 </div>
+
+                {savedLists.length > 0 && (
+                  <div className="flex gap-2 overflow-x-auto hide-scrollbar -mt-2">
+                    {savedLists.map(list => (
+                      <div key={list.id} className="flex shrink-0 items-center gap-1 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 px-3 py-2 rounded-lg text-[10px] font-inter text-black/70 dark:text-white/70 group shadow-sm transition-colors hover:bg-black/10 dark:hover:bg-white/10">
+                        <span className="truncate max-w-[150px] cursor-pointer font-bold" onClick={() => loadList(list.id)} title="Carregar Lista">{list.name}</span>
+                        <div className="w-px h-3 bg-black/20 dark:bg-white/20 mx-1"></div>
+                        <button onClick={(e) => deleteSavedList(list.id, e)} className="text-red-500 hover:text-red-700 transition-colors p-0.5" title="Apagar Lista"><Trash2 size={12} /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 
                 {/* MANUAL CONTACT FORM */}
                 {showNewContactForm && (
