@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import axios from 'axios';
-import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, FolderOpen, Pencil } from 'lucide-react';
+import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, Pencil } from 'lucide-react';
 import CustomSelect from '../CustomSelect';
 
 // Sleep worker removed
@@ -691,31 +691,26 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
               {/* TAB 1: ORIGIN */}
               <div className={`flex-1 flex-col bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[1.5rem] overflow-hidden group w-full lg:relative lg:inset-auto ${activeTargetTab === 'ORIGIN' ? 'flex' : 'hidden'} lg:flex`}>
                   <div className="relative z-10 flex flex-col h-full w-full">
-                    <div className="p-3 lg:p-4 pb-3 flex flex-col gap-3 border-b border-black/5 dark:border-white/5 shrink-0 bg-white/30 dark:bg-black/20">
-                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div>
-                          <h2 className="font-podium text-sm lg:text-base tracking-widest text-black dark:text-white uppercase mb-1">Meus Contatos</h2>
-                          <p className="text-xs font-inter text-black/50 dark:text-white/50">Importe e selecione os contatos desejados.</p>
-                        </div>
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <button 
-                              onClick={fetchWhatsAppContacts}
-                              disabled={isLoadingWhatsApp}
-                              title="Sincronizar com seu WhatsApp"
-                              className="w-full md:w-auto bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-5 py-3 text-[10px] md:text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all disabled:opacity-50 shadow-md"
-                            >
-                              <Users size={16} /> {isLoadingWhatsApp ? "Buscando..." : "Importar do WhatsApp"}
-                            </button>
-                        </div>
+                    <div className="p-3 flex flex-col gap-2 border-b border-black/5 dark:border-white/5 shrink-0 bg-white/30 dark:bg-black/20">
+                      <div className="flex justify-between items-center">
+                        <h2 className="font-podium text-sm lg:text-base tracking-widest text-black dark:text-white uppercase">Meus Contatos</h2>
+                        <button 
+                          onClick={fetchWhatsAppContacts}
+                          disabled={isLoadingWhatsApp}
+                          title="Sincronizar com WhatsApp"
+                          className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 transition-all disabled:opacity-50 shadow-sm"
+                        >
+                          <Users size={12} /> {isLoadingWhatsApp ? "Buscando..." : "Importar"}
+                        </button>
                       </div>
                       <div className="relative">
-                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40" />
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40" />
                         <input 
                           type="text" 
                           value={searchAll}
                           onChange={(e) => setSearchAll(e.target.value)}
                           placeholder="Pesquisar contatos..."
-                          className="w-full bg-white/50 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-sm"
+                          className="w-full bg-white/50 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-lg pl-8 pr-3 py-2 text-[11px] text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-sm"
                         />
                       </div>
                     </div>
@@ -774,106 +769,98 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
               {/* TAB 2: TARGET */}
               <div className={`flex-1 flex-col bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[1.5rem] overflow-hidden group w-full lg:relative lg:inset-auto ${activeTargetTab === 'TARGET' ? 'flex' : 'hidden'} lg:flex`}>
                   <div className="relative z-10 flex flex-col h-full w-full">
-                    <div className="p-3 lg:p-4 pb-3 flex flex-col gap-3 border-b border-black/5 dark:border-white/5 shrink-0 bg-white/30 dark:bg-black/20">
-                      <div className="flex justify-between items-center px-1">
-                        <div>
-                          <h2 className="font-podium text-sm lg:text-base tracking-widest text-black dark:text-white uppercase mb-1">Lista Alvo</h2>
-                          <p className="text-xs font-inter text-black/50 dark:text-white/50">Esta é a lista final de quem vai receber.</p>
-                        </div>
+                    <div className="p-3 flex flex-col gap-2 border-b border-black/5 dark:border-white/5 shrink-0 bg-white/30 dark:bg-black/20">
+                      <div className="flex justify-between items-center">
+                        <h2 className="font-podium text-sm lg:text-base tracking-widest text-black dark:text-white uppercase">Lista Alvo</h2>
                         <div className="flex gap-2 items-center">
                           <button 
                             onClick={() => setShowNewContactForm(!showNewContactForm)}
-                            className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white shadow-sm"
+                            className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 transition-colors text-black dark:text-white shadow-sm"
                           >
-                            <UserPlus size={14} /> <span className="hidden md:inline">Novo</span>
+                            <UserPlus size={12} /> <span className="hidden md:inline">Novo</span>
                           </button>
+                          <div className="w-[120px]">
+                            <CustomSelect 
+                              value={selectedListId}
+                              onChange={loadList}
+                              options={[
+                                { value: 'NEW', label: '+ Nova Vazia' },
+                                ...savedLists.map(list => ({ value: list.id, label: `${list.name}` }))
+                              ]}
+                              placeholder="Salvas..."
+                              className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[10px]"
+                              variant="transparent"
+                            />
+                          </div>
                         </div>
                       </div>
 
-                      {/* List Management UI */}
-                      <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full animate-fade-in bg-white/50 dark:bg-black/40 p-3 rounded-xl border border-black/5 dark:border-white/5 shadow-sm md:items-center">
+                      <div className="flex gap-2">
                         <div className="relative flex-1">
-                          <CustomSelect 
-                            value={selectedListId}
-                            onChange={loadList}
-                            options={[
-                              { value: 'NEW', label: '+ Nova Lista Vazia' },
-                              ...savedLists.map(list => ({ value: list.id, label: `${list.name} (${list.contacts.length} contatos)` }))
-                            ]}
-                            placeholder="Carregar lista salva..."
-                            className="w-full bg-transparent border-none"
-                            variant="transparent"
-                            icon={<FolderOpen size={14} />}
-                          />
-                        </div>
-                        <div className="hidden md:block h-6 w-px bg-black/10 dark:bg-white/10 mx-1"></div>
-                        <div className="flex flex-1 gap-2 items-center relative">
+                          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40" />
                           <input 
                             type="text" 
-                            value={saveListName}
-                            onChange={(e) => setSaveListName(e.target.value)}
-                            placeholder="Nome para salvar..."
-                            className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2.5 text-xs text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 font-inter"
+                            value={searchTarget}
+                            onChange={(e) => setSearchTarget(e.target.value)}
+                            placeholder="Filtrar alvo..."
+                            className="w-full bg-white/50 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-lg pl-8 pr-3 py-2 text-[11px] text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-sm"
                           />
-                          <button 
-                            onClick={saveCurrentList}
-                            title="Salvar Lista Atual"
-                            disabled={targetContacts.length === 0}
-                            className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2.5 rounded-lg text-black dark:text-white transition-colors disabled:opacity-50 flex items-center justify-center shrink-0 text-[10px] uppercase font-bold tracking-widest shadow-sm gap-2"
-                          >
-                            <Save size={14} className="hidden md:block" /> Salvar
-                          </button>
                         </div>
+                        {targetContacts.length > 0 && (
+                          <div className="flex gap-1 items-center shrink-0">
+                            <input 
+                              type="text" 
+                              value={saveListName}
+                              onChange={(e) => setSaveListName(e.target.value)}
+                              placeholder="Nome p/ salvar..."
+                              className="w-28 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-2 py-2 text-[10px] text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 font-inter"
+                            />
+                            <button 
+                              onClick={saveCurrentList}
+                              className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-2 py-2 rounded-lg text-black dark:text-white transition-colors flex items-center justify-center text-[10px] shadow-sm"
+                            >
+                              <Save size={12} />
+                            </button>
+                          </div>
+                        )}
                       </div>
                       
                       {savedLists.length > 0 && (
-                        <div className="flex gap-2 overflow-x-auto hide-scrollbar -mt-1">
+                        <div className="flex gap-1.5 overflow-x-auto hide-scrollbar mt-0.5">
                           {savedLists.map(list => (
-                            <div key={list.id} className="flex shrink-0 items-center gap-1 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 px-2 py-1.5 rounded-lg text-[10px] font-inter text-black/70 dark:text-white/70 group transition-colors hover:bg-black/10 dark:hover:bg-white/10">
-                              <span className="truncate max-w-[100px] cursor-pointer hover:text-black dark:hover:text-white font-bold" onClick={() => loadList(list.id)}>{list.name}</span>
-                              <div className="w-px h-3 bg-black/10 dark:bg-white/10 mx-1"></div>
-                              <button onClick={(e) => deleteSavedList(list.id, e)} className="text-red-500 opacity-50 group-hover:opacity-100 hover:text-red-700 transition-opacity ml-1 p-0.5"><Trash2 size={12} /></button>
+                            <div key={list.id} className="flex shrink-0 items-center gap-1 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 px-2 py-1 rounded text-[9px] font-inter text-black/70 dark:text-white/70 group transition-colors hover:bg-black/10 dark:hover:bg-white/10">
+                              <span className="truncate max-w-[80px] cursor-pointer font-bold" onClick={() => loadList(list.id)}>{list.name}</span>
+                              <button onClick={(e) => deleteSavedList(list.id, e)} className="text-red-500 opacity-50 hover:opacity-100 ml-0.5 p-0.5"><Trash2 size={10} /></button>
                             </div>
                           ))}
                         </div>
                       )}
 
                       {showNewContactForm && (
-                        <div className="bg-white/60 dark:bg-black/40 border border-black/10 dark:border-white/10 p-4 rounded-xl flex flex-col gap-3 animate-fade-in shadow-sm">
-                          <div className="text-[10px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50 mb-1">Adicionar Contato Manual</div>
-                          <div className="flex flex-col md:flex-row gap-3">
+                        <div className="bg-white/60 dark:bg-black/40 border border-black/10 dark:border-white/10 p-3 rounded-lg flex flex-col gap-2 animate-fade-in shadow-sm mt-1">
+                          <div className="text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50">Contato Manual</div>
+                          <div className="flex gap-2">
                             <input 
                               type="text" 
                               value={newContactName}
                               onChange={(e) => setNewContactName(e.target.value)}
-                              placeholder="Nome (opcional)"
-                              className="flex-1 w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 font-inter"
+                              placeholder="Nome"
+                              className="w-1/2 bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded px-2 py-1.5 text-[10px] text-black dark:text-white focus:outline-none focus:border-black/30 dark:focus:border-white/30"
                             />
                             <input 
                               type="text" 
                               value={newContactPhone}
                               onChange={(e) => setNewContactPhone(e.target.value)}
-                              placeholder="Telefone (5511999999999)"
-                              className="flex-1 w-full bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 font-inter"
+                              placeholder="Telefone"
+                              className="w-1/2 bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded px-2 py-1.5 text-[10px] text-black dark:text-white focus:outline-none focus:border-black/30 dark:focus:border-white/30"
                             />
-                            <div className="flex gap-2 mt-2 md:mt-0">
-                              <button onClick={() => setShowNewContactForm(false)} className="flex-1 md:flex-none text-[10px] tracking-widest uppercase font-bold text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white px-4 border border-black/10 dark:border-white/10 rounded-lg py-2.5">Cancelar</button>
-                              <button onClick={handleAddNewContact} className="flex-1 md:flex-none bg-black dark:bg-white text-white dark:text-black px-4 py-2.5 rounded-lg text-[10px] uppercase font-bold tracking-widest hover:scale-105 transition-transform shadow-md">Salvar</button>
-                            </div>
+                          </div>
+                          <div className="flex justify-end gap-2 mt-1">
+                            <button onClick={() => setShowNewContactForm(false)} className="text-[9px] uppercase font-bold text-black/50 dark:text-white/50 px-2">Cancelar</button>
+                            <button onClick={handleAddNewContact} className="bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded text-[9px] uppercase font-bold shadow-md">Salvar</button>
                           </div>
                         </div>
                       )}
-                      
-                      <div className="relative mt-2">
-                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40" />
-                        <input 
-                          type="text" 
-                          value={searchTarget}
-                          onChange={(e) => setSearchTarget(e.target.value)}
-                          placeholder="Filtrar na lista alvo..."
-                          className="w-full bg-white/50 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-xs text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all font-inter shadow-sm"
-                        />
-                      </div>
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-3 hide-scrollbar flex flex-col gap-2 min-h-0 relative">
