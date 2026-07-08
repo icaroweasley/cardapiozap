@@ -89,12 +89,13 @@ export const startBroadcastWorker = async (merchantId: string) => {
 
           // 1. Send Presence
           try {
+            const typingDuration = Math.floor(Math.random() * (20000 - 5000 + 1)) + 5000;
             await axios.post(`${apiUrl}/chat/sendPresence/${instanceName}`, {
               number: cleanPhone,
               presence: 'composing',
-              delay: 3000
+              delay: typingDuration
             }, { headers: { apikey: apiKey } });
-            await new Promise(r => setTimeout(r, 4000)); // wait for typing simulation
+            await new Promise(r => setTimeout(r, typingDuration + 1000)); // wait for typing simulation
           } catch(e) {}
 
           // 2. Send Message

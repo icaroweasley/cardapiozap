@@ -390,8 +390,8 @@ router.post('/session/start', authenticate, async (req: any, res) => {
         messageText,
         mediaAttachments: JSON.stringify(mediaAttachments || []),
         textPosition: textPosition || 'after',
-        minDelay: minDelay || 15,
-        maxDelay: maxDelay || 90,
+        minDelay: minDelay || 30,
+        maxDelay: maxDelay || 150,
         currentIndex: 0
       },
       update: {
@@ -400,8 +400,8 @@ router.post('/session/start', authenticate, async (req: any, res) => {
         messageText,
         mediaAttachments: JSON.stringify(mediaAttachments || []),
         textPosition: textPosition || 'after',
-        minDelay: minDelay || 15,
-        maxDelay: maxDelay || 90,
+        minDelay: minDelay || 30,
+        maxDelay: maxDelay || 150,
         currentIndex: 0
       }
     });

@@ -84,8 +84,8 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   const [usageStats, setUsageStats] = useState<{used: number, limit: number} | null>(null);
   const [sessionSentCount, setSessionSentCount] = useState(0);
   
-  const [minDelay] = useState(15);
-  const [maxDelay] = useState(90);
+  const [minDelay] = useState(30);
+  const [maxDelay] = useState(150);
   
   const [editingContactId, setEditingContactId] = useState<string | null>(null);
   const [editingContactName, setEditingContactName] = useState("");
