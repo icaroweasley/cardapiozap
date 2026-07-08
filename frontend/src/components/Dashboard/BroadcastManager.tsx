@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import axios from 'axios';
-import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, Pencil } from 'lucide-react';
-import CustomSelect from '../CustomSelect';
+import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, Pencil, ChevronDown } from 'lucide-react';
+
 
 // Sleep worker removed
 interface MediaAttachment {
@@ -779,18 +779,19 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                           >
                             <UserPlus size={12} /> <span className="hidden md:inline">Novo</span>
                           </button>
-                          <div className="w-[120px]">
-                            <CustomSelect 
+                          <div className="relative w-[110px]">
+                            <select 
                               value={selectedListId}
-                              onChange={loadList}
-                              options={[
-                                { value: 'NEW', label: '+ Nova Vazia' },
-                                ...savedLists.map(list => ({ value: list.id, label: `${list.name}` }))
-                              ]}
-                              placeholder="Salvas..."
-                              className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[10px]"
-                              variant="transparent"
-                            />
+                              onChange={(e) => loadList(e.target.value)}
+                              className="w-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-lg pl-2.5 pr-6 py-1.5 text-[10px] font-bold uppercase tracking-widest text-black dark:text-white shadow-sm focus:outline-none appearance-none cursor-pointer"
+                            >
+                              <option value="">Salvas...</option>
+                              <option value="NEW">+ Nova Vazia</option>
+                              {savedLists.map(list => (
+                                <option key={list.id} value={list.id}>{list.name}</option>
+                              ))}
+                            </select>
+                            <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-black/50 dark:text-white/50" />
                           </div>
                         </div>
                       </div>
