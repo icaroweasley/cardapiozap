@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import axios from 'axios';
-import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, Pencil, ChevronDown } from 'lucide-react';
+import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, Pencil } from 'lucide-react';
+import CustomSelect from '../CustomSelect';
 
 
 // Sleep worker removed
@@ -734,7 +735,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                             <div className="flex-1 uppercase tracking-widest">Selecionar Todos ({filteredAllContacts.length})</div>
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                          <div className="flex flex-col gap-1.5">
                             {filteredAllContacts.map(contact => (
                               <div key={contact.id} onClick={() => toggleAllSelection(contact.id)} className={`rounded-lg p-2.5 flex items-center transition-colors cursor-pointer border ${selectedAllContacts.has(contact.id) ? 'bg-black/5 dark:bg-white/10 border-black/20 dark:border-white/20 shadow-sm' : 'bg-white/50 dark:bg-black/20 border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-white/80 dark:hover:bg-black/40'}`}>
                                 <input 
@@ -779,19 +780,18 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                           >
                             <UserPlus size={12} /> <span className="hidden md:inline">Novo</span>
                           </button>
-                          <div className="relative w-[110px]">
-                            <select 
+                          <div className="w-[120px]">
+                            <CustomSelect 
                               value={selectedListId}
-                              onChange={(e) => loadList(e.target.value)}
-                              className="w-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-lg pl-2.5 pr-6 py-1.5 text-[10px] font-bold uppercase tracking-widest text-black dark:text-white shadow-sm focus:outline-none appearance-none cursor-pointer"
-                            >
-                              <option value="">Salvas...</option>
-                              <option value="NEW">+ Nova Vazia</option>
-                              {savedLists.map(list => (
-                                <option key={list.id} value={list.id}>{list.name}</option>
-                              ))}
-                            </select>
-                            <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-black/50 dark:text-white/50" />
+                              onChange={loadList}
+                              options={[
+                                { value: 'NEW', label: '+ Nova Vazia' },
+                                ...savedLists.map(list => ({ value: list.id, label: `${list.name}` }))
+                              ]}
+                              placeholder="Salvas..."
+                              className="text-[10px]"
+                              variant="small"
+                            />
                           </div>
                         </div>
                       </div>
@@ -886,7 +886,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                             )}
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
+                          <div className="flex flex-col gap-1.5">
                             {filteredTargetContacts.map(contact => (
                               <div key={contact.id} onClick={() => toggleTargetSelection(contact.id)} className={`rounded-lg p-2.5 flex items-center transition-colors cursor-pointer border ${selectedTargetContacts.has(contact.id) ? 'bg-black/5 dark:bg-white/10 border-black/20 dark:border-white/20 shadow-sm' : 'bg-white/50 dark:bg-black/20 border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 hover:bg-white/80 dark:hover:bg-black/40'}`}>
                                 <input 

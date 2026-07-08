@@ -12,7 +12,7 @@ interface CustomSelectProps {
   options: Option[];
   placeholder?: string;
   className?: string;
-  variant?: 'default' | 'transparent';
+  variant?: 'default' | 'transparent' | 'small';
   icon?: ReactNode;
 }
 
@@ -35,6 +35,8 @@ export default function CustomSelect({ value, onChange, options, placeholder = '
 
   const buttonClasses = variant === 'transparent' 
     ? "w-full bg-transparent border-none text-black dark:text-white py-2 pl-1 pr-3 text-xs font-inter focus:outline-none flex items-center justify-between group gap-2"
+    : variant === 'small'
+    ? "w-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 text-black dark:text-white rounded-lg pl-2.5 pr-2 py-1.5 text-[10px] font-bold uppercase tracking-widest shadow-sm focus:outline-none transition-colors flex items-center justify-between group gap-2"
     : "w-full bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 text-black dark:text-white p-3 font-inter text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors rounded-xl flex items-center justify-between group gap-2";
 
   return (
@@ -50,7 +52,7 @@ export default function CustomSelect({ value, onChange, options, placeholder = '
             {selectedOption ? selectedOption.label : placeholder}
           </span>
         </div>
-        <ChevronDown size={16} className={`shrink-0 text-black/50 dark:text-white/50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={variant === 'small' ? 12 : 16} className={`shrink-0 text-black/50 dark:text-white/50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
@@ -64,7 +66,7 @@ export default function CustomSelect({ value, onChange, options, placeholder = '
                   onChange(opt.value);
                   setIsOpen(false);
                 }}
-                className={`w-full text-left px-4 py-3 font-inter text-sm transition-colors hover:bg-black/5 dark:hover:bg-white/5 text-black dark:text-white ${opt.value === value ? 'bg-black/5 dark:bg-white/5 font-bold' : ''}`}
+                className={`w-full text-left px-4 py-3 font-inter transition-colors hover:bg-black/5 dark:hover:bg-white/5 text-black dark:text-white ${opt.value === value ? 'bg-black/5 dark:bg-white/5 font-bold' : ''} ${variant === 'small' ? 'text-xs' : 'text-sm'}`}
               >
                 {opt.label}
               </button>
