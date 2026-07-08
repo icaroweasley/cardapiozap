@@ -112,57 +112,92 @@ router.get('/whatsapp-contacts', authenticate, async (req: any, res) => {
     const instanceName = `zapgarcom_${req.merchantId}`;
     const apiKey = process.env.EVOLUTION_API_KEY || '';
 
-    const endpointsToTry = [
-      { path: `/chat/findContacts/${instanceName}`, method: 'POST', data: {} },
-      { path: `/v2/chat/findContacts/${instanceName}`, method: 'POST', data: {} },
-      { path: `/contact/find/${instanceName}`, method: 'POST', data: {} },
+    const contactEndpoints = [
+      { path: `/chat/findContacts/${instanceName}`, method: 'POST', data: { where: {} } },
+      { path: `/v2/chat/findContacts/${instanceName}`, method: 'POST', data: { where: {} } },
+      { path: `/contact/find/${instanceName}`, method: 'POST', data: { where: {} } },
       { path: `/v2/contact/fetchContacts/${instanceName}`, method: 'GET' },
       { path: `/contact/fetchContacts/${instanceName}`, method: 'GET' },
       { path: `/chat/fetchContacts/${instanceName}`, method: 'GET' }
     ];
 
-    let success = false;
-    let customers: any[] = [];
+    const chatEndpoints = [
+      { path: `/chat/findChats/${instanceName}`, method: 'POST', data: { where: {} } },
+      { path: `/v2/chat/findChats/${instanceName}`, method: 'POST', data: { where: {} } },
+      { path: `/chat/find/${instanceName}`, method: 'POST', data: { where: {} } }
+    ];
 
-    for (const endpoint of endpointsToTry) {
+    let allRawContacts: any[] = [];
+
+    // Tenta buscar Contatos (Agenda)
+    for (const endpoint of contactEndpoints) {
       try {
         const reqConfig: any = {
           method: endpoint.method,
           url: `${apiUrl}${endpoint.path}`,
           headers: { apikey: apiKey }
         };
-        if (endpoint.method === 'POST') {
-          reqConfig.data = endpoint.data;
-        }
+        if (endpoint.method === 'POST') reqConfig.data = endpoint.data;
 
         const response = await axios(reqConfig);
-        
-        const rawContacts = Array.isArray(response.data) ? response.data : (response.data?.contacts || response.data?.data || []);
-        
-        customers = rawContacts
-          .filter((c: any) => {
-            const jid = c.remoteJid || c.id || c.number || '';
-            if (typeof jid === 'string' && (jid.includes('@g.us') || jid.includes('@broadcast') || jid.includes('@lid') || jid.includes('@newsletter'))) {
-              return false;
-            }
-            return true;
-          })
-          .map((c: any) => ({
-             name: c.name || c.pushName || c.verifiedName || '',
-             number: (c.remoteJid || c.id || c.number || '').split('@')[0]
-          }))
-          .filter((c: any) => c.number && c.number.length >= 10);
-        
-        success = true;
-        break; // Stop at first successful endpoint
+        const raw = Array.isArray(response.data) ? response.data : (response.data?.contacts || response.data?.data || []);
+        if (raw.length > 0) {
+          allRawContacts = [...allRawContacts, ...raw];
+          break; // Sucesso em contatos
+        }
       } catch (e) {
         // Silently try next
       }
     }
 
-    if (!success) {
-      throw new Error('All contact fetch endpoints failed.');
+    // Tenta buscar Chats (Histórico de conversas)
+    for (const endpoint of chatEndpoints) {
+      try {
+        const reqConfig: any = {
+          method: endpoint.method,
+          url: `${apiUrl}${endpoint.path}`,
+          headers: { apikey: apiKey }
+        };
+        if (endpoint.method === 'POST') reqConfig.data = endpoint.data;
+
+        const response = await axios(reqConfig);
+        const raw = Array.isArray(response.data) ? response.data : (response.data?.chats || response.data?.data || []);
+        if (raw.length > 0) {
+          allRawContacts = [...allRawContacts, ...raw];
+          break; // Sucesso em chats
+        }
+      } catch (e) {
+        // Silently try next
+      }
     }
+
+    if (allRawContacts.length === 0) {
+      throw new Error('Não foi possível buscar contatos. Tente novamente mais tarde.');
+    }
+    
+    customers = allRawContacts
+      .filter((c: any) => {
+        const jid = c.remoteJid || c.id || c.number || '';
+        // Remove grupos e transmissões
+        if (typeof jid === 'string' && (jid.includes('@g.us') || jid.includes('@broadcast') || jid.includes('@lid') || jid.includes('@newsletter'))) {
+          return false;
+        }
+        return true;
+      })
+      .map((c: any) => ({
+         name: c.name || c.pushName || c.verifiedName || '',
+         number: (c.remoteJid || c.id || c.number || '').split('@')[0]
+      }))
+      .filter((c: any) => c.number && c.number.length >= 10);
+
+    // Deduplicate by number
+    const uniqueCustomersMap = new Map();
+    for (const c of customers) {
+      if (!uniqueCustomersMap.has(c.number) || (c.name && !uniqueCustomersMap.get(c.number).name)) {
+        uniqueCustomersMap.set(c.number, c);
+      }
+    }
+    customers = Array.from(uniqueCustomersMap.values());
     
     res.json(customers);
   } catch (error: any) {

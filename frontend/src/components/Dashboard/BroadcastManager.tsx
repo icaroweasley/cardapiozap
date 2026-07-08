@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import axios from 'axios';
-import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, FolderOpen, Pencil } from 'lucide-react';
+import { Play, Pause, Square, Users, MessageSquare, Plug, ArrowRight, UserPlus, Search, CheckCircle2, AlertCircle, Trash2, ArrowLeft, Save, FolderOpen, Pencil, Upload } from 'lucide-react';
 import CustomSelect from '../CustomSelect';
 
 // Sleep worker removed
@@ -45,6 +45,11 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
   const [targetContacts, setTargetContacts] = useState<Contact[]>([]);
   const [selectedTargetContacts, setSelectedTargetContacts] = useState<Set<string>>(new Set());
   const [searchTarget, setSearchTarget] = useState('');
+
+  const [isLoadingWhatsApp, setIsLoadingWhatsApp] = useState(false);
+  const [isLoadingDatabase, setIsLoadingDatabase] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [showNewContactForm, setShowNewContactForm] = useState(false);
   const [newContactName, setNewContactName] = useState('');
@@ -317,6 +322,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
   const fetchDatabaseContacts = async () => {
     try {
+      setIsLoadingDatabase(true);
       const res = await axios.get(`${apiUrl}/api/broadcast/customers`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
@@ -332,11 +338,14 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
       setAllContacts(Array.from(uniqueMap.values()));
     } catch (e) {
       showAlert("Erro ao buscar clientes do banco de dados.");
+    } finally {
+      setIsLoadingDatabase(false);
     }
   };
 
   const fetchWhatsAppContacts = async () => {
     try {
+      setIsLoadingWhatsApp(true);
       addLog('Buscando contatos do WhatsApp...', 'pending');
       const res = await axios.get(`${apiUrl}/api/broadcast/whatsapp-contacts`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -353,6 +362,8 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
       addLog(`Encontrados ${uniqueMap.size} contatos no WhatsApp.`, 'success');
     } catch (e: any) {
       showAlert(e?.response?.data?.error || "Erro ao buscar contatos do WhatsApp.");
+    } finally {
+      setIsLoadingWhatsApp(false);
     }
   };
 
@@ -439,6 +450,65 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
     setNewContactName('');
     setNewContactPhone('');
     setShowNewContactForm(false);
+  };
+
+  const handleImportCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      const lines = text.split(/\r?\n/);
+      const newContacts: Contact[] = [];
+      let importedCount = 0;
+      
+      lines.forEach(line => {
+        // Handle common CSV separators: comma or semicolon
+        const separator = line.includes(';') ? ';' : ',';
+        const columns = line.split(separator);
+        
+        if (columns.length > 0) {
+          const col0 = columns[0].trim().replace(/^"|"$/g, '');
+          const col1 = columns.length > 1 ? columns[1].trim().replace(/^"|"$/g, '') : '';
+          
+          const col0Num = col0.replace(/\D/g, '');
+          const col1Num = col1.replace(/\D/g, '');
+          
+          if (col0Num.length >= 10 && col0Num.length <= 15) {
+            newContacts.push({
+              id: col0Num,
+              name: col1,
+              number: col0Num,
+              status: 'pending'
+            });
+            importedCount++;
+          } else if (col1Num.length >= 10 && col1Num.length <= 15) {
+            newContacts.push({
+              id: col1Num,
+              name: col0,
+              number: col1Num,
+              status: 'pending'
+            });
+            importedCount++;
+          }
+        }
+      });
+      
+      if (newContacts.length > 0) {
+        setAllContacts(prev => {
+          const uniqueMap = new Map<string, Contact>();
+          prev.forEach(c => uniqueMap.set(c.id, c));
+          newContacts.forEach(c => uniqueMap.set(c.id, c));
+          return Array.from(uniqueMap.values());
+        });
+        showAlert(`Importados ${importedCount} contatos da planilha!`);
+      } else {
+        showAlert("Nenhum contato válido encontrado. Certifique-se de usar CSV com uma coluna de telefone.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   // --- Filtering ---
@@ -566,10 +636,10 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
     <div className="flex-1 flex flex-col lg:flex-row h-full bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-fade-up rounded-[2rem] lg:m-2">
       
       {/* SIDEBAR WIZARD */}
-      <aside className="w-full lg:w-24 lg:h-full shrink-0 flex flex-row lg:flex-col items-center justify-center lg:justify-start gap-4 lg:gap-8 px-6 py-4 lg:py-10 border-b lg:border-b-0 lg:border-r border-black/10 dark:border-white/10 bg-white/20 dark:bg-black/20">
+      <aside className="w-full lg:w-24 shrink-0 flex flex-row lg:flex-col items-center justify-around lg:justify-start gap-2 lg:gap-8 px-4 lg:px-6 py-3 lg:py-10 border-b lg:border-b-0 lg:border-r border-black/10 dark:border-white/10 bg-white/20 dark:bg-black/20 z-20">
         <button 
           onClick={() => setCurrentScreen(1)} 
-          className={`relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 1 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
+          className={`relative w-12 h-12 lg:w-14 lg:h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 1 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
           title="1. Conexão"
         >
           <div className="flex flex-col items-center gap-1">
@@ -580,7 +650,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
         <button 
           onClick={() => nextScreen(2)} 
-          className={`relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 2 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
+          className={`relative w-12 h-12 lg:w-14 lg:h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 2 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
           title="2. Alvos"
         >
           <div className="flex flex-col items-center gap-1">
@@ -591,7 +661,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
         <button 
           onClick={() => nextScreen(3)} 
-          className={`relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 3 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
+          className={`relative w-12 h-12 lg:w-14 lg:h-14 rounded-2xl flex items-center justify-center transition-all ${currentScreen === 3 ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg scale-110' : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10'}`}
           title="3. Disparo"
         >
           <div className="flex flex-col items-center gap-1">
@@ -602,7 +672,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 overflow-hidden flex flex-col p-6 lg:p-10 relative z-10">
+      <main className="flex-1 overflow-y-auto lg:overflow-hidden flex flex-col p-4 lg:p-10 relative z-10 hide-scrollbar">
         
         {actualInstanceStatus !== 'Conectado' && (
           <div className="flex-1 flex flex-col items-center justify-center w-full max-w-xl mx-auto animate-fade-in">
@@ -681,29 +751,45 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
         {/* SCREEN 2: TARGETS */}
         {actualInstanceStatus === 'Conectado' && currentScreen === 2 && (
-          <div className="flex-1 flex flex-col lg:flex-row gap-6 w-full h-full overflow-hidden animate-fade-in font-inter">
+          <div className="flex-1 flex flex-col lg:flex-row gap-4 lg:gap-6 w-full lg:h-full lg:overflow-hidden animate-fade-in font-inter">
             
             {/* LEFT COLUMN: Source Contacts */}
-            <div className="flex-1 flex flex-col bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden relative group">
+            <div className="w-full lg:flex-1 flex flex-col h-[400px] lg:h-auto lg:min-h-0 bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden relative group shrink-0 lg:shrink">
               <div className="relative z-10 flex flex-col h-full w-full">
                 <div className="p-5 pb-3 flex flex-col gap-4 border-b border-black/5 dark:border-white/5">
                   <div className="flex justify-between items-center px-1">
                     <h2 className="font-podium text-sm lg:text-base tracking-widest text-black dark:text-white uppercase">Contatos</h2>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap justify-end">
                         <button 
-                          onClick={fetchWhatsAppContacts}
-                          title={isBroadcastOnly ? "Atualizar contatos do WhatsApp" : "Sincronizar com seu WhatsApp"}
+                          onClick={() => fileInputRef.current?.click()}
+                          title="Importar contatos de uma planilha CSV"
                           className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white"
                         >
-                          <Users size={14} /> {isBroadcastOnly ? "Atualizar" : "WhatsApp"}
+                          <Upload size={14} /> Importar CSV
+                        </button>
+                        <input 
+                          type="file" 
+                          accept=".csv"
+                          ref={fileInputRef}
+                          onChange={handleImportCSV}
+                          className="hidden"
+                        />
+                        <button 
+                          onClick={fetchWhatsAppContacts}
+                          disabled={isLoadingWhatsApp}
+                          title={isBroadcastOnly ? "Atualizar contatos do WhatsApp" : "Sincronizar com seu WhatsApp"}
+                          className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white disabled:opacity-50"
+                        >
+                          <Users size={14} /> {isLoadingWhatsApp ? "Buscando..." : (isBroadcastOnly ? "Atualizar" : "WhatsApp")}
                         </button>
                         {!isBroadcastOnly && (
                           <button 
                             onClick={fetchDatabaseContacts}
+                            disabled={isLoadingDatabase}
                             title="Sincronizar Clientes do Cardápio"
-                            className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white"
+                            className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors text-black dark:text-white disabled:opacity-50"
                           >
-                            <Users size={14} /> Clientes
+                            <Users size={14} /> {isLoadingDatabase ? "Buscando..." : "Clientes"}
                           </button>
                         )}
                     </div>
@@ -769,7 +855,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
             </div>
 
             {/* RIGHT COLUMN: Target Contacts */}
-            <div className="flex-1 flex flex-col bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden relative group">
+            <div className="w-full lg:flex-1 flex flex-col h-[500px] lg:h-auto lg:min-h-0 bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden relative group shrink-0 lg:shrink">
               <div className="relative z-10 flex flex-col h-full w-full">
                 <div className="p-5 pb-3 flex flex-col gap-4 border-b border-black/5 dark:border-white/5">
                   <div className="flex justify-between items-center px-1">
@@ -955,9 +1041,9 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
         {/* SCREEN 3: BROADCAST */}
         {actualInstanceStatus === 'Conectado' && currentScreen === 3 && (
-          <div className="flex-1 flex flex-col lg:flex-row gap-6 w-full h-full overflow-hidden animate-fade-in font-inter">
+          <div className="flex-1 flex flex-col lg:flex-row gap-4 lg:gap-6 w-full lg:h-full lg:overflow-hidden animate-fade-in font-inter">
             {/* Left Config Panel */}
-            <div className="flex-1 flex flex-col bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden relative">
+            <div className="w-full lg:flex-1 flex flex-col h-[500px] lg:h-auto lg:min-h-0 bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden relative shrink-0 lg:shrink">
                <div className="p-6 pb-2 border-b border-black/5 dark:border-white/5 bg-white/30 dark:bg-black/20">
                  <button onClick={() => setCurrentScreen(2)} className="text-[10px] text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white mb-4 flex items-center gap-1 font-bold uppercase tracking-widest transition-colors"><ArrowLeft size={14}/> Voltar</button>
                  <h2 className="font-podium text-xl uppercase tracking-widest text-black dark:text-white mb-2">
@@ -1035,10 +1121,10 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
             </div>
 
             {/* Right Panel: Preview & Logs */}
-            <div className="flex-1 flex flex-col gap-6 h-full w-full lg:w-1/2 min-h-0">
+            <div className="flex-1 flex flex-col gap-4 lg:gap-6 h-auto lg:h-full w-full lg:w-1/2 min-h-0 shrink-0 lg:shrink">
               
               {/* Preview */}
-              <div className="flex-1 bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] p-6 flex flex-col items-center min-h-0 relative overflow-y-auto hide-scrollbar">
+              <div className="flex-1 bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] p-4 lg:p-6 flex flex-col items-center min-h-[300px] lg:min-h-0 relative overflow-y-auto hide-scrollbar shrink-0 lg:shrink">
                 <div className="w-full text-center text-[10px] text-black/50 dark:text-white/50 uppercase tracking-widest font-bold shrink-0 mb-6">Preview da Mensagem</div>
                 <div className="w-full max-w-sm shrink-0">
                   <div className="bg-[#e5ddd5] dark:bg-[#0b141a] rounded-2xl p-5 w-full border border-black/5 dark:border-white/5 shadow-2xl relative">
@@ -1123,7 +1209,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
 
               {/* Logs */}
               {(isSending || logs.length > 0) && (
-                <div className="flex-1 bg-white/60 dark:bg-black/60 backdrop-blur-xl p-5 rounded-[2rem] border border-black/10 dark:border-white/10 font-mono text-xs overflow-y-auto flex flex-col gap-2 shadow-inner relative min-h-[200px]">
+                <div className="flex-1 bg-white/60 dark:bg-black/60 backdrop-blur-xl p-4 lg:p-5 rounded-[2rem] border border-black/10 dark:border-white/10 font-mono text-xs overflow-y-auto flex flex-col gap-2 shadow-inner relative min-h-[300px] lg:min-h-0 shrink-0 lg:shrink">
                   <div className="absolute top-4 right-5 text-[10px] text-black/40 dark:text-white/40 uppercase tracking-widest font-bold">Histórico / Logs</div>
                   <div className="mt-6 flex-1 overflow-y-auto hide-scrollbar pr-2">
                     {logs.length === 0 && <div className="text-black/30 dark:text-white/30 italic mt-2">Iniciando...</div>}
