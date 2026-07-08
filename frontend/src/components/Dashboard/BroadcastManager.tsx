@@ -671,7 +671,7 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
           <div className="flex-1 flex flex-col w-full h-full lg:overflow-hidden animate-fade-in font-inter">
             
             {/* TABS */}
-            <div className="flex w-full mb-4 bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-2xl overflow-hidden p-1 shrink-0 shadow-sm">
+            <div className="flex w-full mb-4 bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-2xl overflow-hidden p-1 shrink-0 shadow-sm lg:hidden">
               <button 
                 onClick={() => setActiveTargetTab('ORIGIN')}
                 className={`flex-1 py-3 md:py-4 text-[10px] md:text-xs font-bold uppercase tracking-widest rounded-xl transition-all ${activeTargetTab === 'ORIGIN' ? 'bg-black dark:bg-white text-white dark:text-black shadow-md' : 'text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/5'}`}
@@ -686,11 +686,10 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
               </button>
             </div>
 
-            <div className="flex-1 relative lg:overflow-hidden flex flex-col">
+            <div className="flex-1 relative lg:overflow-hidden flex flex-col lg:flex-row lg:gap-6">
               
               {/* TAB 1: ORIGIN */}
-              {activeTargetTab === 'ORIGIN' && (
-                <div className="flex-1 flex flex-col h-[500px] lg:h-auto bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden group w-full lg:absolute lg:inset-0">
+              <div className={`flex-1 flex-col h-[500px] lg:h-auto bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden group w-full lg:relative lg:inset-auto ${activeTargetTab === 'ORIGIN' ? 'flex' : 'hidden'} lg:flex`}>
                   <div className="relative z-10 flex flex-col h-full w-full">
                     <div className="p-4 lg:p-6 pb-4 flex flex-col gap-4 border-b border-black/5 dark:border-white/5 shrink-0 bg-white/30 dark:bg-black/20">
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -771,11 +770,9 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                     </div>
                   </div>
                 </div>
-              )}
 
               {/* TAB 2: TARGET */}
-              {activeTargetTab === 'TARGET' && (
-                <div className="flex-1 flex flex-col h-[600px] lg:h-auto bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden group w-full lg:absolute lg:inset-0">
+              <div className={`flex-1 flex-col h-[600px] lg:h-auto bg-white/40 dark:bg-black/30 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-inner rounded-[2rem] overflow-hidden group w-full lg:relative lg:inset-auto ${activeTargetTab === 'TARGET' ? 'flex' : 'hidden'} lg:flex`}>
                   <div className="relative z-10 flex flex-col h-full w-full">
                     <div className="p-4 lg:p-6 pb-4 flex flex-col gap-4 border-b border-black/5 dark:border-white/5 shrink-0 bg-white/30 dark:bg-black/20">
                       <div className="flex justify-between items-center px-1">
@@ -959,7 +956,6 @@ export default function BroadcastManager({ setActiveTab }: { setActiveTab?: (tab
                     </div>
                   </div>
                 </div>
-              )}
             </div>
           </div>
         )}
