@@ -175,7 +175,7 @@ router.get('/whatsapp-contacts', authenticate, async (req: any, res) => {
       throw new Error('Não foi possível buscar contatos. Tente novamente mais tarde.');
     }
     
-    customers = allRawContacts
+    let customers = allRawContacts
       .filter((c: any) => {
         const jid = c.remoteJid || c.id || c.number || '';
         // Remove grupos e transmissões
