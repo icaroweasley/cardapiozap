@@ -316,28 +316,28 @@ export default function Dashboard() {
           {merchant.accountType !== 'BROADCAST_ONLY' && (
             <>
               <button 
-                onClick={() => setActiveTab('KANBAN')}
+                onClick={() => { setActiveTab('KANBAN'); setIsMobileMenuOpen(false); }}
                 className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'KANBAN' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <LayoutDashboard size={18} />
                 Pedidos
               </button>
               <button 
-                onClick={() => setActiveTab('PRODUCTS')}
+                onClick={() => { setActiveTab('PRODUCTS'); setIsMobileMenuOpen(false); }}
                 className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'PRODUCTS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <Package size={18} />
                 Cardápio
               </button>
               <button 
-                onClick={() => setActiveTab('REPORTS')}
+                onClick={() => { setActiveTab('REPORTS'); setIsMobileMenuOpen(false); }}
                 className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'REPORTS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <TrendingUp size={18} />
                 Relatórios
               </button>
               <button 
-                onClick={() => setActiveTab('QRCODE')}
+                onClick={() => { setActiveTab('QRCODE'); setIsMobileMenuOpen(false); }}
                 className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'QRCODE' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
               >
                 <QrCode size={18} />
@@ -346,21 +346,21 @@ export default function Dashboard() {
             </>
           )}
           <button 
-            onClick={() => setActiveTab('SETTINGS')}
+            onClick={() => { setActiveTab('SETTINGS'); setIsMobileMenuOpen(false); }}
             className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'SETTINGS' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
           >
             <Settings2 size={18} />
             Conexões
           </button>
           <button 
-            onClick={() => setActiveTab('BROADCAST')}
+            onClick={() => { setActiveTab('BROADCAST'); setIsMobileMenuOpen(false); }}
             className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'BROADCAST' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
           >
             <Megaphone size={18} />
             Disparos
           </button>
           <button 
-            onClick={() => setActiveTab('PROFILE')}
+            onClick={() => { setActiveTab('PROFILE'); setIsMobileMenuOpen(false); }}
             className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'PROFILE' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
           >
             <Settings2 size={18} />
@@ -369,7 +369,7 @@ export default function Dashboard() {
           
           {merchant.isAdmin && (
             <button 
-              onClick={() => setActiveTab('ADMIN')}
+              onClick={() => { setActiveTab('ADMIN'); setIsMobileMenuOpen(false); }}
               className={`flex items-center gap-4 px-6 min-h-[48px] md:py-4 font-inter text-xs tracking-widest uppercase transition-all whitespace-nowrap border rounded-xl ${activeTab === 'ADMIN' ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white font-bold shadow-lg' : 'bg-white/10 dark:bg-black/10 text-black/70 dark:text-white/70 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:bg-black/5 dark:hover:bg-white/5'}`}
             >
               <Server size={18} />
