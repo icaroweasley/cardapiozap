@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Settings2, Smartphone } from 'lucide-react';
+import { Settings2, Smartphone, Cloud, Save } from 'lucide-react';
 import { useToastStore } from '../../store/useToastStore';
 
 export default function SettingsPanel() {
   const [config, setConfig] = useState<any>({});
+  const [provider, setProvider] = useState<'EVOLUTION' | 'OFFICIAL'>('EVOLUTION');
   const [loading, setLoading] = useState(true);
+  const [isSavingMeta, setIsSavingMeta] = useState(false);
 
   const [instanceStatus, setInstanceStatus] = useState<string>('Desconectado');
   const [qrCode, setQrCode] = useState<string | null>(null);
@@ -120,11 +122,39 @@ export default function SettingsPanel() {
       const data = await response.json();
       if (response.ok) {
         setConfig(data.whatsappConfig || {});
+        setProvider(data.whatsappProvider || 'EVOLUTION');
       }
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveMetaConfig = async () => {
+    setIsSavingMeta(true);
+    try {
+      const response = await fetch(`${apiUrl}/api/auth/settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          whatsappProvider: 'OFFICIAL',
+          whatsappConfig: config
+        })
+      });
+      if (response.ok) {
+        useToastStore.getState().addToast('Configurações da Meta salvas!', 'success');
+      } else {
+        throw new Error('Erro ao salvar');
+      }
+    } catch (e) {
+      console.error(e);
+      useToastStore.getState().addToast('Erro ao salvar configurações.', 'error');
+    } finally {
+      setIsSavingMeta(false);
     }
   };
 
@@ -155,7 +185,34 @@ export default function SettingsPanel() {
 
         {/* Content */}
         <div className="w-full">
-          <div className="flex flex-col lg:flex-row gap-6">
+          {/* Tabs */}
+          <div className="flex flex-col sm:flex-row gap-2 mb-6">
+            <button
+              onClick={() => setProvider('EVOLUTION')}
+              className={`flex-1 py-3 px-4 rounded-xl text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all ${
+                provider === 'EVOLUTION'
+                  ? 'bg-black text-white dark:bg-white dark:text-black shadow-lg scale-[1.02]'
+                  : 'bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 hover:bg-black/10 dark:hover:bg-white/10'
+              }`}
+            >
+              <Smartphone size={16} />
+              API Não Oficial (Baileys)
+            </button>
+            <button
+              onClick={() => setProvider('OFFICIAL')}
+              className={`flex-1 py-3 px-4 rounded-xl text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 transition-all ${
+                provider === 'OFFICIAL'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 scale-[1.02]'
+                  : 'bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 hover:bg-black/10 dark:hover:bg-white/10'
+              }`}
+            >
+              <Cloud size={16} />
+              API Oficial (Meta Cloud)
+            </button>
+          </div>
+
+          {provider === 'EVOLUTION' ? (
+            <div className="flex flex-col lg:flex-row gap-6 animate-fade-in">
                <div className="w-full lg:w-64 lg:h-64 shrink-0 bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-3xl p-4 flex items-center justify-center relative shadow-inner group aspect-square lg:aspect-auto">
                    {qrCode ? (
                      <img src={qrCode} alt="QR Code" className="w-full h-full object-contain rounded-2xl" />
@@ -220,6 +277,67 @@ export default function SettingsPanel() {
                  </div>
                </div>
             </div>
+          ) : (
+            <div className="flex flex-col gap-6 animate-fade-in bg-white/50 dark:bg-black/50 border border-black/10 dark:border-white/10 p-5 md:p-8 rounded-3xl shadow-sm">
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-black/60 dark:text-white/60 mb-1.5">
+                    Phone Number ID (ID do Número)
+                  </label>
+                  <input
+                    type="text"
+                    value={config.phoneNumberId || ''}
+                    onChange={(e) => setConfig({ ...config, phoneNumberId: e.target.value })}
+                    className="w-full bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm font-medium text-black dark:text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner"
+                    placeholder="Ex: 123456789012345"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-black/60 dark:text-white/60 mb-1.5">
+                    Access Token (Token Temporário)
+                  </label>
+                  <input
+                    type="password"
+                    value={config.accessToken || ''}
+                    onChange={(e) => setConfig({ ...config, accessToken: e.target.value })}
+                    className="w-full bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm font-medium text-black dark:text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner"
+                    placeholder="EAAB..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-black/60 dark:text-white/60 mb-1.5">
+                    WABA ID (WhatsApp Business Account ID) - Opcional
+                  </label>
+                  <input
+                    type="text"
+                    value={config.wabaId || ''}
+                    onChange={(e) => setConfig({ ...config, wabaId: e.target.value })}
+                    className="w-full bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm font-medium text-black dark:text-white focus:outline-none focus:border-blue-500 transition-colors shadow-inner"
+                    placeholder="Ex: 123456789012345"
+                  />
+                </div>
+              </div>
+              
+              <button
+                onClick={handleSaveMetaConfig}
+                disabled={isSavingMeta}
+                className="w-full bg-blue-600 text-white px-6 py-4 text-xs uppercase tracking-widest font-bold rounded-xl disabled:opacity-50 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 mt-2"
+              >
+                <Save size={18} />
+                {isSavingMeta ? 'Salvando...' : 'Salvar Configurações da Meta'}
+              </button>
+
+              <div className="bg-blue-500/10 border border-blue-500/20 p-5 rounded-2xl text-xs font-inter mt-2">
+                <strong className="flex items-center gap-2 uppercase tracking-widest text-[10px] mb-3 text-blue-700 dark:text-blue-400">
+                  <Cloud size={14} />
+                  Aviso de Disparos em Massa (Meta)
+                </strong>
+                <p className="text-black/70 dark:text-white/70 leading-relaxed font-medium">
+                  Ao usar a API Oficial, o envio de disparos (broadcasts) para clientes fora da janela de 24 horas requer <b className="text-black dark:text-white">Templates Aprovados</b> pelo WhatsApp. Se enviar textos livres, a mensagem pode falhar.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

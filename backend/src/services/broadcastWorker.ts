@@ -75,90 +75,121 @@ export const startBroadcastWorker = async (merchantId: string) => {
       if (allowSend) {
         // Send message
         try {
-          const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
-          const instanceName = `zapgarcom_${merchantId}`;
-          const apiKey = process.env.EVOLUTION_API_KEY || '';
-
-          // Parse media
-          const mediaAttachments = JSON.parse(session.mediaAttachments || '[]');
-          const hasMedia = mediaAttachments.length > 0;
-          const media = hasMedia ? mediaAttachments[0] : null;
-
+          const provider = merchant.whatsappProvider || 'EVOLUTION';
+          
           // Replace vars
           let textToSend = session.messageText.replace(/{nome}/g, contact.name || 'Cliente');
 
-          // 1. Send Presence
-          try {
-            const typingDuration = Math.floor(Math.random() * (20000 - 5000 + 1)) + 5000;
-            await axios.post(`${apiUrl}/chat/sendPresence/${instanceName}`, {
-              number: cleanPhone,
-              presence: 'composing',
-              delay: typingDuration
-            }, { headers: { apikey: apiKey } });
-            await new Promise(r => setTimeout(r, typingDuration + 1000)); // wait for typing simulation
-          } catch(e) {}
+          if (provider === 'OFFICIAL') {
+            const config = merchant.whatsappConfig ? JSON.parse(merchant.whatsappConfig) : {};
+            const phoneNumberId = config.phoneNumberId;
+            const accessToken = config.accessToken;
 
-          // 2. Send Message
-          if (media) {
-            let finalMedia = media.base64 || media.data || '';
-            if (finalMedia && finalMedia.includes('base64,')) {
-               finalMedia = finalMedia.split('base64,')[1];
+            if (!phoneNumberId || !accessToken) {
+              throw new Error('Credenciais da API Oficial ausentes.');
             }
-            const isVideo = media.type.startsWith('video');
-            const isAudio = media.type.startsWith('audio');
-            const mediaType = isVideo ? 'video' : isAudio ? 'audio' : 'image';
 
-            const sendMediaOnly = async (captionText: string) => {
-               await axios.post(`${apiUrl}/message/sendMedia/${instanceName}`, {
+            await axios.post(
+              `https://graph.facebook.com/v17.0/${phoneNumberId}/messages`,
+              {
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: cleanPhone,
+                type: 'text',
+                text: { preview_url: false, body: textToSend }
+              },
+              {
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`,
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+            
+            contact.status = 'sent';
+          } else {
+            const apiUrl = process.env.EVOLUTION_API_URL || 'http://127.0.0.1:8080';
+            const instanceName = `zapgarcom_${merchantId}`;
+            const apiKey = process.env.EVOLUTION_API_KEY || '';
+
+            // Parse media
+            const mediaAttachments = JSON.parse(session.mediaAttachments || '[]');
+            const hasMedia = mediaAttachments.length > 0;
+            const media = hasMedia ? mediaAttachments[0] : null;
+
+            // 1. Send Presence
+            try {
+              const typingDuration = Math.floor(Math.random() * (20000 - 5000 + 1)) + 5000;
+              await axios.post(`${apiUrl}/chat/sendPresence/${instanceName}`, {
+                number: cleanPhone,
+                presence: 'composing',
+                delay: typingDuration
+              }, { headers: { apikey: apiKey } });
+              await new Promise(r => setTimeout(r, typingDuration + 1000)); // wait for typing simulation
+            } catch(e) {}
+
+            // 2. Send Message
+            if (media) {
+              let finalMedia = media.base64 || media.data || '';
+              if (finalMedia && finalMedia.includes('base64,')) {
+                 finalMedia = finalMedia.split('base64,')[1];
+              }
+              const isVideo = media.type.startsWith('video');
+              const isAudio = media.type.startsWith('audio');
+              const mediaType = isVideo ? 'video' : isAudio ? 'audio' : 'image';
+
+              const sendMediaOnly = async (captionText: string) => {
+                 await axios.post(`${apiUrl}/message/sendMedia/${instanceName}`, {
+                    number: cleanPhone,
+                    options: { delay: 1200, presence: 'composing' },
+                    mediaMessage: {
+                      mediatype: mediaType,
+                      mimetype: media.type,
+                      fileName: media.name || 'media',
+                      caption: captionText,
+                      media: finalMedia
+                    }
+                 }, { headers: { apikey: apiKey } });
+              };
+
+              const sendTextOnly = async () => {
+                 if (textToSend) {
+                   await axios.post(`${apiUrl}/message/sendText/${instanceName}`, {
+                     number: cleanPhone,
+                     options: { delay: 1200, presence: 'composing' },
+                     textMessage: { text: textToSend }
+                   }, { headers: { apikey: apiKey } });
+                 }
+              };
+
+              if (session.textPosition === 'before') {
+                await sendTextOnly();
+                await new Promise(r => setTimeout(r, 2000));
+                await sendMediaOnly('');
+              } else if (session.textPosition === 'after') {
+                await sendMediaOnly('');
+                await new Promise(r => setTimeout(r, 2000));
+                await sendTextOnly();
+              } else {
+                 if (isAudio) {
+                    // Audio não suporta legenda embutida
+                    await sendMediaOnly('');
+                    await new Promise(r => setTimeout(r, 2000));
+                    await sendTextOnly();
+                 } else {
+                    await sendMediaOnly(textToSend || '');
+                 }
+              }
+            } else {
+               await axios.post(`${apiUrl}/message/sendText/${instanceName}`, {
                   number: cleanPhone,
                   options: { delay: 1200, presence: 'composing' },
-                  mediaMessage: {
-                    mediatype: mediaType,
-                    mimetype: media.type,
-                    fileName: media.name || 'media',
-                    caption: captionText,
-                    media: finalMedia
-                  }
-               }, { headers: { apikey: apiKey } });
-            };
-
-            const sendTextOnly = async () => {
-               if (textToSend) {
-                 await axios.post(`${apiUrl}/message/sendText/${instanceName}`, {
-                   number: cleanPhone,
-                   options: { delay: 1200, presence: 'composing' },
-                   textMessage: { text: textToSend }
-                 }, { headers: { apikey: apiKey } });
-               }
-            };
-
-            if (session.textPosition === 'before') {
-              await sendTextOnly();
-              await new Promise(r => setTimeout(r, 2000));
-              await sendMediaOnly('');
-            } else if (session.textPosition === 'after') {
-              await sendMediaOnly('');
-              await new Promise(r => setTimeout(r, 2000));
-              await sendTextOnly();
-            } else {
-               if (isAudio) {
-                  // Audio não suporta legenda embutida
-                  await sendMediaOnly('');
-                  await new Promise(r => setTimeout(r, 2000));
-                  await sendTextOnly();
-               } else {
-                  await sendMediaOnly(textToSend || '');
-               }
+                  textMessage: { text: textToSend }
+                }, { headers: { apikey: apiKey } });
             }
-          } else {
-             await axios.post(`${apiUrl}/message/sendText/${instanceName}`, {
-                number: cleanPhone,
-                options: { delay: 1200, presence: 'composing' },
-                textMessage: { text: textToSend }
-              }, { headers: { apikey: apiKey } });
-          }
 
-          contact.status = 'sent';
+            contact.status = 'sent';
+          }
         } catch (err: any) {
           contact.status = 'error';
           contact.error = err.response?.data?.message || err.message || 'Error';

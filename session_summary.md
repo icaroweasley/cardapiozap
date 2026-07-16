@@ -20,6 +20,7 @@
 15. **Sincronização de Contatos & UX:** Investigação arquitetural concluída sobre limites de sincronização da Evolution API (Multi-Device não recebe agenda completa via Baileys por segurança do WhatsApp). Implementado estado de `Loading ("Buscando...")` nas buscas de contato do Frontend (`BroadcastManager.tsx`) para maior responsividade, além de forçar as *flags* mais rigorosas na API (`syncFullHistory: true`, `readContacts: true`).
 16. **Otimização Extrema de UX em Disparos:** Interface do módulo de Disparos totalmente redesenhada para maximizar densidade de leitura. Cabeçalhos simplificados de forma alinhada (*inline*), botões e *dropdowns* (`CustomSelect` no formato miniatura) padronizados no tema Glassmorphism para evitar caixas de seleção opacas do sistema operacional. Layouts de contatos convertidos de grades (grids) para listas verticais estritas. No Mobile, a navegação em abas laterais agora usa `padding` responsivo, corrigindo problemas de sobreposição do indicador de seleção (bolinha) e o vazamento de texto.
 
+17. **Integração Meta Cloud API (Oficial):** Adicionada a opção de escolha no painel de configurações (Aba: Conexões) entre a API Não Oficial (Baileys/Evolution) e a API Oficial da Meta. O backend e os workers de disparo em massa agora suportam o envio de mensagens via `graph.facebook.com` nativamente quando configurado com `Phone Number ID` e `Access Token`.
 
 #### 🔧 Estado Atual e Configurações (Produção):
 - **Painel:** `https://zapgarcom.com.br/login`
@@ -27,8 +28,8 @@
 - **Login Admin Mestre:** Slug: `admin` | Senha: `123456`
 
 #### 🚀 PRÓXIMOS PASSOS SUGERIDOS:
-1. **[CONCLUÍDO]** Implementar o recurso "Importar Planilha (Excel/CSV)" na interface de disparos, criando uma alternativa profissional para contornar a restrição de contatos inativos da Evolution API.
-2. Avaliar a performance e usabilidade dos relatórios no longo prazo com grandes volumes de dados.
+1. Avaliar a performance e usabilidade dos relatórios no longo prazo com grandes volumes de dados.
+2. Refinar as regras de Templates aprovados no painel para disparos na API Oficial fora da janela de 24h.
 3. Continuar o refinamento das funcionalidades do cardápio digital conforme o feedback dos clientes.
 
-*Status: Módulo de disparos completamente otimizado em termos de densidade de UI/UX, interface responsiva adaptada. Projeto estável e atualizado na produção.*
+*Status: Módulo de disparos completamente otimizado. Suporte simultâneo a Evolution API e Meta Cloud API adicionado.*
